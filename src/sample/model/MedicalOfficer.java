@@ -2,6 +2,15 @@ package sample.model;
 
 import java.util.List;
 
-public class MedicalOfficer {
-    private List<String> speciality;
+public class MedicalOfficer extends Employee{
+    private String speciality;
+
+    public String getSpeciality() {
+        return speciality;
+    }
+
+    public void setSpeciality(String speciality) {
+        this.speciality = speciality;
+    }
+
 }
