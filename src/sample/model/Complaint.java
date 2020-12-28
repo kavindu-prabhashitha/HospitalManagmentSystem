@@ -1,6 +1,10 @@
 package sample.model;
 
+import java.time.LocalDate;
+
 public class Complaint {
+    private int complaintID;
+    private LocalDate complaintDate;
     private String complaintType;
     private String complaintBy;
     private String phoneNumber;
@@ -11,13 +15,20 @@ public class Complaint {
     public Complaint() {
     }
 
-    public Complaint(String complaintType, String complaintBy, String phoneNumber, String description, String note, String actiontaken) {
-        this.complaintType = complaintType;
-        this.complaintBy = complaintBy;
-        this.phoneNumber = phoneNumber;
-        this.description = description;
-        this.note = note;
-        this.actiontaken = actiontaken;
+    public LocalDate getComplaintDate() {
+        return complaintDate;
+    }
+
+    public void setComplaintDate(LocalDate complaintDate) {
+        this.complaintDate = complaintDate;
+    }
+
+    public int getComplaintID() {
+        return complaintID;
+    }
+
+    public void setComplaintID(int complaintID) {
+        this.complaintID = complaintID;
     }
 
     public String getComplaintType() {
@@ -70,11 +81,14 @@ public class Complaint {
 
     @Override
     public String toString() {
-        return complaintType+","+
-                complaintBy+","+
-                phoneNumber+","+
-                description+","+
-                note+","+
+        return  complaintID+"~"+
+                complaintDate+"~"+
+                complaintType+"~"+
+                complaintBy+"~"+
+                phoneNumber+"~"+
+                description+"~"+
+                note+"~"+
                 actiontaken;
     }
+
 }
