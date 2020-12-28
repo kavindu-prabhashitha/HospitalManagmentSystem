@@ -21,8 +21,6 @@ public class ReceivedPostal extends Postal {
     //toString method
     @Override
     public String toString() {
-        return "ReceivedPostal{" +
-                "fromAddress='" + fromAddress + '\'' +
-                '}'+ super.toString();
+        return  super.toString()+"~"+fromAddress ;
     }
 }
