@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class SystemDataWriter {
 
+    //when update and Delete use  int=10 as deleteItem parameter
+    //in any other case use any inter other than 10
     public void writeDataToFile(String dataLine,String filePath,int deleteItems){
         File file = new File((filePath));
 
@@ -31,18 +33,21 @@ public class SystemDataWriter {
         }
     }
 
+    //when update and Delete use  int=10 as deleteItem parameter
+    //in any other case use any inter other than 10
     public  void writeDataToFile(ArrayList<String> dataList,String filePath,int deleteItems){
         File file = new File(filePath);
 
         if (deleteItems ==10){
             boolean isDeletd = file.delete();
+            System.out.println("file deleted : "+isDeletd);
             try {
                boolean isFileCreted=  file.createNewFile();
                 System.out.println("file created : "+isFileCreted);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("file deleted : "+isDeletd);
+
 
         }
 
@@ -55,7 +60,7 @@ public class SystemDataWriter {
             }
             bufferedWriter.close();
             fileWriter.close();
-            System.out.println("Data written to appointment File Arrray Data data");
+            System.out.println("Data written to  File ");
         } catch (IOException e) {
             e.printStackTrace();
         }
