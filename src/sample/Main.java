@@ -31,6 +31,7 @@ public class Main extends Application {
     private static int staffID ;
     private static int appointmentID;
     private static int complaintID;
+    private static int visitorID;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -94,11 +95,15 @@ public class Main extends Application {
                     break;
                 case "appointmentID":
                     appointmentID = Integer.parseInt(temSystemDataList.get(1));
-                    System.out.println("staff ID : "+appointmentID);
+                    System.out.println("appointment ID : "+appointmentID);
                     break;
                 case "complaintID":
                     complaintID =Integer.parseInt(temSystemDataList.get(1));
-                    System.out.println("reference ID : "+complaintID);
+                    System.out.println("complaint ID : "+complaintID);
+                    break;
+                case "visitorID":
+                    visitorID =Integer.parseInt(temSystemDataList.get(1));
+                    System.out.println("visitorID : "+visitorID);
                     break;
                 default:
                     break;
@@ -123,6 +128,8 @@ public class Main extends Application {
             bufferedWriter.newLine();
             bufferedWriter.write("complaintID~"+complaintID);
             bufferedWriter.newLine();
+            bufferedWriter.write("visitorID~"+visitorID);
+            bufferedWriter.newLine();
             bufferedWriter.close();
             fileWriter.close();
             System.out.println("system data saved");
@@ -131,9 +138,14 @@ public class Main extends Application {
         }
     }
 
+    public static int getVisitorID(){
+        return   ++visitorID;
+    }
+
     public static int getStaffID(){
       return   ++staffID;
     }
+
     public static int getComplaintID(){
         return ++complaintID;
     }
@@ -154,6 +166,26 @@ public class Main extends Application {
             return LocalDate.parse(string, dateFormatter);
         } else {
             return null;
+        }
+    }
+
+    public static LocalTime getLocalTimeFromString(String string){
+        String pattern = "HH:mm";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+        if (string != null && !string.isEmpty()) {
+            return LocalTime.parse(string, dateFormatter);
+        } else {
+            return null;
+        }
+    }
+
+    public static String getStringFromLocalTime(LocalTime localTime){
+        String pattern = "HH:mm";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+        if (localTime != null) {
+            return dateFormatter.format(localTime);
+        } else {
+            return "";
         }
     }
 

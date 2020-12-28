@@ -1,0 +1,2 @@
+4~2020-12-24~1212~kavindu prabhashitha~opd patient visit~0756324545~MALE~nothing special~22:50~22:52~true~true
+5~2020-12-28~1919~Nimal rathnayake~doctor channeling~075434323~MALE~just to say hi~22:51~null~true~false
