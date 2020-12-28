@@ -15,9 +15,12 @@ import sample.controller.MultipleFXMLLoader;
 import sample.controller.SystemDataReader;
 import sample.controller.actionTask.ReferenceAction;
 import sample.controller.actionTask.UserAction;
-import sample.model.*;
+import sample.model.PostalType;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +35,7 @@ public class Main extends Application {
     private static int appointmentID;
     private static int complaintID;
     private static int visitorID;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
