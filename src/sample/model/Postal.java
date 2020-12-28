@@ -68,13 +68,12 @@ public abstract class Postal {
 //toString method
     @Override
     public String toString() {
-        return "Postal{" +
-                "postalType=" + postalType +
-                ", referenceNo='" + referenceNo + '\'' +
-                ", toName='" + toName + '\'' +
-                ", fromName='" + fromName + '\'' +
-                ", note='" + note + '\'' +
-                ", date=" + date +
-                '}';
+        return  postalType + "~" +
+                referenceNo + '~' +
+                toName + '~' +
+                fromName + '~' +
+                date +"~"+
+                note
+                ;
     }
 }
