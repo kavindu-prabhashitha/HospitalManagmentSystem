@@ -20,8 +20,6 @@ public class DispatchPostal extends Postal{
     //toString method
     @Override
     public String toString() {
-        return "DispatchPostal{" +
-                "address='" + address + '\'' +
-                '}'+ super.toString();
+        return super.toString()+"~"+address;
     }
 }
