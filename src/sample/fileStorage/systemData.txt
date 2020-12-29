@@ -1,5 +1,6 @@
 staffID~10
 referenceID~28
 appointmentID~6
-complaintID~102
-visitorID~5
+complaintID~103
+visitorID~0
+postalReferenceID~5

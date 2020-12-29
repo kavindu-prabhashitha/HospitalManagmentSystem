@@ -4,75 +4,76 @@ import java.time.LocalDate;
 
 //create a Postal class
 
-public abstract class Postal {
+public  class Postal {
 
     //Instance variable
 
     private PostalType postalType;
-    private String referenceNo;
-    private String toName;
-    private String fromName;
-    private String note;
+    private int referenceNo;
     private LocalDate date;
+    private String name;
+    private String address;
+    private String note;
 
 //getters and setters
 
-    public void setPostalType(PostalType postalType) {
-        this.postalType = postalType;
-    }
-
-    public void setReferenceNo(String referenceNo) {
-        this.referenceNo = referenceNo;
-    }
-
-    public void setToName(String toName) {
-        this.toName = toName;
-    }
-
-    public void setFromName(String fromName) {
-        this.fromName = fromName;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
 
     public PostalType getPostalType() {
         return postalType;
     }
 
-    public String getReferenceNo() {
+    public void setPostalType(PostalType postalType) {
+        this.postalType = postalType;
+    }
+
+    public int getReferenceNo() {
         return referenceNo;
     }
 
-    public String getToName() {
-        return toName;
-    }
-
-    public String getFromName() {
-        return fromName;
-    }
-
-    public String getNote() {
-        return note;
+    public void setReferenceNo(int referenceNo) {
+        this.referenceNo = referenceNo;
     }
 
     public LocalDate getDate() {
         return date;
     }
 
-//toString method
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    //toString method
     @Override
     public String toString() {
         return  postalType + "~" +
                 referenceNo + '~' +
-                toName + '~' +
-                fromName + '~' +
-                date +"~"+
+                date + '~' +
+                name + '~' +
+                address + '~' +
                 note
                 ;
     }

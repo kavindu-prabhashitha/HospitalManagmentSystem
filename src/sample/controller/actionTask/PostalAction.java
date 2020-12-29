@@ -1,511 +1,150 @@
 package sample.controller.actionTask;
 
-import sample.model.DispatchPostal;
+import sample.Main;
+import sample.controller.SystemDataReader;
+import sample.controller.taskControllers.SystemDataWriter;
+import sample.model.Postal;
 import sample.model.PostalType;
-import sample.model.ReceivedPostal;
-import sample.model.UserRoll;
-
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static sample.controller.actionTask.UserAction.*;
 
-//create a postalAction class
+public class PostalAction{
 
-public class PostalAction<searchedReceived> {
+    private static String postalDataFile ="src/sample/fileStorage/moduleData/postalData.txt";
 
-    //received postal data recoded in receivedData.txt file
-    public static String receivedFilePath = "src/sample/fileStorage/moduleData/postalData/receivedData.txt";
 
-    //dispatch postal data recoded in dispatch .txt file
-    public static String dispatchFilePath = "src/sample/fileStorage/moduleData/postalData/dispatchData.txt";
-
-    //get PostalType enum object with the String type input of the pName
-    public static PostalType getPostalType(String pName) {
-        PostalType postalType = null;
-        switch (pName) {
-            case "RECEIVED":
-                postalType = PostalType.RECEIVED;
-                break;
-
-            case "DISPATCH":
-                postalType = PostalType.DISPATCH;
-                break;
-        }
-        return postalType;
+    public static void addPostaRecord(Postal postal){
+        addPostal(postal);
     }
 
-     /* =============================================================================================================
-       RECEIVED Action tasks
-      =============================================================================================================
-    */
-
-    public static void addReceived(ReceivedPostal receivedPostal, UserRoll roll) {
-
-        if (roll.equals(UserRoll.ADMIN) || roll.equals(UserRoll.RECEPTIONIST)) {
-            saveReceived(receivedPostal);
-        }
-
+    public static void updatePostalRecord(Postal postal){
+        System.out.println("passes postal from viewController "+postal);
+        editDeletePostal(postal,1);
     }
 
-
-    private static void saveReceived(ReceivedPostal receivedPostal) {
-        File receivedfile = new File(receivedFilePath);
-
-        try (FileWriter fileWriter = new FileWriter(receivedfile, true)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(receivedPostal.toString());
-            bufferedWriter.newLine();
-            bufferedWriter.close();
-            fileWriter.close();
-
-            System.out.println("file path : " + receivedfile.getPath() + " Received Postal saved");
-            //addUserLoginData(patientloginData, new LoginUser(user.getUserName(), user.getUserPassword()));
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-
+    public static void deletePostalRecord(Postal postal){
+        editDeletePostal(postal,5);
     }
 
-    public static void updateReceivedRecord(UserRoll userRoll, ReceivedPostal receivedPostal, String searchedID) {
-        if (userRoll.equals(UserRoll.RECEPTIONIST) || userRoll.equals(UserRoll.ADMIN)) {
-            editReceivedRecord(receivedFilePath, receivedPostal, searchedID);
-        } else {
-
-            System.out.println("acces denied(cannot update)");
-        }
+    public static Postal searchPostalRecord(int postalReference){
+        return searchPostal(postalReference);
     }
 
-    private static void editReceivedRecord(String filePath, ReceivedPostal receivedRecord, String searchReceivedid) {
-
-        ArrayList<String> tempReceivedList = new ArrayList<>();
-
-        File file = new File(filePath);
-        boolean found = false;
-        try {
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-
-                if (tempList.get(1).equals(searchReceivedid)) {
-                    found = true;
-                    line = receivedRecord.toString();
-                    tempReceivedList.add(line);
-                } else {
-                    tempReceivedList.add(line);
-                }
-            }
-
-            bufferedReader.close();
-            fileReader.close();
-
-            if (found) {
-                try {
-
-                    File fileNew = new File(receivedFilePath);
-                    if (file.exists()) {
-
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    for (int i = 0; i < tempReceivedList.size(); i++) {
-                        newbufferedWriter.write(tempReceivedList.get(i));
-                        newbufferedWriter.newLine();
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    System.out.println("Received edited  success");
-                    System.out.println(tempReceivedList.toString());
-                    //  updateUserLoginData(patientloginData, loginUser);
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static ReceivedPostal searchReceived(String seachTerm) {
-        ReceivedPostal foundReceived = searchReceivedRecord(seachTerm);
-        System.out.println("return Received : " + foundReceived.toString());
-        return foundReceived;
-    }
-
-    private static ReceivedPostal searchReceivedRecord(String searchedItem ){
-
-        boolean found = false;
-        ReceivedPostal searchedReceived = new ReceivedPostal();
-        List<String> temp = new ArrayList<>();
-
-        File dispatchFile = new File(dispatchFilePath);
-        if (dispatchFile != null) {
-            try (FileReader fileReader = new FileReader(dispatchFile)) {
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-                String line = null;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    List<String> tempList = Arrays.asList(line.split("~"));
-
-                    if (searchedItem.equals( tempList.get( 1 ) )&& !found) {
-
-
-                        found = true;
-
-                        temp = tempList;
-                        System.out.println("received Record found in dispatchFilePath.txt");
-                    }
-                }
-                if (found) {
-                    System.out.println("received record found :" + temp.toString());
-                    searchedReceived.setPostalType(getPostalType((temp.get(0))));
-                    searchedReceived.setReferenceNo(temp.get(1));
-                    searchedReceived.setToName(temp.get(2));
-                    searchedReceived.setFromName(temp.get(3));
-                    searchedReceived.setDate(getLocalDatefromString(temp.get(4)));
-                    searchedReceived.setNote(temp.get(5));
-                    searchedReceived.setFromAddress(temp.get(6));
-
-                    System.out.println("search found :" + searchedReceived);
-                }
-
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        return searchedReceived;
+    public static  ArrayList<Postal>  getAllPostals(){
+        return  getAllPostalFromFile();
     }
 
 
 
-    public static ArrayList<ReceivedPostal> getAllReceived() {
-        ArrayList<ReceivedPostal> allReceivedRecords = new ArrayList<>();
-        File newReceivedFile = new File(receivedFilePath);
-        String receivedRecord = null;
-        try (FileReader adminFileReader = new FileReader(newReceivedFile)){
-            BufferedReader receivedBufferedRedaer = new BufferedReader(adminFileReader);
-
-            while ((receivedRecord = receivedBufferedRedaer.readLine()) != null) {
-                List<String> tempReceivedList = Arrays.asList(receivedRecord.split("~"));
-                System.out.println(tempReceivedList.toString());
-                ReceivedPostal receivedPostal = getReceivedFromList(tempReceivedList);
-                allReceivedRecords.add(receivedPostal);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return allReceivedRecords;
-
+    private static void addPostal(Postal postal){
+        SystemDataWriter systemDataWriter =new SystemDataWriter();
+        systemDataWriter.writeDataToFile(postal.toString(),postalDataFile,5);
     }
 
-    private static ReceivedPostal getReceivedFromList(List<String> tenpReceivedRec) {
-        ReceivedPostal returnReceived = new ReceivedPostal();
+    private static void editDeletePostal(Postal postal,int operation){
+        SystemDataReader systemDataReader =new SystemDataReader();
+        ArrayList<Postal> editedorDeletedArray =new ArrayList<>();
+        ArrayList<String> allPostalStrinArray = systemDataReader.getTempDataArray(postalDataFile);
+        ArrayList<Postal> getAllPostals =getAllPostalFromString(allPostalStrinArray);
 
-        returnReceived.setPostalType(getPostalType(tenpReceivedRec.get(0)));
-        returnReceived.setReferenceNo(tenpReceivedRec.get(1));
-        returnReceived.setToName(tenpReceivedRec.get(2));
-        returnReceived.setFromName(tenpReceivedRec.get(3));
-        returnReceived.setFromAddress(tenpReceivedRec.get(4));
-        returnReceived.setDate(getLocalDatefromString(tenpReceivedRec.get(5)));
-        returnReceived.setNote(tenpReceivedRec.get(6));
+        System.out.println("getAllPostalFromString()-->"+getAllPostals);
 
-        return returnReceived;
-    }
-
-
-
-
-    /* =============================================================================================================
-       DISPATCH Action tasks
-      =============================================================================================================
-    */
-
-
-    public static void addDispatch(DispatchPostal dispatchPostal, UserRoll roll) {
-
-        if (roll.equals(UserRoll.ADMIN) || roll.equals(UserRoll.RECEPTIONIST)) {
-            saveDispatch(dispatchPostal);
-        }
-
-    }
-
-
-    private static void saveDispatch(DispatchPostal dispatchPostal) {
-        File dispatchfile = new File(dispatchFilePath);
-
-        try (FileWriter fileWriter = new FileWriter(dispatchfile, true)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(dispatchPostal.toString());
-            bufferedWriter.newLine();
-            bufferedWriter.close();
-            fileWriter.close();
-
-            System.out.println("file path : " + dispatchfile.getPath() + " dispatch Postal saved");
-            //addUserLoginData(patientloginData, new LoginUser(user.getUserName(), user.getUserPassword()));
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-
-    }
-
-    public static void updateDispachRecord(UserRoll userRoll, DispatchPostal dispatchPostal, String searchedID) {
-        if (userRoll.equals(UserRoll.RECEPTIONIST) || userRoll.equals(UserRoll.ADMIN)) {
-            editDispatchRecord(dispatchFilePath, dispatchPostal, searchedID);
-        } else {
-
-            System.out.println("acces denied(cannot update)");
-        }
-    }
-
-    private static void editDispatchRecord(String filePath, DispatchPostal dispatchPostal, String searchDispatchid) {
-
-        ArrayList<String> tempDispatchList = new ArrayList<>();
-
-        File file = new File(filePath);
-        boolean found = false;
-        try {
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-
-                if (!tempList.get(1).equals(searchDispatchid)) {
-                    tempDispatchList.add(line);
-                } else {
-                    found = true;
-                    line = dispatchPostal.toString();
-                    tempDispatchList.add(line);
-                }
-            }
-
-            bufferedReader.close();
-            fileReader.close();
-
-            if (found) {
-                try {
-
-                    File fileNew = new File(dispatchFilePath);
-                    if(file.exists()){
-
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    for (int i = 0; i < tempDispatchList.size(); i++) {
-                        newbufferedWriter.write(tempDispatchList.get(i));
-                        newbufferedWriter.newLine();
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    System.out.println("DispatchList edited  success");
-                    System.out.println(tempDispatchList.toString());
-                   // updateUserLoginData(patientloginData,loginUser);
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static DispatchPostal searchDispatch(String seachTerm) {
-        DispatchPostal foundDispatch;
-        foundDispatch = searchDispatchRecord( seachTerm );
-        System.out.println("return Dispatch : " + foundDispatch.toString());
-        return foundDispatch;
-    }
-
-    private static DispatchPostal searchDispatchRecord(String searchTerm) {
-
-
-        boolean found = false;
-        DispatchPostal searchedDispatch = new DispatchPostal();
-        List<String> temp = new ArrayList<>();
-
-        File dispatchFile = new File(dispatchFilePath);
-        if (dispatchFile != null) {
-            try (FileReader fileReader = new FileReader(dispatchFile)) {
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-                String line = null;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    List<String> tempList = Arrays.asList(line.split("~"));
-
-                    if (searchTerm.equals( tempList.get( 1 ) )|| found) {
-                        continue;
-                    }
-                    found = true;
-
-                    temp = tempList;
-                    System.out.println("dispatch Record found in dispatchFilePath.txt");
-                }
-                if (found) {
-                    System.out.println("dispatch record found :" + temp.toString());
-                    searchedDispatch.setPostalType(getPostalType((temp.get(0))));
-                    searchedDispatch.setReferenceNo(temp.get(1));
-                    searchedDispatch.setToName(temp.get(2));
-                    searchedDispatch.setFromName(temp.get(3));
-                    searchedDispatch.setDate(getLocalDatefromString(temp.get(4)));
-                    searchedDispatch.setNote(temp.get(5));
-                    searchedDispatch.setAddress(temp.get(6));
-
-                    System.out.println("search found :" + searchedDispatch);
-                }
-
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        return searchedDispatch;
-    }
-
-
-
-
-    public static ArrayList<DispatchPostal> getAllDispatch() {
-        ArrayList<DispatchPostal> allDispatchRecords = new ArrayList<>();
-        File newDispatchFile = new File(dispatchFilePath);
-        String dispatchRecord = null;
-        try (FileReader adminFileReader = new FileReader(newDispatchFile)){
-            BufferedReader dispatchBufferedRedaer = new BufferedReader(adminFileReader);
-
-            while ((dispatchRecord = dispatchBufferedRedaer.readLine()) != null) {
-                List<String> tempDispatchList = Arrays.asList(dispatchRecord.split("~"));
-                System.out.println(tempDispatchList.toString());
-                DispatchPostal dispatchPostal = getDispatchFromList(tempDispatchList);
-                allDispatchRecords.add(dispatchPostal);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return allDispatchRecords;
-    }
-
-    private static DispatchPostal getDispatchFromList(List<String> tenpDispatchRec) {
-        DispatchPostal returnDispatch = new DispatchPostal();
-
-        returnDispatch.setPostalType(getPostalType(tenpDispatchRec.get(0)));
-        returnDispatch.setReferenceNo(tenpDispatchRec.get(1));
-        returnDispatch.setToName(tenpDispatchRec.get(2));
-        returnDispatch.setFromName(tenpDispatchRec.get(3));
-        returnDispatch.setAddress(tenpDispatchRec.get(4));
-        returnDispatch.setDate(getLocalDatefromString(tenpDispatchRec.get(5)));
-        returnDispatch.setNote(tenpDispatchRec.get(6));
-
-        return returnDispatch;
-    }
-    public static void deleteUserRecord(PostalType postalType, String searchTerm, UserRoll currentUserRoll){
-        if (postalType.equals(PostalType.RECEIVED)){
-            removePostalRecord(receivedFilePath,searchTerm);
-
-        }else
-        {
-            removePostalRecord(dispatchFilePath,searchTerm);
-        }
-    }
-
-    private static void removePostalRecord(String filePath, String serachTerm){
-        ArrayList<String> tempPatientList =new ArrayList<>();
-        File file = new File(filePath);
-        boolean found =false;
-        try{
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line =null;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-                if(!tempList.get(6).equals(serachTerm)){
-                    tempPatientList.add(line);
+        for (int i=0;i<getAllPostals.size();i++){
+            if(getAllPostals.get(i).getReferenceNo()==(postal.getReferenceNo())){
+                if (operation==1){
+                    editedorDeletedArray.add(postal);
+                    System.out.println("postal updated success in --->  editDeletePostal() "+postal);
                 }else {
-                    found = true;
+                    System.out.println("postal deleted success");
                 }
+            }else {
+                editedorDeletedArray.add(getAllPostals.get(i));
             }
 
-            bufferedReader.close();
-            fileReader.close();
-
-            if (found){
-                try {
-
-                    File fileNew = new File(filePath);
-                    if(file.exists()){
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    newbufferedWriter.write("");
-                    for (int i=0;i<tempPatientList.size();i++){
-                        newbufferedWriter.write(tempPatientList.get(i));
-                        newbufferedWriter.newLine();
-
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    System.out.println("User deleted success");
-                    System.out.println(tempPatientList.toString());
-                    //  deleteUserLoginData(loginDataPath,loginUser);
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+        SystemDataWriter systemDataWriter =new SystemDataWriter();
+        ArrayList<String> strinPostalArray = getStringArrayfromPostals(editedorDeletedArray);
+        systemDataWriter.writeDataToFile(strinPostalArray,postalDataFile,10);
+
     }
 
+    private static Postal searchPostal(int searchTerm){
+        ArrayList<Postal> allPostals = getAllPostalFromFile();
+        Postal foundPostal =null;
 
+        for (int i=0;i<allPostals.size();i++){
+            if (allPostals.get(i).getReferenceNo()==(searchTerm)){
+                foundPostal=allPostals.get(i);
+                System.out.println("Record found for search ----->searchTerm "+foundPostal);
+            }
+        }
 
+        return foundPostal;
+    }
 
+    private static ArrayList<Postal> getAllPostalFromFile(){
+        ArrayList<Postal> allPostalRecords = new ArrayList<>();
+        SystemDataReader systemDataReader=new SystemDataReader();
+
+        ArrayList<String> stringArrayList =systemDataReader.getTempDataArray(postalDataFile);
+        allPostalRecords=getAllPostalFromString(stringArrayList);
+
+        return allPostalRecords;
+    }
+
+    private static ArrayList<String> getStringArrayfromPostals(ArrayList<Postal> editedorDeletedArray) {
+        ArrayList<String> strpostalArrayList =new ArrayList<>();
+        for (int i=0;i<editedorDeletedArray.size();i++){
+            strpostalArrayList.add(editedorDeletedArray.get(i).toString());
+        }
+
+        return strpostalArrayList;
+    }
+
+    private static ArrayList<Postal> getAllPostalFromString(ArrayList<String> allPostalStrinArray) {
+        ArrayList<Postal> finalPostalArray =new ArrayList<>();
+        for (int i=0;i<allPostalStrinArray.size();i++){
+            String line =allPostalStrinArray.get(i);
+            Postal postal = getPostalByStringLine(line);
+            finalPostalArray.add(postal);
+        }
+
+        System.out.println("getAllPostalFromString()--->"+finalPostalArray.toString());
+        return finalPostalArray;
+    }
+
+    private static Postal getPostalByStringLine(String line) {
+        List<String> tempPostal = Arrays.asList(line.split("[~\n]"));
+
+        Postal postal =new Postal();
+
+        postal.setPostalType(getPostalType(tempPostal.get(0)));
+        postal.setReferenceNo(Integer.parseInt(tempPostal.get(1)));
+        postal.setDate(Main.getLocalDatefromString(tempPostal.get(2)));
+        postal.setName(tempPostal.get(3));
+        postal.setAddress(tempPostal.get(4));
+        postal.setNote(tempPostal.get(5));
+
+        return postal;
+
+    }
+
+    private static PostalType getPostalType(String postalType){
+        PostalType postal=null;
+        switch (postalType){
+            case "RECEIVED":
+                postal=PostalType.RECEIVED;
+                break;
+            case "DISPATCH":
+                postal=PostalType.DISPATCH;
+                break;
+            default:
+                break;
+
+        }
+        return postal;
+    }
 }

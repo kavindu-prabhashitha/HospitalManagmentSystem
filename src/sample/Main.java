@@ -35,6 +35,7 @@ public class Main extends Application {
     private static int appointmentID;
     private static int complaintID;
     private static int visitorID;
+    private static int postalReferenceID;
 
 
     @Override
@@ -109,6 +110,10 @@ public class Main extends Application {
                     visitorID =Integer.parseInt(temSystemDataList.get(1));
                     System.out.println("visitorID : "+visitorID);
                     break;
+                case "postalReferenceID":
+                    postalReferenceID =Integer.parseInt(temSystemDataList.get(1));
+                    System.out.println("postalReferenceID : "+postalReferenceID);
+                    break;
                 default:
                     break;
 
@@ -134,6 +139,8 @@ public class Main extends Application {
             bufferedWriter.newLine();
             bufferedWriter.write("visitorID~"+visitorID);
             bufferedWriter.newLine();
+            bufferedWriter.write("postalReferenceID~"+postalReferenceID);
+            bufferedWriter.newLine();
             bufferedWriter.close();
             fileWriter.close();
             System.out.println("system data saved");
@@ -157,6 +164,8 @@ public class Main extends Application {
     public static int getAppointmentID(){
         return ++appointmentID;
     }
+
+    public static int getPostalReferenceID(){return ++postalReferenceID;}
 
     public static int getReferenceID(){
         ++referenceID;
