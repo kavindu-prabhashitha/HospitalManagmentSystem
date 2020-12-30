@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import sample.Main;
 import sample.controller.actionTask.AppointmentAction;
@@ -41,120 +42,45 @@ public class AppointmentViewController {
     @FXML
     private URL location;
 
-    @FXML
-    private TableView<Appointment> appointmentView_mainTable;
-
-
-    @FXML
-    private JFXButton appointmentView_addAppointment;
-
-    @FXML
-    private JFXButton appointmentView_updateAppoin;
-
-    @FXML
-    private JFXButton appointmentView_deleteAppoin;
-
-    @FXML
-    private JFXButton appointmentView_viewAllAppoin;
-
-    @FXML
-    private JFXButton appointmentView_viewPending;
-
-    @FXML
-    private AnchorPane appointmentView_mainPane;
-
-    @FXML
-    private JFXTextField appointmentView_patient;
-
-    @FXML
-    private JFXTextField appointmentView_doctor;
-
-    @FXML
-    private JFXTextArea appointmentView_symtoms;
-
-    @FXML
-    private JFXComboBox<AppointmentStatus> appointmentView_status;
-
-    @FXML
-    private DatePicker appointmentView_APdate;
-
-    @FXML
-    private TextField appointmentView_searchID;
-
-    @FXML
-    private JFXButton appointmentView_searchButton;
-
-    @FXML
-    private JFXTextField appointmentView_timeHour;
-
-    @FXML
-    private JFXTextField appointmentView_timeMinute;
-
-    @FXML
-    private TabPane appointmentView_mainTabPane;
-
-    @FXML
-    private Tab appointmentView_patientTab;
-
-    @FXML
-    private Pane appointmentView_patientDetails;
-
-    @FXML
-    private JFXButton appointmentView_selectPatient;
-
-    @FXML
-    private JFXTextField appointmentView_patientID;
-
-    @FXML
-    private JFXButton appointmentView_patientSearch;
-
-    @FXML
-    private Tab appointmentView_doctorTab;
-
-    @FXML
-    private Tab appointmentView_apDetailsTab;
-
-    @FXML
-    private JFXComboBox<String> appointmentView_doctorSpecDrop;
-
-    @FXML
-    private TableView<MedicalOfficer> appointmentView_docTable;
-
-    @FXML
-    private Pane appointmentView_DocDetails;
-
-    @FXML
-    private JFXButton appointmentView_selectDoc;
-
-    @FXML
-    private JFXButton appointmentView_addPatientBy;
-
-    @FXML
-    private JFXButton appointmentView_addDoctorBy;
-
-    @FXML
-    private Label appointmentView_patientShow;
-
-    @FXML
-    private Label appointmentView_doctorShow;
-
-    @FXML
-    private JFXButton appointmentView_doctorselectButton;
-
-    @FXML
-    private JFXButton appointmentView_viewApproved;
-
-    @FXML
-    private JFXButton appointmentView_viewCompleted;
-
-    @FXML
-    private JFXButton appointmentView_resetViewBtn;
-
-    @FXML
-    private Label appointmentView_apIDLabel;
-
-    @FXML
-    private TextArea appointmentView_appointmentDetails;
+    @FXML private TableView<Appointment> appointmentView_mainTable;
+    @FXML private JFXButton appointmentView_addAppointment;
+    @FXML private JFXButton appointmentView_updateAppoin;
+    @FXML private JFXButton appointmentView_deleteAppoin;
+    @FXML private JFXButton appointmentView_viewAllAppoin;
+    @FXML private JFXButton appointmentView_viewPending;
+    @FXML private AnchorPane appointmentView_mainPane;
+    @FXML private JFXTextField appointmentView_patient;
+    @FXML private JFXTextField appointmentView_doctor;
+    @FXML private JFXTextArea appointmentView_symtoms;
+    @FXML private JFXComboBox<AppointmentStatus> appointmentView_status;
+    @FXML private DatePicker appointmentView_APdate;
+    @FXML private TextField appointmentView_searchID;
+    @FXML private JFXButton appointmentView_searchButton;
+    @FXML private JFXTextField appointmentView_timeHour;
+    @FXML private JFXTextField appointmentView_timeMinute;
+    @FXML private TabPane appointmentView_mainTabPane;
+    @FXML private Tab appointmentView_patientTab;
+    @FXML private Pane appointmentView_patientDetails;
+    @FXML private JFXButton appointmentView_selectPatient;
+    @FXML private JFXTextField appointmentView_patientID;
+    @FXML private JFXButton appointmentView_patientSearch;
+    @FXML private Tab appointmentView_doctorTab;
+    @FXML private Tab appointmentView_apDetailsTab;
+    @FXML private JFXComboBox<String> appointmentView_doctorSpecDrop;
+    @FXML private TableView<MedicalOfficer> appointmentView_docTable;
+    @FXML private Pane appointmentView_DocDetails;
+    @FXML private JFXButton appointmentView_selectDoc;
+    @FXML private JFXButton appointmentView_addPatientBy;
+    @FXML private JFXButton appointmentView_addDoctorBy;
+    @FXML private Label appointmentView_patientShow;
+    @FXML private Label appointmentView_doctorShow;
+    @FXML private JFXButton appointmentView_doctorselectButton;
+    @FXML private JFXButton appointmentView_viewApproved;
+    @FXML private JFXButton appointmentView_viewCompleted;
+    @FXML private JFXButton appointmentView_resetViewBtn;
+    @FXML private Label appointmentView_apIDLabel;
+    @FXML private TextArea appointmentView_appointmentDetails;
+    @FXML private HBox appointView_HobxButtons;
 
 
 
@@ -164,6 +90,9 @@ public class AppointmentViewController {
         currentAppointment =new Appointment();
 
         appointmentView_status.getItems().addAll(ReferenceAction.apointmentStatus);
+
+        setViewForSystemUser();
+        appointView_HobxButtons.setManaged(true);
 
         appointmentView_doctorSpecDrop.getItems().addAll(ReferenceAction.getDocSpecialityStringArray());
 
@@ -337,6 +266,42 @@ public class AppointmentViewController {
         });
 
 
+
+    }
+
+    private void setViewForSystemUser() {
+        switch (Main.getCurrentSystemUser().getUserRoll()){
+            case RECEPTIONIST:
+                break;
+            case ADMIN:
+                setUserViewForAdmin();
+                break;
+            case MEDICALOFFICER:
+                setUserViewForMedicalOfficer();
+                break;
+            case PATIENT:
+                setUserViewForPatient();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setUserViewForAdmin() {
+
+        appointmentView_addAppointment.setVisible(false);
+        appointmentView_updateAppoin.setVisible(false);
+        appointmentView_viewPending.setVisible(false);
+    }
+
+    private void setUserViewForMedicalOfficer(){
+        appointmentView_addAppointment.setVisible(false);
+        appointmentView_deleteAppoin.setVisible(false);
+        appointmentView_viewPending.setVisible(false);
+
+    }
+
+    private void setUserViewForPatient(){
 
     }
 

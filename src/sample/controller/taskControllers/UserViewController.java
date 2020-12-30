@@ -4,15 +4,19 @@ import com.jfoenix.controls.*;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RegexValidator;
 import com.jfoenix.validation.StringLengthValidator;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
+import sample.Main;
 import sample.controller.actionTask.ReferenceAction;
 import sample.controller.actionTask.UserAction;
 import sample.model.*;
@@ -22,10 +26,14 @@ import java.awt.*;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class UserViewController implements Initializable {
-    private  static  int staffID =0;
+    Boolean isPatientTSet =false;
+    Boolean isMedicalTSet =false;
+    Boolean isReceptionTset =false;
+    Boolean isAdminTset = false;
 
     @FXML
     private ResourceBundle resources;
@@ -33,83 +41,32 @@ public class UserViewController implements Initializable {
     @FXML
     private URL location;
 
-    @FXML
-    private Label userView_userNameLable;
-
-    @FXML
-    private TableView<Admin> userView_userTable;
-
-    @FXML
-    private JFXButton userView_addUser;
-
-    @FXML
-    private JFXButton userView_updateUser;
-
-    @FXML
-    private JFXButton userView_deleteUser;
-
-    @FXML
-    private JFXButton userView_viewAll;
-
-    @FXML
-    private JFXButton userView_reset;
-
-    @FXML
-    private JFXTextField userView_name;
-
-    @FXML
-    private JFXTextField userView_phoneNum;
-
-    @FXML
-    private JFXTextField userView_NIC;
-
-    @FXML
-    private DatePicker userView_dob;
-
-    @FXML
-    private JFXTextArea userView_address;
-
-    @FXML
-    private JFXComboBox<String> userView_marital;
-
-    @FXML
-    private JFXTextField userView_userName;
-
-    @FXML
-    private JFXTextField userView_allergies;
-
-    @FXML
-    private JFXComboBox<BloodGroup> userView_bloodGroup;
-
-    @FXML
-    private JFXComboBox<Gender> userView_gender;
-
-    @FXML
-    private JFXTextField userView_staffID;
-
-    @FXML
-    private JFXTextField userView_staffEmail;
-
-    @FXML
-    private DatePicker userView_staffdoj;
-
-    @FXML
-    private TextField userView_searchField;
-
-    @FXML
-    private JFXButton userView_searchButton;
-
-    @FXML
-    private JFXComboBox<String> userView_speciality;
-
-    @FXML
-    private JFXComboBox<UserRoll> userView_userTypeDrop;
-
-    @FXML
-    private JFXPasswordField userView_userPassword;
-
-    @FXML
-    public void initialize(URL url, ResourceBundle rb) {
+    @FXML private Label userView_userNameLable;
+    @FXML private JFXButton userView_addUser;
+    @FXML private JFXButton userView_updateUser;
+    @FXML private JFXButton userView_deleteUser;
+    @FXML private JFXButton userView_viewAll;
+    @FXML private JFXButton userView_reset;
+    @FXML private JFXTextField userView_name;
+    @FXML private JFXTextField userView_phoneNum;
+    @FXML private JFXTextField userView_NIC;
+    @FXML private DatePicker userView_dob;
+    @FXML private JFXTextArea userView_address;
+    @FXML private JFXComboBox<String> userView_marital;
+    @FXML private JFXTextField userView_userName;
+    @FXML private JFXTextField userView_allergies;
+    @FXML private JFXComboBox<BloodGroup> userView_bloodGroup;
+    @FXML private JFXComboBox<Gender> userView_gender;
+    @FXML private JFXTextField userView_staffID;
+    @FXML private JFXTextField userView_staffEmail;
+    @FXML private DatePicker userView_staffdoj;
+    @FXML private TextField userView_searchField;
+    @FXML private JFXButton userView_searchButton;
+    @FXML private JFXComboBox<String> userView_speciality;
+    @FXML private JFXComboBox<UserRoll> userView_userTypeDrop;
+    @FXML private JFXPasswordField userView_userPassword;
+    @FXML private  TabPane userView_mainTabPane;
+    @FXML public void initialize(URL url, ResourceBundle rb) {
 
 //      ObservableList<Admin> adminData = FXCollections.observableArrayList(UserAction.getAllAdmin());
 //      System.out.println(adminData.toString());
@@ -129,6 +86,8 @@ public class UserViewController implements Initializable {
         userView_gender.getItems().addAll(ReferenceAction.getGender());
         userView_bloodGroup.getItems().addAll(ReferenceAction.getBloogGroup());
         userView_marital.getItems().addAll(ReferenceAction.getMaritalStatus());
+
+        setViewForSystemUser();
 
         userView_userTypeDrop.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -221,7 +180,7 @@ public class UserViewController implements Initializable {
                             }
                             else {
                                 if (validateInputs()) {
-                                    UserAction.addReceptionist(getReceptionist(), UserRoll.ADMIN);
+                                    UserAction.addReceptionist(getInitialReceptionist(), UserRoll.ADMIN);
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -259,7 +218,7 @@ public class UserViewController implements Initializable {
                             }
                             else {
                                 if (validateInputs()) {
-                                    UserAction.addMedicalOfficer(getMedicalOfficer(), UserRoll.ADMIN);
+                                    UserAction.addMedicalOfficer(getInitialMedicalOfficer(), UserRoll.ADMIN);
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -370,13 +329,13 @@ public class UserViewController implements Initializable {
                             else {
                                 if (validateInputs()) {
                                     UserAction.updatePatientRecord(UserRoll.ADMIN, getPatient(), userView_searchField.getText(), getLoginUser());
+                                    resetDisplay();
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
                                     JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
                                 }
                             }
-
                             break;
 
 
@@ -393,6 +352,7 @@ public class UserViewController implements Initializable {
                             else {
                                 if (validateInputs()) {
                                     UserAction.updateReceptionRecord(UserRoll.ADMIN, getReceptionist(), userView_searchField.getText(), getLoginUser());
+                                    resetDisplay();
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -406,6 +366,7 @@ public class UserViewController implements Initializable {
 
                             if (validateInputs()) {
                                 UserAction.updateAdmin(UserRoll.ADMIN, getAdmin(), userView_searchField.getText(), getLoginUser());
+                                resetDisplay();
                             }
                             else {
                                 Toolkit.getDefaultToolkit().beep();
@@ -431,6 +392,7 @@ public class UserViewController implements Initializable {
                             else {
                                 if (validateInputs()) {
                                     UserAction.updateMedicalOfficerRecord(UserRoll.ADMIN, getMedicalOfficer(), userView_searchField.getText(), getLoginUser());
+                                    resetDisplay();
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -450,6 +412,108 @@ public class UserViewController implements Initializable {
                 resetDisplay();
             }
         });
+
+        userView_viewAll.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                switch (userView_userTypeDrop.getValue()){
+                    case ADMIN:
+                        reception_Tab.setDisable(true);
+                        medical_tab.setDisable(true);
+                        patientTable_Tab.setDisable(true);
+                        admin_tab.setDisable(false);
+                        userView_mainTabPane.getSelectionModel().select(admin_tab);
+                        userView_mainTabPane.setDisable(false);
+                        setAdminTable(UserAction.getAllAdmin());
+                        break;
+                    case RECEPTIONIST:
+                        userView_mainTabPane.setDisable(false);
+                        reception_Tab.setDisable(false);
+                        admin_tab.setDisable(true);
+                        medical_tab.setDisable(true);
+                        patientTable_Tab.setDisable(true);
+                        userView_mainTabPane.getSelectionModel().select(reception_Tab);
+                        setReceptionTable(UserAction.getAllReceptionist());
+                        break;
+                    case MEDICALOFFICER:
+                        userView_mainTabPane.setDisable(false);
+                        medical_tab.setDisable(false);
+                        admin_tab.setDisable(true);
+                        patientTable_Tab.setDisable(true);
+                        reception_Tab.setDisable(true);
+                        userView_mainTabPane.getSelectionModel().select(medical_tab);
+                        setMedicalOfficerTable(UserAction.getAllMedicalOfficer());
+                        break;
+                    case PATIENT:
+                        userView_mainTabPane.setDisable(false);
+                        patientTable_Tab.setDisable(false);
+                        admin_tab.setDisable(true);
+                        reception_Tab.setDisable(true);
+                        medical_tab.setDisable(true);
+                        userView_mainTabPane.getSelectionModel().select(patientTable_Tab);
+                        setPatientTable(UserAction.getAllPatients());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        userV_PatientTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Patient patient =userV_PatientTable.getSelectionModel().getSelectedItem();
+                displayPatientData(patient);
+            }
+        });
+
+        admin_mainTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Admin admin = admin_mainTable.getSelectionModel().getSelectedItem();
+                userView_searchField.setText(admin.getIdCardNumber());
+                displayAdminData(admin);
+            }
+        });
+
+        receptiontable_mainTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Receptionist receptionist =receptiontable_mainTable.getSelectionModel().getSelectedItem();
+                displayReceptionistData(receptionist);
+            }
+        });
+
+        medicalOfficer_mainTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                MedicalOfficer medicalOfficer =medicalOfficer_mainTable.getSelectionModel().getSelectedItem();
+                displayMedicalOfficerData(medicalOfficer);
+            }
+        });
+
+
+
+    }
+
+    public void setViewForSystemUser(){
+        switch (Main.getCurrentSystemUser().getUserRoll()){
+            case ADMIN :
+                break;
+            case RECEPTIONIST:
+                setUserViewForReception();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setUserViewForReception() {
+        userView_userTypeDrop.setValue(UserRoll.PATIENT);
+        userView_userTypeDrop.setDisable(true);
+        admin_mainTable.setVisible(false);
+        receptiontable_mainTable.setVisible(false);
+        medicalOfficer_mainTable.setVisible(false);
 
     }
 
@@ -541,6 +605,25 @@ public class UserViewController implements Initializable {
         return patient;
     }
 
+    public Receptionist getInitialReceptionist(){
+        Receptionist receptionist = new Receptionist();
+        receptionist.setUserRoll(userView_userTypeDrop.getValue());
+        receptionist.setName(userView_name.getText()); ;
+        receptionist.setGender(userView_gender.getValue());
+        receptionist.setMaritalStatus(userView_marital.getValue());
+        receptionist.setDob(userView_dob.getValue()); ;
+        receptionist.setPhoneNumber(userView_phoneNum.getText());
+        receptionist.setIdCardNumber(userView_NIC.getText());
+        receptionist.setAddress(userView_address.getText());
+        receptionist.setUserName(UserAction.encryptUserData(userView_userName.getText()));
+        receptionist.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
+        receptionist.setStaffID(Main.getStaffID());
+        receptionist.setStaffEmailAddress(userView_staffEmail.getText());
+        receptionist.setDateOfJoining(userView_staffdoj.getValue());
+
+        return receptionist;
+    }
+
     public Receptionist getReceptionist(){
         Receptionist receptionist = new Receptionist();
         receptionist.setUserRoll(userView_userTypeDrop.getValue());
@@ -553,8 +636,9 @@ public class UserViewController implements Initializable {
         receptionist.setAddress(userView_address.getText());
         receptionist.setUserName(UserAction.encryptUserData(userView_userName.getText()));
         receptionist.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
-        receptionist.setStaffID(getStaffId());
+        receptionist.setStaffID(Integer.parseInt(userView_staffID.getText()));
         receptionist.setStaffEmailAddress(userView_staffEmail.getText());
+        receptionist.setDateOfJoining(userView_staffdoj.getValue());
 
         return receptionist;
     }
@@ -569,11 +653,32 @@ public class UserViewController implements Initializable {
         admin.setPhoneNumber(userView_phoneNum.getText());
         admin.setAddress(userView_address.getText());
         admin.setIdCardNumber(userView_NIC.getText());
-        admin.setUserName(UserAction.encryptUserData(userView_userName.getText()).trim());
-        admin.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()).trim());
+        admin.setUserName(UserAction.encryptUserData(userView_userName.getText()));
+        admin.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
 
         return admin;
 
+    }
+
+    public MedicalOfficer getInitialMedicalOfficer(){
+        MedicalOfficer medicalOfficer = new MedicalOfficer();
+
+        medicalOfficer.setUserRoll(userView_userTypeDrop.getValue());
+        medicalOfficer.setName(userView_name.getText()); ;
+        medicalOfficer.setGender(userView_gender.getValue());
+        medicalOfficer.setMaritalStatus(userView_marital.getValue());
+        medicalOfficer.setDob(userView_dob.getValue()); ;
+        medicalOfficer.setPhoneNumber(userView_phoneNum.getText());
+        medicalOfficer.setIdCardNumber(userView_NIC.getText());
+        medicalOfficer.setAddress(userView_address.getText());
+        medicalOfficer.setUserName(UserAction.encryptUserData(userView_userName.getText()));
+        medicalOfficer.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
+        medicalOfficer.setStaffID(Main.getStaffID());
+        medicalOfficer.setStaffEmailAddress(userView_staffEmail.getText());
+        medicalOfficer.setSpeciality(userView_speciality.getValue());
+        medicalOfficer.setDateOfJoining(userView_staffdoj.getValue());
+
+        return medicalOfficer;
     }
 
     public  MedicalOfficer getMedicalOfficer(){
@@ -590,7 +695,7 @@ public class UserViewController implements Initializable {
         medicalOfficer.setAddress(userView_address.getText());
         medicalOfficer.setUserName(UserAction.encryptUserData(userView_userName.getText()));
         medicalOfficer.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
-        medicalOfficer.setStaffID(getStaffId());
+        medicalOfficer.setStaffID(Integer.parseInt(userView_staffID.getText()));
         medicalOfficer.setStaffEmailAddress(userView_staffEmail.getText());
         medicalOfficer.setSpeciality(userView_speciality.getValue());
         medicalOfficer.setDateOfJoining(userView_staffdoj.getValue());
@@ -618,13 +723,13 @@ public class UserViewController implements Initializable {
         userView_searchField.clear();
         userView_staffID.clear();
         userView_userTypeDrop.getItems();
+        userV_PatientTable.setItems(null);
+        admin_mainTable.setItems(null);
+        receptiontable_mainTable.setItems(null);
+        medicalOfficer_mainTable.setItems(null);
+        userView_mainTabPane.setDisable(true);
 
 
-    }
-
-    public static int  getStaffId(){
-        staffID ++;
-        return  staffID;
     }
 
     public void setViewForAdmin(){
@@ -698,7 +803,6 @@ public class UserViewController implements Initializable {
         userView_staffdoj.setDisable(false);
         userView_speciality.setDisable(false);
     }
-
 
     public void validateInitialize(){
 
@@ -810,6 +914,137 @@ public class UserViewController implements Initializable {
             allCheck = true;
         }
         return allCheck;
+    }
+
+    //Patient Table details
+    @FXML private Tab patientTable_Tab;
+    @FXML private TableView<Patient> userV_PatientTable;
+    @FXML private TableColumn<Patient, String> pTable_name;
+    @FXML private TableColumn<Patient, Gender> pTable_gender;
+    @FXML private TableColumn<Patient,String > pTable_marital;
+    @FXML private TableColumn<Patient, LocalDate> pTable_dob;
+    @FXML private TableColumn<Patient, String> pTable_phone;
+    @FXML private TableColumn<Patient, String> pTable_nic;
+    @FXML private TableColumn<Patient, String> pTable_address;
+    @FXML private TableColumn<Patient, String> pTable_UserName;
+    @FXML private TableColumn<Patient, BloodGroup> pTable_bloodGroup;
+    @FXML private TableColumn<Patient, String> pTable_Allergies;
+
+    public void setPatientTable(ArrayList<Patient> patientArrayList){
+
+        ObservableList<Patient> observableList = FXCollections.observableList(patientArrayList);
+        if (!isPatientTSet){
+            pTable_name.setCellValueFactory(new PropertyValueFactory<Patient, String>("name"));
+            pTable_gender.setCellValueFactory(new PropertyValueFactory<Patient, Gender>("gender"));
+            pTable_marital.setCellValueFactory(new PropertyValueFactory<Patient, String>("maritalStatus"));
+            pTable_dob.setCellValueFactory(new PropertyValueFactory<Patient, LocalDate>("dob"));
+            pTable_phone.setCellValueFactory(new PropertyValueFactory<Patient, String>("phoneNumber"));
+            pTable_nic.setCellValueFactory(new PropertyValueFactory<Patient, String>("idCardNumber"));
+            pTable_address.setCellValueFactory(new PropertyValueFactory<Patient, String>("address"));
+            pTable_UserName.setCellValueFactory(new PropertyValueFactory<Patient, String>("userName"));
+            pTable_bloodGroup.setCellValueFactory(new PropertyValueFactory<Patient, BloodGroup>("bloodGroup"));
+            pTable_Allergies.setCellValueFactory(new PropertyValueFactory<Patient, String>("allergies"));
+        }
+
+        userV_PatientTable.setItems(observableList);
+    }
+
+    @FXML private Tab medical_tab;
+    @FXML private TableView<MedicalOfficer> medicalOfficer_mainTable;
+    @FXML private TableColumn<MedicalOfficer, Integer> Mtable_staffID;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_staffName;
+    @FXML private TableColumn<MedicalOfficer, Gender> Mtable_staffGender;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_staffMarital;
+    @FXML private TableColumn<MedicalOfficer, LocalDate> Mtable_staffDOB;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_staffPhone;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_staffNIC;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_address;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_userName;
+    @FXML private TableColumn<MedicalOfficer, String> Mtable_email;
+
+    public void setMedicalOfficerTable(ArrayList<MedicalOfficer> medicalOfficer){
+
+        ObservableList<MedicalOfficer> medicalOfficerObservableList =FXCollections.observableList(medicalOfficer);
+
+        if (!isMedicalTSet){
+            Mtable_staffID.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, Integer>("staffID"));
+            Mtable_staffName.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("name"));
+            Mtable_staffGender.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, Gender>("gender"));
+            Mtable_staffMarital.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("maritalStatus"));
+            Mtable_staffDOB.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, LocalDate>("dob"));
+            Mtable_staffPhone.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("phoneNumber"));
+            Mtable_staffNIC.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("idCardNumber"));
+            Mtable_address.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("address"));
+            Mtable_userName.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("userName"));
+            Mtable_email.setCellValueFactory(new PropertyValueFactory<MedicalOfficer, String>("staffEmailAddress"));
+
+        }
+        medicalOfficer_mainTable.setItems(medicalOfficerObservableList);
+    }
+
+
+    @FXML private Tab admin_tab;
+    @FXML private TableView<Admin> admin_mainTable;
+    @FXML private TableColumn<Admin, String> Atable_name;
+    @FXML private TableColumn<Admin, Gender> A_tableGender;
+    @FXML private TableColumn<Admin, String> Atable_marital;
+    @FXML private TableColumn<Admin, LocalDate> Atable_DOB;
+    @FXML private TableColumn<Admin, String> Atable_phone;
+    @FXML private TableColumn<Admin, String> Atable_NIC;
+    @FXML private TableColumn<Admin, String> Atable_address;
+    @FXML private TableColumn<Admin, String> Atable_userName;
+
+    public void setAdminTable(ArrayList<Admin> adminArrayList){
+
+        ObservableList<Admin> observableList = FXCollections.observableList(adminArrayList);
+        if (!isAdminTset){
+            Atable_name.setCellValueFactory(new PropertyValueFactory<Admin, String>("name"));
+            A_tableGender.setCellValueFactory(new PropertyValueFactory<Admin, Gender>("gender"));
+            Atable_marital.setCellValueFactory(new PropertyValueFactory<Admin, String>("maritalStatus"));
+            Atable_DOB.setCellValueFactory(new PropertyValueFactory<Admin, LocalDate>("dob"));
+            Atable_phone.setCellValueFactory(new PropertyValueFactory<Admin, String>("phoneNumber"));
+            Atable_NIC.setCellValueFactory(new PropertyValueFactory<Admin, String>("idCardNumber"));
+            Atable_address.setCellValueFactory(new PropertyValueFactory<Admin, String>("address"));
+            Atable_userName.setCellValueFactory(new PropertyValueFactory<Admin, String>("userName"));
+
+        }
+
+        admin_mainTable.setItems(observableList);
+    }
+
+
+    @FXML private Tab reception_Tab;
+    @FXML private TableView<Receptionist> receptiontable_mainTable;
+    @FXML private TableColumn<Receptionist, Integer> Rtable_staffID;
+    @FXML private TableColumn<Receptionist, String> Rtable_name;
+    @FXML private TableColumn<Receptionist, Gender> Rtable_gender;
+    @FXML private TableColumn<Receptionist, String> Rtable_marital;
+    @FXML private TableColumn<Receptionist, LocalDate> Rtable_dob;
+    @FXML private TableColumn<Receptionist, String> Rtable_phone;
+    @FXML private TableColumn<Receptionist, String> Rtable_nic;
+    @FXML private TableColumn<Receptionist, String> Rtable_address;
+    @FXML private TableColumn<Receptionist, String> Rtable_userName;
+    @FXML private TableColumn<Receptionist, String> Rtable_email;
+
+    public void setReceptionTable(ArrayList<Receptionist> receptionistArrayList){
+
+        ObservableList<Receptionist> receptionistObservableList = FXCollections.observableList(receptionistArrayList);
+
+        if (!isReceptionTset){
+            Rtable_staffID.setCellValueFactory(new PropertyValueFactory<Receptionist, Integer>("staffID"));
+            Rtable_name.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("name"));
+            Rtable_gender.setCellValueFactory(new PropertyValueFactory<Receptionist, Gender>("gender"));
+            Rtable_marital.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("maritalStatus"));
+            Rtable_dob.setCellValueFactory(new PropertyValueFactory<Receptionist, LocalDate>("dob"));
+            Rtable_phone.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("phoneNumber"));
+            Rtable_nic.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("idCardNumber"));
+            Rtable_address.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("address"));
+            Rtable_userName.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("userName"));
+            Rtable_email.setCellValueFactory(new PropertyValueFactory<Receptionist, String>("staffEmailAddress"));
+        }
+
+        receptiontable_mainTable.setItems(receptionistObservableList);
+
     }
 
 }

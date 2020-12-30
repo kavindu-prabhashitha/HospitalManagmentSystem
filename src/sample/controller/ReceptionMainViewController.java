@@ -26,48 +26,22 @@ public class ReceptionMainViewController {
 
     Receptionist currentreceptionist ;
 
-    @FXML
-    private ResourceBundle resources;
 
-    @FXML
-    private URL location;
-
-    @FXML
-    private BorderPane mainReceptionView;
-
-    @FXML
-    private ImageView receptionView_home;
-
-    @FXML
-    private Label receptionView_userName;
-
-    @FXML
-    private JFXButton receptionView_visitor;
-
-    @FXML
-    private JFXButton receptionView_patient;
-
-    @FXML
-    private JFXButton receptionView_postal;
-
-    @FXML
-    private JFXButton receptionView_appointment;
-
-    @FXML
-    private JFXButton receptionView_complaint;
-
-    @FXML
-    private Pane receptionMain_logout;
-
-    @FXML
-    private JFXButton receptionMain_logoutButton;
-
-    @FXML
-    private ImageView adminMain_backIcon;
-
-    @FXML
-    private AnchorPane receptionView_homePane;
-
+    @FXML private ResourceBundle resources;
+    @FXML private URL location;
+    @FXML private BorderPane mainReceptionView;
+    @FXML private ImageView receptionView_home;
+    @FXML private Label receptionView_userName;
+    @FXML private JFXButton receptionView_visitor;
+    @FXML private JFXButton receptionView_patient;
+    @FXML private JFXButton receptionView_postal;
+    @FXML private JFXButton receptionView_appointment;
+    @FXML private JFXButton receptionView_complaint;
+    @FXML private Pane receptionMain_logout;
+    @FXML private JFXButton receptionMain_logoutButton;
+    @FXML private JFXButton receptionView_profile;
+    @FXML private ImageView adminMain_backIcon;
+    @FXML private AnchorPane receptionView_homePane;
 
 
     @FXML
@@ -134,22 +108,22 @@ public class ReceptionMainViewController {
             }
         });
 
-//        receptionView_complaint.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent actionEvent) {
-//                try {
-//                    System.out.println("taskView/complaintView");
-//                    Pane view = getView("taskView/complaintView");
-//                    setReceptionViewCenter(view);
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-
-        receptionView_complaint.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        receptionView_profile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(MouseEvent mouseEvent) {
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    System.out.println("taskView/profileSettingView");
+                    Pane view = getView("taskView/profileSettingView");
+                    setReceptionViewCenter(view);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        receptionView_complaint.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
                 try {
                     System.out.println("taskView/complaintView");
                     Pane view = getView("taskView/complaintView");
@@ -159,7 +133,6 @@ public class ReceptionMainViewController {
                 }
             }
         });
-
 
         receptionMain_logoutButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -195,7 +168,6 @@ public class ReceptionMainViewController {
 
         });
 
-
     }
 
     public Pane getView(String fileName){
@@ -226,7 +198,6 @@ public class ReceptionMainViewController {
 
     public void setCurrentreceptionist(Receptionist currentreceptionist) {
         this.currentreceptionist = currentreceptionist;
+        System.out.println("receptionist set in receptionView : "+currentreceptionist);
     }
-
-
 }

@@ -14,9 +14,10 @@ import javafx.util.Duration;
 import sample.controller.MultipleFXMLLoader;
 import sample.controller.SystemDataReader;
 import sample.controller.actionTask.ReferenceAction;
-import sample.controller.actionTask.UserAction;
-import sample.model.PostalType;
+import sample.model.SystemUser;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -36,6 +37,7 @@ public class Main extends Application {
     private static int complaintID;
     private static int visitorID;
     private static int postalReferenceID;
+    private static SystemUser currentSystemUser;
 
 
     @Override
@@ -49,10 +51,6 @@ public class Main extends Application {
     public static void main(String[] args) {
 
         ReferenceAction.loadReference();
-        ReferenceAction.setPostalTypes(PostalType.DISPATCH);
-        ReferenceAction.setPostalTypes(PostalType.RECEIVED);
-
-        System.out.println(UserAction.getMedicalOfficerBySpeciality("brain").toString());
 
         loadSystemData();
         launch(args);
@@ -81,6 +79,36 @@ public class Main extends Application {
 
         return viewCurrent;
     }
+    public void backToMain(Scene scene){
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure LogOut"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+
+            scene.getWindow().hide();
+            Stage detailsStage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(getClass().getResource("/sample/view/mainLoginWindow.fxml"));
+            try {
+                loader.load();
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+            Parent root = loader.getRoot();
+            detailsStage.setScene(new Scene(root));
+            detailsStage.show();
+
+        }
+
+    }
+
 
     public static void loadSystemData(){
 
@@ -212,6 +240,12 @@ public class Main extends Application {
         }
     }
 
+    public static SystemUser getCurrentSystemUser() {
+        return currentSystemUser;
+    }
 
-
+    public static void setCurrentSystemUser(SystemUser currentSystemUser) {
+        Main.currentSystemUser = currentSystemUser;
+        System.out.println("System User set in main ---->"+currentSystemUser.toString());
+    }
 }
