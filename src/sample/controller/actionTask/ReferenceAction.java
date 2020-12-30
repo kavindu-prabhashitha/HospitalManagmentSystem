@@ -39,12 +39,6 @@ public class ReferenceAction {
     public static void addReference(Reference reference){
     File newRef = new File(referenceFile);
 
-//    if(reference.getReferenceType().equals(referenceTypes.get(0))){
-//        complaintRefArrayList.add(reference);
-//    }else {
-//        doctorSpecialityArray.add(reference);
-//    }
-
     try(FileWriter fileWriter = new FileWriter(newRef,true)) {
         BufferedWriter bufferedWriter= new BufferedWriter(fileWriter);
         bufferedWriter.write(reference.toString());
@@ -193,6 +187,7 @@ public class ReferenceAction {
         setApointmentStatus();
         loadSavedReference();
         setReferenceTypes();
+        setPostalTypes();
 
     }
 
@@ -304,6 +299,8 @@ public class ReferenceAction {
         apointmentStatus.add(AppointmentStatus.COMPLETED);
     }
 
+
+
     public static ArrayList<String> getMaritalStatus() {
         return maritalStatus;
     }
@@ -312,8 +309,9 @@ public class ReferenceAction {
         return postalTypes;
     }
 
-    public static void setPostalTypes(PostalType postalTypes) {
-        ReferenceAction.postalTypes.add(postalTypes);
+    public static void setPostalTypes() {
+        postalTypes.add(PostalType.RECEIVED);
+        postalTypes.add(PostalType.DISPATCH);
     }
 
     public static void setReferenceTypes(){

@@ -1,6 +1,8 @@
 package sample.controller.actionTask;
 
 import org.jetbrains.annotations.NotNull;
+import sample.controller.SystemDataReader;
+import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.*;
 
 import javax.crypto.Cipher;
@@ -165,20 +167,10 @@ public class UserAction {
 
     //write a method for save patient data
     private static void savePatient(Patient user) {
-        File file = new File(patientDataFilePath);
+       SystemDataWriter systemDataWriter = new SystemDataWriter();
+       systemDataWriter.writeDataToFile(user.toString(),patientDataFilePath,5);
+       addUserLoginData(patientloginData, new LoginUser(user.getUserName(), user.getUserPassword()));
 
-        try (FileWriter fileWriter = new FileWriter(file, true)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(user.toString());
-            bufferedWriter.newLine();
-            bufferedWriter.close();
-            fileWriter.close();
-
-            System.out.println("file path : " + file.getPath() + " patient saved");
-            addUserLoginData(patientloginData, new LoginUser(user.getUserName(), user.getUserPassword()));
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
 
     }
 
@@ -188,16 +180,15 @@ public class UserAction {
 
             Object[] options = { "OK", "CANCEL" };
             Toolkit.getDefaultToolkit().beep();
-            int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+            int selectedValue = JOptionPane.showOptionDialog(null,
+                    "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editPatientRecord(patientDataFilePath,patientRecord,searchedID,loginUser);
             }
-
         }else {
-
             System.out.println("acces denied(cannot update)");
         }
     }
@@ -205,69 +196,34 @@ public class UserAction {
     //write a method for edit patient data
     private static void editPatientRecord(String filePath,Patient patientEdit,String searchPetientid,LoginUser loginUser){
 
-        ArrayList<String> tempPatientList =new ArrayList<>();
+        Boolean recordFound=false;
+        ArrayList<Patient> updatedPAtientList =new ArrayList<>();
+        ArrayList<Patient> allPatientRecord =getAllPatients();
 
-        File file = new File(filePath);
-        boolean found = false;
-        try {
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-
-                if (!tempList.get(6).equals(searchPetientid)) {
-                    tempPatientList.add(line);
-                } else {
-                    found = true;
-                    line = patientEdit.toString();
-                    tempPatientList.add(line);
-                }
+        for (int i=0;i<allPatientRecord.size();i++){
+            if (allPatientRecord.get(i).getIdCardNumber().equals(searchPetientid)){
+                updatedPAtientList.add(patientEdit);
+                JOptionPane.showMessageDialog(null,"Patient Record Updated Successfully");
             }
-
-            bufferedReader.close();
-            fileReader.close();
-
-            if (found) {
-                try {
-
-                    File fileNew = new File(patientDataFilePath);
-                    if(file.exists()){
-
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    for (int i = 0; i < tempPatientList.size(); i++) {
-                        newbufferedWriter.write(tempPatientList.get(i));
-                        newbufferedWriter.newLine();
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    JOptionPane.showMessageDialog(null,"Update Successfully");
-                    System.out.println("patient edited  success");
-                    System.out.println(tempPatientList.toString());
-                    updateUserLoginData(patientloginData,loginUser);
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-            else
-            {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null,"Record Not Found"+"\nPlease Check ID Number in Search Box", "ERROR", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            updatedPAtientList.add(allPatientRecord.get(i));
+            recordFound=true;
         }
+
+        SystemDataWriter systemDataWriter =new SystemDataWriter();
+        systemDataWriter.writeDataToFile(getStringArrayFromPatientArray(updatedPAtientList),patientDataFilePath,10);
+
+        if (recordFound){
+            JOptionPane.showMessageDialog(null,"Patient Record Updated Success");
+        }
+        else {
+            JOptionPane.showMessageDialog(null,
+                    "Record Not Found"+"\nPlease Check ID Number in Search Box",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        updateUserLoginData(patientloginData,loginUser);
+
     }
 
     //write a method for search patient
@@ -279,87 +235,68 @@ public class UserAction {
 
     //write a method for search patient data
     private static Patient searchPatientRecord(String searchTerm, String userName,String password){
-
+        Patient foundpatient=null;
         boolean found = false;
-        Patient searchedPatient = new Patient();
-        List<String> temp = new ArrayList<>();
 
-        File patientFile = new File(patientDataFilePath);
-        if (patientFile != null) {
-            try (FileReader fileReader = new FileReader(patientFile)) {
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
+        ArrayList<Patient> allPatientRecord =getAllPatients();
 
-                String line = null;
+        for (int i=0;i<allPatientRecord.size();i++){
+            Boolean idNumberMatched =allPatientRecord.get(i).getIdCardNumber().equals(searchTerm);
+            Boolean isUserLoginDataTrue =allPatientRecord.get(i).getUserName().equals(encryptUserData(userName))
+                    && allPatientRecord.get(i).getUserPassword().equals(encryptUserData(password));
 
-                while ((line = bufferedReader.readLine()) != null) {
-                    List<String> tempList= Arrays.asList(line.split("~"));
+            if ( (idNumberMatched ||isUserLoginDataTrue)) {
+             foundpatient = allPatientRecord.get(i);
+             found = true;
+         }
+        }
 
-                    if ((tempList.get(6).equals(searchTerm) ||
-                            tempList.get(8).equals(encryptUserData(userName)) && tempList.get(9).equals(encryptUserData(password))) && !found) {
-                        found = true;
-
-                        temp =tempList;
-                        System.out.println("Patient Record found in patientdata.txt");
-                    }
-                }
-                    if (found){
-                        System.out.println("patient record found :"+temp.toString());
-                        searchedPatient.setUserRoll(getUserRoll(temp.get(0)));
-                        searchedPatient.setName(temp.get(1));
-                        searchedPatient.setGender(getGender(temp.get(2)));
-                        searchedPatient.setMaritalStatus(temp.get(3));
-                        searchedPatient.setDob(getLocalDatefromString(temp.get(4)));
-                        searchedPatient.setPhoneNumber(temp.get(5));
-                        searchedPatient.setIdCardNumber(temp.get(6));
-                        searchedPatient.setAddress(temp.get(7));
-                        searchedPatient.setUserName(temp.get(8));
-                        searchedPatient.setUserPassword(temp.get(9));
-                        searchedPatient.setBloodGroup(getBloodGroup(temp.get(10)));
-                        searchedPatient.setAllergies(temp.get(11));
-
-                        JOptionPane.showMessageDialog(null,"Record Found");
-                        System.out.println("search found :"+searchedPatient);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null,"Record Not Found");
-                    }
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (found){
+            if (password==null){
+                JOptionPane.showMessageDialog(null,"Patient Record Found");
+            }
+        }else {
+            if (password==null){
+                JOptionPane.showMessageDialog(null,"Patient  Record Not Found");
             }
         }
 
-
-        return searchedPatient;
+        return foundpatient;
     }
 
     public static  ArrayList<Patient> getAllPatients(){
-        ArrayList<Patient> allPatientRecords = new ArrayList<>();
-        File newFile = new File(patientDataFilePath);
-        String patientRecord = null;
-        try (FileReader patientReader = new FileReader(newFile)){
 
-            BufferedReader patientBufferedRedaer = new BufferedReader(patientReader);
-
-            while ((patientRecord = patientBufferedRedaer.readLine()) != null) {
-                List<String> tenpPatientRec = Arrays.asList(patientRecord.split("~"));
-                Patient newPatient = getPatientFromList(tenpPatientRec);
-                allPatientRecords.add(newPatient);
-
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SystemDataReader systemDataReader = new SystemDataReader();
+        ArrayList<String> patientStrinArray= systemDataReader.getTempDataArray(patientDataFilePath);
+        ArrayList<Patient> allPatientRecords  =getPatientArrayFromStringArray(patientStrinArray);
 
         return allPatientRecords;
     }
 
-    private static Patient getPatientFromList(List<String> tenpPatientRec) {
+    private static ArrayList<Patient> getPatientArrayFromStringArray(ArrayList<String> patientStrinArray) {
+        ArrayList<Patient> patientArrayList =new ArrayList<>();
+        for (int i=0;i<patientStrinArray.size();i++){
+            String line =patientStrinArray.get(i);
+            Patient patient =getPatientFromStringLine(line);
+            patientArrayList.add(patient);
+        }
+
+        return patientArrayList;
+    }
+
+    private static ArrayList<String>  getStringArrayFromPatientArray(ArrayList<Patient> patientArrayList){
+        ArrayList<String> stringPatientArray =new ArrayList<>();
+
+        for (int i=0;i<patientArrayList.size();i++){
+            stringPatientArray.add(patientArrayList.get(i).toString());
+        }
+
+        return stringPatientArray;
+    }
+
+    private static Patient getPatientFromStringLine(String line) {
+
+        List<String> tenpPatientRec =Arrays.asList(line.split("[~\n]"));
         Patient returnPatient = new Patient();
 
         returnPatient.setUserRoll(getUserRoll(tenpPatientRec.get(0)));
@@ -395,21 +332,11 @@ public class UserAction {
 
     //write a method for save receptionist data
     private static  void  saveReceptionist(Receptionist receptionist){
-        File receptionFile = new File(receptionistFilePath);
 
-        try (FileWriter fileWriter = new FileWriter(receptionFile, true)) {
+        SystemDataWriter systemDataWriter=new SystemDataWriter();
+        systemDataWriter.writeDataToFile(receptionist.toString(),receptionistFilePath,5);
+        addUserLoginData(receptionLoginData,new LoginUser(receptionist.getUserName(), receptionist.getUserPassword()));
 
-            BufferedWriter receptionBufferedWriter = new BufferedWriter(fileWriter);
-
-            receptionBufferedWriter.write(receptionist.toString());
-            receptionBufferedWriter.close();
-            fileWriter.close();
-            System.out.println("Receptionist saved: " + receptionFile.getPath()+" patient saved");
-            addUserLoginData(receptionLoginData,new LoginUser(receptionist.getUserName(), receptionist.getUserPassword()));
-
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
     }
 
     //write a method for update receptionist data
@@ -418,12 +345,15 @@ public class UserAction {
 
             Object[] options = { "OK", "CANCEL" };
             Toolkit.getDefaultToolkit().beep();
-            int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+            int selectedValue = JOptionPane.showOptionDialog(
+                    null,
+                    "Are You Sure Update This Record"+"\nClick OK to continue",
+                    "Warning",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
-                editReceptionRecord(receptionistFilePath,receptionist,searchedID,loginUser);
+                editReceptionRecord(receptionist,searchedID,loginUser);
             }
 
         }else {
@@ -432,74 +362,36 @@ public class UserAction {
     }
 
     //write a method for edit receptionist data
-    private static void editReceptionRecord(String filePath,Receptionist receptionist,String searchPetientid,LoginUser loginUser){
+    private static void editReceptionRecord(Receptionist receptionist,String searchPetientid,LoginUser loginUser){
 
-        ArrayList<String> tempPatientList =new ArrayList<>();
-        File file = new File(filePath);
-        boolean found =false;
-        try{
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line =null;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-                if(!tempList.get(6).equals(searchPetientid)){
-                    tempPatientList.add(line);
-                }else {
-                    found = true;
-                    String newLine = receptionist.toString();
-                    line =newLine;
-                    tempPatientList.add(line);
+        Boolean isUpdated =false;
+        ArrayList<Receptionist> allReceptionRecords = getAllReceptionist();
+        ArrayList<Receptionist> finalEditedArray =new ArrayList<>();
 
-                }
+        for (int i=0;i<allReceptionRecords.size();i++){
+            if (allReceptionRecords.get(i).getIdCardNumber().equals(searchPetientid)){
+                finalEditedArray.add(receptionist);
+                isUpdated=true;
             }
-
-            bufferedReader.close();
-            fileReader.close();
-
-            if (found == true){
-                try {
-
-                    File fileNew = new File(receptionistFilePath);
-                    if(file.exists()){
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    newbufferedWriter.write("");
-                    for (int i=0;i<tempPatientList.size();i++){
-                        newbufferedWriter.write(tempPatientList.get(i));
-                        newbufferedWriter.newLine();
-
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    JOptionPane.showMessageDialog(null,"Update Successfully");
-                    System.out.println("Receptionist edited  success");
-                    System.out.println(tempPatientList.toString());
-                    updateUserLoginData(receptionLoginData,loginUser);
-                    System.out.println("receptionist login data updated");
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            else
-            {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null,"Record Not Found"+"\nPlease Check ID Number in Search Box", "ERROR", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            finalEditedArray.add(allReceptionRecords.get(i));
         }
+
+        if (!isUpdated){
+            JOptionPane.showMessageDialog(null,"Update Successfully");
+        }else {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null,
+                    "Record Not Found"+"\nPlease Check ID Number in Search Box",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        SystemDataWriter systemDataWriter=new SystemDataWriter();
+        systemDataWriter.writeDataToFile(getStringArrayFromReceptionArry(finalEditedArray),receptionistFilePath,10);
+        updateUserLoginData(receptionLoginData,loginUser);
+
     }
+
 
     //write a method for search receptionist data
     public static Receptionist searchReceptionRecord(String seachTerm,String userName,String userPass){
@@ -509,60 +401,39 @@ public class UserAction {
         return foundReception;
     }
 
+
+    private static ArrayList<String> getStringArrayFromReceptionArry(ArrayList<Receptionist> finalEditedArray) {
+        ArrayList<String> finalReceptionStringArray =new ArrayList<>();
+        for (int i=0;i<finalEditedArray.size();i++){
+            finalReceptionStringArray.add(finalEditedArray.get(i).toString());
+        }
+
+        return finalReceptionStringArray;
+    }
+
     //write a method for search receptionist
     private static Receptionist searchReceptionist(String searchTerm, String userName,String userPassword){
 
+        ArrayList<Receptionist> allReceptionistData =getAllReceptionist();
         boolean found = false;
+        boolean isPassWordPresent =(userName!=null)&&(userPassword!=null);
         Receptionist searchedReceptionist = new Receptionist();
-        List<String> temp = new ArrayList<>();
 
+        for (int i=0;i<allReceptionistData.size();i++){
+            boolean isloginDataTrue = allReceptionistData.get(i).getUserName().equals(encryptUserData(userName)) &&
+                    allReceptionistData.get(i).getUserPassword().equals(encryptUserData(userPassword));
+            boolean isSearchTermMatched =allReceptionistData.get(i).getIdCardNumber().equals(searchTerm);
 
-        File patientFile = new File(receptionistFilePath);
-        if (patientFile != null) {
-            try (FileReader fileReader = new FileReader(patientFile)) {
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-
-                String line = null;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    List<String> tempList= Arrays.asList(line.split("~"));
-
-                    if ((tempList.get(6).equals(searchTerm) ||
-                            tempList.get(1).equals(encryptUserData(userName)) && tempList.get(9).equals(encryptUserData(userPassword))) && !found) {
-                        found = true;
-                        temp =tempList;
-                        System.out.println("search Receptionist  found ");
-                    }
-                }
-                if (found){
-                    System.out.println("ReceptionRecord  found :"+temp.toString());
-                    searchedReceptionist.setUserRoll(getUserRoll(temp.get(0)));
-                    searchedReceptionist.setName(temp.get(1));
-                    searchedReceptionist.setGender(getGender(temp.get(2)));
-                    searchedReceptionist.setMaritalStatus(temp.get(3));
-                    searchedReceptionist.setDob(getLocalDatefromString(temp.get(4)));
-                    searchedReceptionist.setPhoneNumber(temp.get(5));
-                    searchedReceptionist.setIdCardNumber(temp.get(6));
-                    searchedReceptionist.setAddress(temp.get(7));
-                    searchedReceptionist.setUserName(temp.get(8));
-                    searchedReceptionist.setUserPassword(temp.get(9));
-                    searchedReceptionist.setStaffID(Integer.parseInt(temp.get(10)));
-                    searchedReceptionist.setStaffEmailAddress(temp.get(11));
-                    searchedReceptionist.setDateOfJoining(getLocalDatefromString(temp.get(12)));
-
-                    JOptionPane.showMessageDialog(null,"Record Found");
-                    System.out.println("search found :"+searchedReceptionist);
-                }
-                else {
-                    JOptionPane.showMessageDialog(null,"Record Not Found");
-                }
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (isloginDataTrue || isSearchTermMatched){
+                found=true;
+                searchedReceptionist=allReceptionistData.get(i);
             }
+        }
+
+        if (found && !isPassWordPresent){
+            JOptionPane.showMessageDialog(null,"Record Found");
+        }else if (!isPassWordPresent){
+            JOptionPane.showMessageDialog(null,"Record Not Found");
         }
 
 
@@ -570,43 +441,39 @@ public class UserAction {
     }
 
     public static  ArrayList<Receptionist> getAllReceptionist(){
+
         ArrayList<Receptionist> allReceptionRecords = new ArrayList<>();
-        File newFile = new File(receptionistFilePath);
-        String receptionRecord = null;
-        try (FileReader receptionReader = new FileReader(newFile)){
-            BufferedReader receptionBufferedRedaer = new BufferedReader(receptionReader);
+    SystemDataReader systemDataReader = new SystemDataReader();
+    ArrayList<String> allReceptionistStringArray = systemDataReader.getTempDataArray(receptionistFilePath);
 
-            while ((receptionRecord = receptionBufferedRedaer.readLine()) != null) {
-                List<String> tempReceptionList = Arrays.asList(receptionRecord.split("~"));
-                Receptionist newReception = getReceptionistFromList(tempReceptionList);
-                allReceptionRecords.add(newReception);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    for(int i=0;i<allReceptionistStringArray.size();i++){
+        Receptionist receptionist = getReceptionistFromString(allReceptionistStringArray.get(i));
+        allReceptionRecords.add(receptionist);
+    }
 
         return allReceptionRecords;
     }
 
-    private static Receptionist getReceptionistFromList(List<String> tempReceptionRec) {
+    private static Receptionist getReceptionistFromString(String tempReceptionRecLine) {
+
+        List<String> tempReceptionList = Arrays.asList(tempReceptionRecLine.split("[~\n]"));
+
         Receptionist returnReceptionist = new Receptionist();
 
-        returnReceptionist.setUserRoll(getUserRoll(tempReceptionRec.get(0)));
-        returnReceptionist.setName(tempReceptionRec.get(1));
-        returnReceptionist.setGender(getGender(tempReceptionRec.get(2)));
-        returnReceptionist.setMaritalStatus(tempReceptionRec.get(3));
-        returnReceptionist.setDob(getLocalDatefromString(tempReceptionRec.get(4)));
-        returnReceptionist.setPhoneNumber(tempReceptionRec.get(5));
-        returnReceptionist.setIdCardNumber(tempReceptionRec.get(6));
-        returnReceptionist.setAddress(tempReceptionRec.get(7));
-        returnReceptionist.setUserName(tempReceptionRec.get(8));
-        returnReceptionist.setUserPassword(tempReceptionRec.get(9));
-        returnReceptionist.setStaffID(Integer.parseInt(tempReceptionRec.get(10)));
-        returnReceptionist.setStaffEmailAddress(tempReceptionRec.get(11));
-        returnReceptionist.setDateOfJoining(getLocalDatefromString(tempReceptionRec.get(12)));
+        System.out.println("getAllReception --->"+tempReceptionRecLine);
+        returnReceptionist.setUserRoll(getUserRoll(tempReceptionList.get(0)));
+        returnReceptionist.setName(tempReceptionList.get(1));
+        returnReceptionist.setGender(getGender(tempReceptionList.get(2)));
+        returnReceptionist.setMaritalStatus(tempReceptionList.get(3));
+        returnReceptionist.setDob(getLocalDatefromString(tempReceptionList.get(4)));
+        returnReceptionist.setPhoneNumber(tempReceptionList.get(5));
+        returnReceptionist.setIdCardNumber(tempReceptionList.get(6));
+        returnReceptionist.setAddress(tempReceptionList.get(7));
+        returnReceptionist.setUserName(tempReceptionList.get(8));
+        returnReceptionist.setUserPassword(tempReceptionList.get(9));
+        returnReceptionist.setStaffID(Integer.parseInt(tempReceptionList.get(10)));
+        returnReceptionist.setStaffEmailAddress(tempReceptionList.get(11));
+        returnReceptionist.setDateOfJoining(getLocalDatefromString(tempReceptionList.get(12)));
 
 
         return returnReceptionist;
@@ -630,22 +497,11 @@ public class UserAction {
 
     //write a method for save admin data
     private static void saveAdmin(Admin admin) {
-        File file = new File(adminFilePath);
-
-        try (FileWriter fileWriter = new FileWriter(file, true)) {
-            BufferedWriter adminBufferedWriter = new BufferedWriter(fileWriter);
-
-            adminBufferedWriter.write(admin.toString());
-            adminBufferedWriter.newLine();
-            adminBufferedWriter.close();
-            fileWriter.close();
-
-            System.out.println("file path : " + file.getPath() + " admin saved");
+        SystemDataWriter systemDataWriter = new SystemDataWriter();
+        systemDataWriter.writeDataToFile(admin.toString(),adminFilePath,5);
+            System.out.println("file path :  admin saved");
             addUserLoginData(adminloginData,new LoginUser(admin.getUserName(), admin.getUserPassword()));
 
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
     }
 
     //write a method for update admin data
@@ -654,12 +510,13 @@ public class UserAction {
 
             Object[] options = { "OK", "CANCEL" };
             Toolkit.getDefaultToolkit().beep();
-            int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+            int selectedValue = JOptionPane.showOptionDialog(null,
+                    "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
-                editAdminRecord(adminFilePath,adminRecord,searchedID,loginUser);
+                editAdminRecord(adminRecord,searchedID,loginUser);
             }
 
         }else {
@@ -668,137 +525,74 @@ public class UserAction {
     }
 
     //write a method for edit admin data
-    private static void editAdminRecord(String filePath,Admin adminEdit,String searchAdminRec,LoginUser loginUser){
+    private static void editAdminRecord(Admin adminEdit,String searchAdminRec,LoginUser loginUser){
 
-        ArrayList<String> tempAdminList =new ArrayList<>();
-        File file = new File(filePath);
-        boolean found =false;
-        try{
-            FileReader adminfileReader = new FileReader(file);
-            BufferedReader adminbufferedReader = new BufferedReader(adminfileReader);
-            String line =null;
-            while ((line = adminbufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-                if(!tempList.get(6).equals(searchAdminRec)){
-                    tempAdminList.add(line);
-                }else {
-                    found = true;
-                    String newLine = adminEdit.toString();
-                    line =newLine;
-                    tempAdminList.add(line);
+        ArrayList<Admin> allAdminRecord =getAllAdmin();
+        ArrayList<Admin> finalEditedAdminArray=new ArrayList<>();
+        boolean isUpdated=false;
 
-                }
+        for (int i=0;i<allAdminRecord.size();i++){
+            if (allAdminRecord.get(i).getIdCardNumber().equals(searchAdminRec)){
+                finalEditedAdminArray.add(adminEdit);
+                isUpdated=true;
             }
-
-            adminbufferedReader.close();
-            adminfileReader.close();
-
-            if (found){
-                try {
-
-                    File fileNew = new File(adminFilePath);
-                    if(file.exists()){
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    newbufferedWriter.write("");
-                    for (int i=0;i<tempAdminList.size();i++){
-                        newbufferedWriter.write(tempAdminList.get(i));
-                        newbufferedWriter.newLine();
-
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    JOptionPane.showMessageDialog(null,"Update Successfully");
-                    System.out.println("Admin edited  success");
-                    System.out.println(tempAdminList.toString());
-
-                    updateUserLoginData(adminloginData,loginUser);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-            else
-            {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null,"Record Not Found"+"\nPlease Check ID Number in Search Box", "ERROR", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            finalEditedAdminArray.add(allAdminRecord.get(i));
         }
+
+        if (isUpdated){
+            SystemDataWriter systemDataWriter =new SystemDataWriter();
+            systemDataWriter.writeDataToFile(getStringArrayFromAdminArray(finalEditedAdminArray),adminFilePath,10);
+            updateUserLoginData(adminloginData,loginUser);
+            JOptionPane.showMessageDialog(null,"Update Successfully");
+        }else {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null,
+                    "Record Not Found"+"\nPlease Check ID Number in Search Box",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+
+    private static ArrayList<String> getStringArrayFromAdminArray(ArrayList<Admin> finalEditedAdminArray) {
+        ArrayList<String> adminStringArray= new ArrayList<>();
+        for (int i =0;i<finalEditedAdminArray.size();i++){
+            adminStringArray.add(finalEditedAdminArray.get(i).toString());
+        }
+
+        return adminStringArray;
     }
 
     //write a method for search admin
-    public static Admin searchAdmin(String seachTerm,String userPassword){
+    public static Admin searchAdmin(String seachTermOrUserName,String userPassword){
 
-        Admin foundAdmin = searchAdminRecord(seachTerm,userPassword);
+        Admin foundAdmin = searchAdminRecord(seachTermOrUserName,userPassword);
         System.out.println("return Patient :"+foundAdmin.toString());
         return foundAdmin;
     }
 
     //write a method for search admin data
-    private static Admin searchAdminRecord(String searchTerm, String pass){
+    private static Admin searchAdminRecord(String searchTermORuserName, String password){
 
+        ArrayList<Admin> allAdminRecords =getAllAdmin();
+        boolean PassPresent=password!=null;
         boolean found = false;
         Admin searchedAdmin = new Admin();
-        List<String> temp = new ArrayList<>();
 
-        File adminFile = new File(adminFilePath);
-        if (adminFile != null) {
-            try (FileReader fileReader = new FileReader(adminFile)) {
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-                String line = null;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    List<String> tempList= Arrays.asList(line.split("~"));
-
-                    if ((tempList.get(6).equals(searchTerm) ||
-                            tempList.get(1).equals(searchTerm) && tempList.get(9).equals(pass)) && !found) {
-                        found = true;
-                        temp =tempList;
-                        System.out.println("search Admin found ");
-                    }
-                }
-                if (found){
-                    System.out.println("Admin record found :"+temp.toString());
-                    searchedAdmin.setUserRoll(getUserRoll(temp.get(0)));
-                    searchedAdmin.setName(temp.get(1));
-                    searchedAdmin.setGender(getGender(temp.get(2)));
-                    searchedAdmin.setMaritalStatus(temp.get(3));
-                    searchedAdmin.setDob(getLocalDatefromString(temp.get(4)));
-                    searchedAdmin.setPhoneNumber(temp.get(5));
-                    searchedAdmin.setIdCardNumber(temp.get(6));
-                    searchedAdmin.setAddress(temp.get(7));
-                    searchedAdmin.setUserName(temp.get(8));
-                    searchedAdmin.setUserPassword(temp.get(9));
-
-                    if(pass==null){
-                        JOptionPane.showMessageDialog(null,"Record Found");
-                    }
-
-                    System.out.println("search found :"+searchedAdmin);
-                }
-                else {
-                    if(pass==null){
-                        JOptionPane.showMessageDialog(null,"Record Not Found");
-                    }
-
-                }
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        for (int i=0;i<allAdminRecords.size();i++){
+            boolean isPassMatch =allAdminRecords.get(i).getUserName().equals(encryptUserData(searchTermORuserName)) &&
+                    allAdminRecords.get(i).getUserPassword().equals(encryptUserData(password));
+            boolean isSerchTermMatched =allAdminRecords.get(i).getIdCardNumber().equals(searchTermORuserName);
+            if (isPassMatch || isSerchTermMatched){
+                searchedAdmin =allAdminRecords.get(i);
+                found=true;
             }
+        }
+
+        if (found && !PassPresent){
+            JOptionPane.showMessageDialog(null,"Record Found");
+        }else if (!PassPresent){
+            JOptionPane.showMessageDialog(null,"Record Not Found");
         }
 
 
@@ -807,40 +601,34 @@ public class UserAction {
 
     public static ArrayList<Admin> getAllAdmin(){
         ArrayList<Admin> allAdminRecords =new ArrayList<>();
-        File newFile = new File(adminFilePath);
-        String adminRecord = null;
-        try (FileReader adminFileReader = new FileReader(newFile)){
-            BufferedReader adminBufferedRedaer = new BufferedReader(adminFileReader);
 
-            while ((adminRecord = adminBufferedRedaer.readLine()) != null) {
-                List<String> tempAdminList = Arrays.asList(adminRecord.split("~"));
-                System.out.println(tempAdminList.toString());
-                Admin newAdmin = getAdminFromList(tempAdminList);
-                allAdminRecords.add(newAdmin);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        SystemDataReader systemDataReader = new SystemDataReader();
+        ArrayList<String> allAdminStrinArray =systemDataReader.getTempDataArray(adminFilePath);
+        for (int i=0;i<allAdminStrinArray.size();i++){
+            String line = allAdminStrinArray.get(i);
+            Admin admin =getAdminFromList(line);
+            allAdminRecords.add(admin);
         }
 
         return allAdminRecords;
     }
 
-    private static Admin getAdminFromList(List<String> tempAdminRec) {
+    private static Admin getAdminFromList(String adminLine) {
+
+        List<String> adminRecList = Arrays.asList(adminLine.split("[~\n]"));
+
         Admin returnAdmiin =new Admin();
 
-        returnAdmiin.setUserRoll(getUserRoll(tempAdminRec.get(0)));
-        returnAdmiin.setName(tempAdminRec.get(1));
-        returnAdmiin.setGender(getGender(tempAdminRec.get(2)));
-        returnAdmiin.setMaritalStatus(tempAdminRec.get(3));
-        returnAdmiin.setDob(getLocalDatefromString(tempAdminRec.get(4)));
-        returnAdmiin.setPhoneNumber(tempAdminRec.get(5));
-        returnAdmiin.setIdCardNumber(tempAdminRec.get(6));
-        returnAdmiin.setAddress(tempAdminRec.get(7));
-        returnAdmiin.setUserName(tempAdminRec.get(8));
-        returnAdmiin.setUserPassword(tempAdminRec.get(9));
+        returnAdmiin.setUserRoll(getUserRoll(adminRecList.get(0)));
+        returnAdmiin.setName(adminRecList.get(1));
+        returnAdmiin.setGender(getGender(adminRecList.get(2)));
+        returnAdmiin.setMaritalStatus(adminRecList.get(3));
+        returnAdmiin.setDob(getLocalDatefromString(adminRecList.get(4)));
+        returnAdmiin.setPhoneNumber(adminRecList.get(5));
+        returnAdmiin.setIdCardNumber(adminRecList.get(6));
+        returnAdmiin.setAddress(adminRecList.get(7));
+        returnAdmiin.setUserName(adminRecList.get(8));
+        returnAdmiin.setUserPassword(adminRecList.get(9));
         return returnAdmiin;
     }
 
@@ -860,21 +648,8 @@ public class UserAction {
 
     //write a method for save medicalofficer data
     private static void saveMedicalOfficer(MedicalOfficer medicalOfficer) {
-        File file = new File(medicalOfficerFilePath);
-
-        try (FileWriter fileWriter = new FileWriter(file, true)) {
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(medicalOfficer.toString());
-            bufferedWriter.newLine();
-            bufferedWriter.close();
-            fileWriter.close();
-            System.out.println("file path : " + file.getPath()+" medicalOfficer saved");
-            addUserLoginData(medicalLoginData,new LoginUser(medicalOfficer.getUserName(), medicalOfficer.getUserPassword()));
-
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-
+     SystemDataWriter systemDataWriter=new SystemDataWriter();
+     systemDataWriter.writeDataToFile(medicalOfficer.toString(),medicalOfficerFilePath,5);
     }
 
     //Write a method for update medicalofficer data record
@@ -883,8 +658,10 @@ public class UserAction {
 
             Object[] options = { "OK", "CANCEL" };
             Toolkit.getDefaultToolkit().beep();
-            int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+            int selectedValue = JOptionPane.showOptionDialog(null,
+                    "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
@@ -900,134 +677,65 @@ public class UserAction {
     //Write a method foe edit medicalofficer data record
     private static void editMedicalOfficerRecord(String filePath,MedicalOfficer medicalOfficer,String searchMedicalOfficerId,LoginUser loginUser){
 
-        ArrayList<String> tempMedicalOfficerList =new ArrayList<>();
-        File file = new File(filePath);
-        boolean found =false;
-        try{
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line =null;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
-                if(!tempList.get(6).equals(searchMedicalOfficerId)){
-                    tempMedicalOfficerList.add(line);
-                }else {
-                    found = true;
-                    String newLine = medicalOfficer.toString();
-                    line =newLine;
-                    tempMedicalOfficerList.add(line);
+        ArrayList<MedicalOfficer> allmedicalOfficerArray= getAllMedicalOfficer();
+        ArrayList<MedicalOfficer> finalEditedMedicalArray =new ArrayList<>();
+        boolean recordUpdated =false;
 
-                }
+        for (int i=0;i<allmedicalOfficerArray.size();i++){
+            if (allmedicalOfficerArray.get(i).getIdCardNumber().equals(searchMedicalOfficerId)){
+                finalEditedMedicalArray.add(medicalOfficer);
+                recordUpdated=true;
             }
-
-            bufferedReader.close();
-            fileReader.close();
-
-            if (found ){
-                try {
-
-                    File fileNew = new File(medicalOfficerFilePath);
-                    if(file.exists()){
-                        file.delete();
-                    }
-                    file.createNewFile();
-
-                    FileWriter fileWriter = new FileWriter(fileNew);
-                    BufferedWriter newbufferedWriter = new BufferedWriter(fileWriter);
-                    newbufferedWriter.write("");
-                    for (int i=0;i<tempMedicalOfficerList.size();i++){
-                        newbufferedWriter.write(tempMedicalOfficerList.get(i));
-                        newbufferedWriter.newLine();
-
-                    }
-                    newbufferedWriter.close();
-                    fileWriter.close();
-                    JOptionPane.showMessageDialog(null,"Update Successfully");
-                    System.out.println("Medical Officer Edited Success");
-                    System.out.println(tempMedicalOfficerList.toString());
-
-                    updateUserLoginData(medicalLoginData,loginUser);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-            else
-            {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null,"Record Not Found"+"\nPlease Check ID Number in Search Box", "ERROR", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            finalEditedMedicalArray.add(allmedicalOfficerArray.get(i));
         }
+
+        if (recordUpdated){
+            SystemDataWriter systemDataWriter =new SystemDataWriter();
+            systemDataWriter.writeDataToFile(getStringArrayFromMedicalArray(finalEditedMedicalArray),medicalOfficerFilePath,10);
+            updateUserLoginData(medicalLoginData,loginUser);
+            JOptionPane.showMessageDialog(null,"Update Successfully");
+        }else {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null,
+                    "Record Not Found"+"\nPlease Check ID Number in Search Box",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+
+    private static ArrayList<String> getStringArrayFromMedicalArray(ArrayList<MedicalOfficer> finalEditedMedicalArray) {
+        ArrayList<String> strinMedicalArray =new ArrayList<>();
+
+        for (int i=0;i<finalEditedMedicalArray.size();i++){
+            strinMedicalArray.add(finalEditedMedicalArray.get(i).toString());
+        }
+
+        return strinMedicalArray;
     }
 
     //Write a method for Search medicalofficer data record
-    public static MedicalOfficer searchMedicalOfficer(String seachTerm, String filepath) {
+    public static MedicalOfficer searchMedicalOfficer(String seachTermOrUserName, String password) {
         boolean found = false;
+        boolean passPresent =(password!=null);
         MedicalOfficer searchedMedicalOfficer = new MedicalOfficer();
+        ArrayList<MedicalOfficer> allMedicalOfficer=getAllMedicalOfficer();
 
-        try {
-            String userRoll = null;
-            String name = null, address = null;
-            String gender = null, marital = null, dob = null, phonenumber = null, idcardNumber = null, userName = null, password = null;
-            String staffId =null,dateOFJoin=null;
-            String staffEmailAddress = null, speciality = null;
-            scanner = new Scanner(new File(filepath));
-            scanner.useDelimiter("[~\n]");
+        for(int i=0;i<allMedicalOfficer.size();i++){
+            boolean isPassMatched =allMedicalOfficer.get(i).getUserName().equals(encryptUserData(seachTermOrUserName)) &&
+                    allMedicalOfficer.get(i).getUserPassword().equals(encryptUserData(password));
+            boolean isSearchTermMatched= allMedicalOfficer.get(i).getIdCardNumber().equals(seachTermOrUserName);
 
-            while (scanner.hasNext() && !found) {
-
-                userRoll = scanner.next();
-                name = scanner.next();
-                gender = scanner.next();
-                marital = scanner.next();
-                dob = scanner.next();
-                phonenumber = scanner.next();
-                idcardNumber = scanner.next();
-                address = scanner.next();
-                userName = scanner.next();
-                password = scanner.next();
-                staffId = scanner.next();
-                staffEmailAddress = scanner.next();
-                dateOFJoin =scanner.next();
-                speciality = scanner.next();
-
-
-                if (idcardNumber.equals(seachTerm)) {
-                    found = true;
-                }
+            if (isPassMatched||isSearchTermMatched){
+                found=true;
+                searchedMedicalOfficer =allMedicalOfficer.get(i);
             }
-            if (found){
-                searchedMedicalOfficer.setUserRoll(getUserRoll(userRoll));
-                searchedMedicalOfficer.setName(name);
-                searchedMedicalOfficer.setGender(getGender(gender));
-                searchedMedicalOfficer.setMaritalStatus(marital);
-                searchedMedicalOfficer.setDob(getLocalDatefromString(dob));
-                searchedMedicalOfficer.setPhoneNumber(phonenumber);
-                searchedMedicalOfficer.setIdCardNumber(idcardNumber);
-                searchedMedicalOfficer.setAddress(address);
-                searchedMedicalOfficer.setUserName(userName);
-                searchedMedicalOfficer.setUserPassword(password);
-                searchedMedicalOfficer.setStaffID(Integer.parseInt(staffId));
-                searchedMedicalOfficer.setStaffEmailAddress(staffEmailAddress);
-                searchedMedicalOfficer.setDateOfJoining(getLocalDatefromString(dateOFJoin));
-                searchedMedicalOfficer.setSpeciality(speciality);
+        }
 
-                System.out.println(searchedMedicalOfficer.toString());
-
-                JOptionPane.showMessageDialog(null,"Record Found");
-
-            }
-            else {
-                JOptionPane.showMessageDialog(null,"Record Not Found");
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        if (found && !passPresent){
+            JOptionPane.showMessageDialog(null,"Record Found");
+        }else if ( !passPresent){
+            JOptionPane.showMessageDialog(null,"Record Not Found");
         }
 
         return searchedMedicalOfficer;
@@ -1036,29 +744,23 @@ public class UserAction {
 
     public static ArrayList<MedicalOfficer> getAllMedicalOfficer(){
         ArrayList<MedicalOfficer> allMedicalOfficerRecords =new ArrayList<>();
-        File newFile = new File(medicalOfficerFilePath);
-        String adminRecord = null;
-        try (FileReader adminFileReader = new FileReader(newFile)){
-            BufferedReader adminBufferedRedaer = new BufferedReader(adminFileReader);
 
-            while ((adminRecord = adminBufferedRedaer.readLine()) != null) {
-                List<String> tempMedicList = Arrays.asList(adminRecord.split("~"));
-                System.out.println(tempMedicList.toString());
-                MedicalOfficer medicalOfficer = getMedicalOfficer(tempMedicList);
-                allMedicalOfficerRecords.add(medicalOfficer);
-            }
+        SystemDataReader systemDataReader =new SystemDataReader();
+        ArrayList<String> stringArrayListMedical =systemDataReader.getTempDataArray(medicalOfficerFilePath);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i=0;i<stringArrayListMedical.size();i++){
+            String line = stringArrayListMedical.get(i);
+            MedicalOfficer medicalOfficer = getMedicalOfficerFromStrinLine(line) ;
+            allMedicalOfficerRecords.add(medicalOfficer);
         }
 
         return allMedicalOfficerRecords;
     }
 
-    private static MedicalOfficer getMedicalOfficer(List<String> tempMedicList) {
+    private static MedicalOfficer getMedicalOfficerFromStrinLine(String  MedicLine) {
         MedicalOfficer returnMedicalOfficer =new MedicalOfficer();
+
+        List<String> tempMedicList =Arrays.asList(MedicLine.split("[~\n]"));
 
         returnMedicalOfficer.setUserRoll(getUserRoll(tempMedicList.get(0)));
         returnMedicalOfficer.setName(tempMedicList.get(1));
@@ -1151,6 +853,8 @@ public class UserAction {
     //write a method for remove user data
     private static void removeUserRecord(String filePath, String serachTerm,LoginUser loginUser,String loginDataPath){
         ArrayList<String> tempPatientList =new ArrayList<>();
+
+
         File file = new File(filePath);
         boolean found =false;
         try{
@@ -1158,7 +862,7 @@ public class UserAction {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line =null;
             while ((line = bufferedReader.readLine()) != null) {
-                List<String> tempList = Arrays.asList(line.split("~"));
+                List<String> tempList = Arrays.asList(line.split("[~\n]"));
                 if(!tempList.get(6).equals(serachTerm)){
                     tempPatientList.add(line);
                 }else {
@@ -1202,7 +906,10 @@ public class UserAction {
             else
             {
                 Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null,"Record Not Found"+"\nPlease Check ID Number in Search Box", "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "Record Not Found"+"\nPlease Check ID Number in Search Box",
+                        "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (FileNotFoundException e) {
@@ -1318,19 +1025,9 @@ public class UserAction {
       =============================================================================================================*/
 
     private static void addUserLoginData(String fileName, LoginUser user) {
-        File addLoginFile = new File(fileName);
 
-        try (FileWriter userLoginWriter = new FileWriter(addLoginFile, true)) {
-            BufferedWriter userLoginBufferedWriter = new BufferedWriter(userLoginWriter);
-            userLoginBufferedWriter.write(user.toString());
-            userLoginBufferedWriter.newLine();
-            userLoginBufferedWriter.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println("user Login data added success");
-        }
+        SystemDataWriter systemDataWriter = new SystemDataWriter();
+        systemDataWriter.writeDataToFile(user.toString(),fileName,5);
     }
 
     private static void updateUserLoginData(String fileName, LoginUser user){
@@ -1358,7 +1055,7 @@ public class UserAction {
             loginbufferedReader.close();
             loginfileReader.close();
 
-            if (found == true){
+            if (found){
                 try {
 
                     File fileNew = new File(fileName);

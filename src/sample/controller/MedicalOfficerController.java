@@ -26,36 +26,19 @@ public class MedicalOfficerController {
 
     private MedicalOfficer currentmedicalofficer;
 
-    @FXML
-    private ResourceBundle resources;
+    @FXML private ResourceBundle resources;
+    @FXML private URL location;
+    @FXML private BorderPane medicalMain_boarderPane;
+    @FXML private ImageView medicalMain_mainHome;
+    @FXML private JFXButton medicalMain_appointment;
+    @FXML private Pane medicalMain_logout;
+    @FXML private JFXButton medicalMain_logoutButton;
+    @FXML private JFXButton medicalMain_profile;
+    @FXML private ImageView adminMain_backIcon;
+    @FXML private AnchorPane medicalMain_loaderPane;
 
-    @FXML
-    private URL location;
 
-    @FXML
-    private BorderPane medicalMain_boarderPane;
-
-    @FXML
-    private ImageView medicalMain_mainHome;
-
-    @FXML
-    private JFXButton medicalMain_appointment;
-
-    @FXML
-    private Pane medicalMain_logout;
-
-    @FXML
-    private JFXButton medicalMain_logoutButton;
-
-    @FXML
-    private ImageView adminMain_backIcon;
-
-    @FXML
-    private AnchorPane medicalMain_loaderPane;
-
-    @FXML
-    void initialize() {
-
+    @FXML void initialize() {
 
         medicalMain_mainHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -70,6 +53,19 @@ public class MedicalOfficerController {
                 try {
                     System.out.println("taskView/appointmentView");
                     Pane view = Main.getView("taskView/appointmentView");
+                    setMedicalViewCenter(view);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        medicalMain_profile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    System.out.println("taskView/profileSettingView");
+                    Pane view = Main.getView("taskView/profileSettingView");
                     setMedicalViewCenter(view);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -123,5 +119,6 @@ public class MedicalOfficerController {
 
     public void setCurrentmedicalofficer(MedicalOfficer currentmedicalofficer) {
         this.currentmedicalofficer = currentmedicalofficer;
+        System.out.println("medicalOfficer set in officerView : "+currentmedicalofficer);
     }
 }
