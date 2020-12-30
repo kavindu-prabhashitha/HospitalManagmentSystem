@@ -108,6 +108,8 @@ public class CustomLoginController {
 
                     Parent root = loader.getRoot();
                     detailsStage.setScene(new Scene(root));
+                    detailsStage.setResizable(false);
+                    detailsStage.setTitle("Login Windows");
                     detailsStage.show();
 
                 }
@@ -138,6 +140,7 @@ public class CustomLoginController {
 
         Parent root = loader.getRoot();
         dashBoardStage.setScene(new Scene(root));
+        String dashBoardTitile=null;
 
         switch (fileName){
             case "patientMainView":
@@ -148,6 +151,7 @@ public class CustomLoginController {
                 Main.setCurrentSystemUser(systemUser);
                 PatientViewController patientViewController = loader.getController();
                 patientViewController.setCurrentpatient(patientDetails);
+                dashBoardTitile="User Dashboard";
                 break;
 
             case "receptionistMainView":
@@ -158,6 +162,7 @@ public class CustomLoginController {
                 Main.setCurrentSystemUser(receptionSystemUser);
                 ReceptionMainViewController receptionMainViewController = loader.getController();
                 receptionMainViewController.setCurrentreceptionist(receptionRecord);
+                dashBoardTitile="Receptionist Dashboard";
                 break;
             case "adminMainView":
 
@@ -169,6 +174,7 @@ public class CustomLoginController {
                 adminSysUser.setAdmin(adminDetails);
                 Main.setCurrentSystemUser(adminSysUser);
                 adminMainController.setCurrentAdmin(adminDetails);
+                dashBoardTitile="Admin Dashboard";
                 break;
             case "medicalOfficerView":
                 MedicalOfficer medicalOfficer = UserAction.searchMedicalOfficer(userLogin_userName.getText(),userLogin_userPassword.getText());
@@ -178,10 +184,13 @@ public class CustomLoginController {
                 Main.setCurrentSystemUser(medicalSysUser);
                 MedicalOfficerController medicalOfficerController = loader.getController();
                 medicalOfficerController.setCurrentmedicalofficer(medicalOfficer);
+                dashBoardTitile="Medical Officer Dashboard";
                 break;
             default:
                 break;
         }
+        dashBoardStage.setTitle(dashBoardTitile);
+        dashBoardStage.setResizable(false);
         dashBoardStage.show();
     }
 
