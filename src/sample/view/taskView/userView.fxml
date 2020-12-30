@@ -37,9 +37,9 @@
       <Line endX="185.0" endY="-104.0" layoutX="643.0" layoutY="560.0" startX="-623.0" startY="-104.0" stroke="#d9d9d9" />
       <AnchorPane prefHeight="454.0" prefWidth="850.0" style="-fx-background-color: white;">
          <children>
-            <Label alignment="CENTER" layoutY="16.0" prefHeight="35.0" prefWidth="174.0" text="USER DETAILS" textFill="#4f5b62">
+            <Label alignment="CENTER" layoutX="21.0" layoutY="13.0" prefHeight="44.0" prefWidth="126.0" text="USER DETAILS" textFill="#4f5b62">
                <font>
-                  <Font size="24.0" />
+                  <Font name="System Bold" size="17.0" />
                </font>
             </Label>
             <Label layoutX="20.0" layoutY="120.0" text="Name" />
@@ -54,7 +54,7 @@
             <Label layoutX="15.0" layoutY="323.0" text="Address" />
             <Label layoutX="114.0" layoutY="80.0" prefHeight="21.0" prefWidth="106.0" text="Person Details">
                <font>
-                  <Font size="15.0" />
+                  <Font name="Bookshelf Symbol 7" size="15.0" />
                </font>
             </Label>
             <JFXComboBox fx:id="userView_marital" layoutX="269.0" layoutY="155.0" prefHeight="25.0" prefWidth="126.0" promptText="Marital" style="-fx-background-color: e8e8e8;" />
@@ -64,7 +64,7 @@
             <Line endX="-499.0" endY="-471.0" layoutX="1114.0" layoutY="843.0" startX="-529.0" startY="-471.0" stroke="#d9d9d9" />
             <Label layoutX="553.0" layoutY="81.0" text="Patient Details">
                <font>
-                  <Font size="15.0" />
+                  <Font name="Bookshelf Symbol 7" size="15.0" />
                </font>
             </Label>
             <JFXTextField fx:id="userView_allergies" focusColor="DODGERBLUE" layoutX="558.0" layoutY="147.0" prefHeight="26.0" prefWidth="187.0" promptText="Allergies" style="-fx-background-color: e8e8e8;" />
@@ -75,10 +75,10 @@
             <Line endX="-31.0" endY="-468.0" layoutX="631.0" layoutY="674.0" startX="-193.0" startY="-468.0" stroke="#d9d9d9" />
             <Label layoutX="611.0" layoutY="195.0" text="Staff Details">
                <font>
-                  <Font size="15.0" />
+                  <Font name="Bookshelf Symbol 7" size="15.0" />
                </font>
             </Label>
-            <Line endX="-91.20001220703125" endY="-468.0" layoutX="638.0" layoutY="560.0" startX="-209.0" startY="-468.0" stroke="#d9d9d9" />
+            <Line endX="-91.20001220703125" endY="-468.0" layoutX="638.0" layoutY="560.0" opacity="0.57" startX="-209.0" startY="-468.0" stroke="#d9d9d9" />
             <Line endX="262.0" endY="-322.0" layoutX="544.0" layoutY="527.0" startX="159.0" startY="-322.0" stroke="#d9d9d9" />
             <JFXTextField fx:id="userView_staffID" focusColor="DODGERBLUE" layoutX="552.0" layoutY="228.0" prefHeight="26.0" prefWidth="198.0" promptText="Staff ID" style="-fx-background-color: e8e8e8;" />
             <Label layoutX="449.0" layoutY="240.0" text="Staff ID" />

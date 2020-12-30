@@ -16,7 +16,7 @@
          <children>
             <Label alignment="CENTER" layoutX="327.0" layoutY="33.0" prefHeight="42.0" prefWidth="195.0" text="REFERENCES" AnchorPane.leftAnchor="327.0" AnchorPane.rightAnchor="328.0">
                <font>
-                  <Font size="28.0" />
+                  <Font name="System Bold" size="28.0" />
                </font>
             </Label>
             <Label layoutX="153.0" layoutY="185.0" prefHeight="20.0" prefWidth="129.0" text="Reference Type">
