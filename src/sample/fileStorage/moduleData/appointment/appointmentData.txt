@@ -1,0 +1,8 @@
+8~Anne Perera%%1200%%0777123456~2021-12-07~8:30~Thilini Dissanayake%%1106%%Cardiologist~PENDING~High blood pressure
+10~Nimal Livera%%1201%%0777123457~2021-12-02~9:30~Hasitha Perera%%1102%%Gastroenterologist~PENDING~Abdominal pain
+12~Kamal Desilva%%1202%%0777123458~2021-12-03~9:30~Hasitha Perera%%1102%%Gastroenterologist~PENDING~ Diarrhea
+14~Rathmali Silva%%1205%%0777123479~2021-12-03~9:30~Heshan Jayamaha%%1101%%Neurologist~PENDING~Spinal cord pain
+16~Dilshan Perera%%1208%%0777123499~2021-12-20~12:30~Asitha Perera%%1108%%Physiatrist~PENDING~Back and neck pain
+18~Nipuni Janz%%1207%%0777123479~2021-12-30~2:30~Asitha Perera%%1108%%Physiatrist~PENDING~Blood report not normal
+20~Supuni Perera%%1206%%0777123489~2020-12-23~1:15~Hashan Desilva%%1109%%Pediatrician~PENDING~Pregnancy checkup
+22~Namal Jayaweera%%1204%%0777123469~2020-12-27~3:15~Hashan Desilva%%1109%%Pediatrician~PENDING~Skin allergies - scars

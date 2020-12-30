@@ -1,1 +1,9 @@
-PATIENT~patient~MALE~Unmarried~2020-12-09~0769999888~1234~srilanka , colombo~NY/ok29DxFN6OvI0Upv0uQ==~vgvcLay3kWbslS5Y+1Clew==~A_POSITIVE~computers
+PATIENT~Anne Perera~FEMALE~Married~1993-04-13~0777123456~1200~Nugegoda~r3VYz26GfH+6apHaqkypJQ==~aJZ0FCWu3LwDP0+0YIbTXw==~A_POSITIVE~None
+PATIENT~Nimal Livera~MALE~Unmarried~1996-06-10~0777123457~1201~Kelaniya~a+WZ8RDXf6Gt5GO1/l+9yA==~tXY9/+rKFhboYwcFIlGf4g==~A_NEGATIVE~Chicken
+PATIENT~Gotabaya ~MALE~Married~1987-09-16~0777123459~1203~Kollupitiya~B8eHD0vqnB/mO7T7uyqfNQ==~L4eTmFO64Qx9Kbumm5upgg==~AB_POSITIVE~Chioclate
+PATIENT~Kamal Desilva~MALE~Married~1992-06-20~0777123458~1202~Borella~HAjot/wAPcE0SpJruxQBJQ==~w5d2usRtfy4EVBLRBZChag==~AB_NEGATIVE~None
+PATIENT~Namal Jayaweera~MALE~Unmarried~1999-10-22~0777123469~1204~Wellampitiya~w7rWKrmW3eYOOOFVwqy4dg==~BCZH3w+vmAyhpdXw/cun9g==~B_NEGATIVE~None
+PATIENT~Rathmali Silva~FEMALE~Married~1994-07-11~0777123479~1205~Dehiwala~qTHn46mTAAYe5lLNjiG7dA==~KWUzik7/ljys5cVf8fBNfA==~B_POSITIVE~Tomatoes
+PATIENT~Supuni Perera~FEMALE~Unmarried~1998-09-19~0777123489~1206~Kandana~vzFgGa86F26uOZ4h+VAC2g==~rWtf3IPxuaHeJegevvkACA==~O_NEGATIVE~None
+PATIENT~Nipuni Janz~FEMALE~Married~1993-09-07~0777123479~1207~Mount Lavania~TXulHTyoziK9dBRyZ/6/MQ==~cbcupQ3UVrXeo1KQolWsVg==~O_POSITIVE~Milk
+PATIENT~Dilshan Perera~MALE~Unmarried~1999-09-22~0777123499~1208~Ja-ela~mlny/2F8T5ky3/nc6zm/mg==~Uhx5aAdiz+0NI4m+Ora08Q==~A_NEGATIVE~None

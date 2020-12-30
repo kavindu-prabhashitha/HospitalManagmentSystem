@@ -1,0 +1,6 @@
+106~2020-12-30~medical officer related~null~0751234568~Very rude doctor~null~Action Taken
+106~2020-12-30~medical officer related~Sirisena~0751234568~Very rude doctor~null~PENDING
+107~2020-12-30~experience related~Nimal~0751234567~Not satisfied~null~PENDING
+108~2020-12-30~medication related~Kamala~0751234569~Wrong medication given~Please take the necessary actions.~PENDING
+109~2020-12-30~staff related~Sanduni~0751234579~Not satisfied with the staff members~Please take the necessary actions.~PENDING
+110~2020-12-30~medication related~Sirimal~0751234589~Non-relevant medication given~null~PENDING
