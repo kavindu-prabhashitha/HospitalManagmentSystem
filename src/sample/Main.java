@@ -244,6 +244,28 @@ public class Main extends Application {
     public static SystemUser getCurrentSystemUser() {
         return currentSystemUser;
     }
+    public static String getCurretUserName(){
+        String userName = null;
+        SystemUser systemUser =getCurrentSystemUser();
+        switch (systemUser.getUserRoll()){
+            case PATIENT:
+                userName =systemUser.getPatient().getUserName();
+                break;
+            case RECEPTIONIST:
+                userName =systemUser.getReceptionist().getUserName();
+                break;
+            case MEDICALOFFICER:
+                userName =systemUser.getMedicalOfficer().getUserName();
+                break;
+            case ADMIN:
+                userName =systemUser.getAdmin().getUserName();
+                break;
+            default:
+                break;
+
+        }
+        return userName;
+    }
 
     public static void setCurrentSystemUser(SystemUser currentSystemUser) {
         Main.currentSystemUser = currentSystemUser;

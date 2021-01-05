@@ -1,6 +1,7 @@
 package sample.controller.actionTask;
 
 import org.jetbrains.annotations.NotNull;
+import sample.Main;
 import sample.controller.SystemDataReader;
 import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.*;
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.io.*;
 import java.security.spec.KeySpec;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
@@ -36,6 +38,8 @@ public class UserAction {
     public static String receptionistFilePath = "src/sample/fileStorage/moduleData/userData/receptionistData.txt";
     public static String medicalOfficerFilePath = "src/sample/fileStorage/moduleData/userData/medicalOfficerData.txt";
     public static String adminFilePath = "src/sample/fileStorage/moduleData/userData/adminData.txt";
+
+    private static String userActionLogFile = "src/sample/fileStorage/logData/userLogData.txt";
 
 
     /* =============================================================================================================
@@ -155,17 +159,18 @@ public class UserAction {
        PATIENT Action tasks
       =============================================================================================================*/
 
-    //write a method for add patient data
+    //method for add patient data
     public static void  addPatient(Patient user, UserRoll roll) {
 
         if (roll.equals(UserRoll.ADMIN) || roll.equals(UserRoll.RECEPTIONIST)) {
             savePatient(user);
             JOptionPane.showMessageDialog(null,"Record Add Successfully");
+            adduserlog(user.getUserRoll(),user.getUserName(),"Patient Record Added");
         }
 
     }
 
-    //write a method for save patient data
+    //method for save patient data
     private static void savePatient(Patient user) {
        SystemDataWriter systemDataWriter = new SystemDataWriter();
        systemDataWriter.writeDataToFile(user.toString(),patientDataFilePath,5);
@@ -174,7 +179,7 @@ public class UserAction {
 
     }
 
-    //write a method for update patient data
+    //method for update patient data
     public static void updatePatientRecord(UserRoll userRoll,Patient patientRecord,String searchedID,LoginUser loginUser){
         if (userRoll.equals(UserRoll.RECEPTIONIST) || userRoll.equals(UserRoll.ADMIN)){
 
@@ -187,13 +192,14 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editPatientRecord(patientDataFilePath,patientRecord,searchedID,loginUser);
+                adduserlog(patientRecord.getUserRoll(),patientRecord.getUserName(),"Patient Record Updated");
             }
         }else {
             System.out.println("acces denied(cannot update)");
         }
     }
 
-    //write a method for edit patient data
+    //method for edit patient data
     private static void editPatientRecord(String filePath,Patient patientEdit,String searchPetientid,LoginUser loginUser){
 
         Boolean recordFound=false;
@@ -226,14 +232,14 @@ public class UserAction {
 
     }
 
-    //write a method for search patient
+    //method for search patient
     public static Patient searchPatient(String seachTerm,String userName,String userpassword){
         Patient foundPatient = searchPatientRecord(seachTerm,userName,userpassword);
         System.out.println("return Patient : "+foundPatient.toString());
         return foundPatient;
     }
 
-    //write a method for search patient data
+    //method for search patient data
     private static Patient searchPatientRecord(String searchTerm, String userName,String password){
         Patient foundpatient=null;
         boolean found = false;
@@ -321,16 +327,17 @@ public class UserAction {
       =============================================================================================================
     */
 
-    //write a method for add receptionist data
+    //method for add receptionist data
     public static void addReceptionist(Receptionist receptionist,UserRoll roll){
 
         if (roll.equals(UserRoll.ADMIN)){
             saveReceptionist(receptionist);
             JOptionPane.showMessageDialog(null,"Record Add Successfully");
+            adduserlog(receptionist.getUserRoll(),receptionist.getUserName(),"Receptionist Record Added");
         }
     }
 
-    //write a method for save receptionist data
+    //method for save receptionist data
     private static  void  saveReceptionist(Receptionist receptionist){
 
         SystemDataWriter systemDataWriter=new SystemDataWriter();
@@ -339,7 +346,7 @@ public class UserAction {
 
     }
 
-    //write a method for update receptionist data
+    //method for update receptionist data
     public static void updateReceptionRecord(UserRoll userRoll,Receptionist receptionist,String searchedID,LoginUser loginUser){
         if (userRoll.equals(UserRoll.RECEPTIONIST) || userRoll.equals(UserRoll.ADMIN)){
 
@@ -354,6 +361,7 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editReceptionRecord(receptionist,searchedID,loginUser);
+                adduserlog(receptionist.getUserRoll(),receptionist.getUserName(),"Receptionist Record Updated");
             }
 
         }else {
@@ -361,7 +369,7 @@ public class UserAction {
         }
     }
 
-    //write a method for edit receptionist data
+    //method for edit receptionist data
     private static void editReceptionRecord(Receptionist receptionist,String searchPetientid,LoginUser loginUser){
 
         Boolean isUpdated =false;
@@ -392,15 +400,13 @@ public class UserAction {
 
     }
 
-
-    //write a method for search receptionist data
+    //method for search receptionist data
     public static Receptionist searchReceptionRecord(String seachTerm,String userName,String userPass){
 
         Receptionist foundReception = searchReceptionist(seachTerm,userName,userPass);
         System.out.println("return Patient :"+foundReception.toString());
         return foundReception;
     }
-
 
     private static ArrayList<String> getStringArrayFromReceptionArry(ArrayList<Receptionist> finalEditedArray) {
         ArrayList<String> finalReceptionStringArray =new ArrayList<>();
@@ -411,7 +417,7 @@ public class UserAction {
         return finalReceptionStringArray;
     }
 
-    //write a method for search receptionist
+    //method for search receptionist
     private static Receptionist searchReceptionist(String searchTerm, String userName,String userPassword){
 
         ArrayList<Receptionist> allReceptionistData =getAllReceptionist();
@@ -484,7 +490,7 @@ public class UserAction {
        ADMIN Action tasks
       =============================================================================================================*/
 
-    //write a method for add admin data
+    //method for add admin data
     public static void addAdmin (Admin admin,UserRoll userRoll){
 
         if (userRoll.equals(UserRoll.ADMIN)) {
@@ -495,16 +501,17 @@ public class UserAction {
             System.out.println("cannot save");}
     }
 
-    //write a method for save admin data
+    //method for save admin data
     private static void saveAdmin(Admin admin) {
         SystemDataWriter systemDataWriter = new SystemDataWriter();
         systemDataWriter.writeDataToFile(admin.toString(),adminFilePath,5);
             System.out.println("file path :  admin saved");
             addUserLoginData(adminloginData,new LoginUser(admin.getUserName(), admin.getUserPassword()));
+            adduserlog(admin.getUserRoll(),admin.getUserName(),"Admin Record Added");
 
     }
 
-    //write a method for update admin data
+    //method for update admin data
     public static void updateAdmin(UserRoll userRoll,Admin adminRecord,String searchedID,LoginUser loginUser){
         if (userRoll.equals(UserRoll.ADMIN)){
 
@@ -517,6 +524,7 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editAdminRecord(adminRecord,searchedID,loginUser);
+                adduserlog(adminRecord.getUserRoll(),adminRecord.getUserName(),"Admin Record Updated");
             }
 
         }else {
@@ -524,7 +532,7 @@ public class UserAction {
         }
     }
 
-    //write a method for edit admin data
+    //method for edit admin data
     private static void editAdminRecord(Admin adminEdit,String searchAdminRec,LoginUser loginUser){
 
         ArrayList<Admin> allAdminRecord =getAllAdmin();
@@ -535,8 +543,10 @@ public class UserAction {
             if (allAdminRecord.get(i).getIdCardNumber().equals(searchAdminRec)){
                 finalEditedAdminArray.add(adminEdit);
                 isUpdated=true;
+            }else {
+                finalEditedAdminArray.add(allAdminRecord.get(i));
             }
-            finalEditedAdminArray.add(allAdminRecord.get(i));
+
         }
 
         if (isUpdated){
@@ -563,7 +573,7 @@ public class UserAction {
         return adminStringArray;
     }
 
-    //write a method for search admin
+    //method for search admin
     public static Admin searchAdmin(String seachTermOrUserName,String userPassword){
 
         Admin foundAdmin = searchAdminRecord(seachTermOrUserName,userPassword);
@@ -571,7 +581,7 @@ public class UserAction {
         return foundAdmin;
     }
 
-    //write a method for search admin data
+    //method for search admin data
     private static Admin searchAdminRecord(String searchTermORuserName, String password){
 
         ArrayList<Admin> allAdminRecords =getAllAdmin();
@@ -636,7 +646,7 @@ public class UserAction {
        MEDICALOFFICER Action tasks
       =============================================================================================================*/
 
-    //write a method for add medicalofficer data
+    //method for add medicalofficer data
     public static void addMedicalOfficer(MedicalOfficer medicalOfficer,UserRoll userRoll){
 
         if (userRoll.equals(UserRoll.ADMIN)) {
@@ -646,13 +656,14 @@ public class UserAction {
 
     }
 
-    //write a method for save medicalofficer data
+    //method for save medicalofficer data
     private static void saveMedicalOfficer(MedicalOfficer medicalOfficer) {
      SystemDataWriter systemDataWriter=new SystemDataWriter();
      systemDataWriter.writeDataToFile(medicalOfficer.toString(),medicalOfficerFilePath,5);
+     adduserlog(medicalOfficer.getUserRoll(),medicalOfficer.getUserName(),"MedicalOfficer record Added ");
     }
 
-    //Write a method for update medicalofficer data record
+    //method for update medicalofficer data record
     public static void updateMedicalOfficerRecord(UserRoll userRoll,MedicalOfficer medicalOfficerRecord,String searchedID,LoginUser loginUser){
         if (userRoll.equals(UserRoll.ADMIN)){
 
@@ -665,7 +676,7 @@ public class UserAction {
                     null, options, options[0]);
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
-                editMedicalOfficerRecord(medicalOfficerFilePath,medicalOfficerRecord,searchedID,loginUser);
+                editMedicalOfficerRecord(medicalOfficerRecord,searchedID,loginUser);
             }
 
         }
@@ -674,8 +685,8 @@ public class UserAction {
         }
     }
 
-    //Write a method foe edit medicalofficer data record
-    private static void editMedicalOfficerRecord(String filePath,MedicalOfficer medicalOfficer,String searchMedicalOfficerId,LoginUser loginUser){
+    //method foe edit medicalofficer data record
+    private static void editMedicalOfficerRecord(MedicalOfficer medicalOfficer,String searchMedicalOfficerId,LoginUser loginUser){
 
         ArrayList<MedicalOfficer> allmedicalOfficerArray= getAllMedicalOfficer();
         ArrayList<MedicalOfficer> finalEditedMedicalArray =new ArrayList<>();
@@ -693,6 +704,7 @@ public class UserAction {
             SystemDataWriter systemDataWriter =new SystemDataWriter();
             systemDataWriter.writeDataToFile(getStringArrayFromMedicalArray(finalEditedMedicalArray),medicalOfficerFilePath,10);
             updateUserLoginData(medicalLoginData,loginUser);
+            adduserlog(UserRoll.MEDICALOFFICER,loginUser.getUserName(),"MedicalOfficer Record Updated");
             JOptionPane.showMessageDialog(null,"Update Successfully");
         }else {
             Toolkit.getDefaultToolkit().beep();
@@ -714,7 +726,7 @@ public class UserAction {
         return strinMedicalArray;
     }
 
-    //Write a method for Search medicalofficer data record
+    //method for Search medicalofficer data record
     public static MedicalOfficer searchMedicalOfficer(String seachTermOrUserName, String password) {
         boolean found = false;
         boolean passPresent =(password!=null);
@@ -802,7 +814,7 @@ public class UserAction {
        Common User  Action tasks
       =============================================================================================================*/
 
-    //write a method for delete user data
+    //method for delete user data
     public static void deleteUserRecord(UserRoll taskUserRoll, String searchTerm, UserRoll currentUserRoll,LoginUser loginUser){
         if (taskUserRoll.equals(UserRoll.RECEPTIONIST)){
             Object[] options = { "OK", "CANCEL" };
@@ -828,18 +840,22 @@ public class UserAction {
                 switch (currentUserRoll){
                     case ADMIN:
                         removeUserRecord(adminFilePath,searchTerm,loginUser,adminloginData);
+                        adduserlog(UserRoll.ADMIN,loginUser.getUserName(),"Admin Record deleted");
 
                         break;
                     case RECEPTIONIST:
                         removeUserRecord(receptionistFilePath,searchTerm,loginUser,receptionLoginData);
+                        adduserlog(UserRoll.RECEPTIONIST,loginUser.getUserName(),"Receptionist Record deleted");
 
                         break;
                     case PATIENT:
                         removeUserRecord(patientDataFilePath,searchTerm,loginUser,patientloginData);
+                        adduserlog(UserRoll.PATIENT,loginUser.getUserName(),"Patient Record deleted");
 
                         break;
                     case MEDICALOFFICER:
                         removeUserRecord(medicalOfficerFilePath,searchTerm,loginUser,medicalLoginData);
+                        adduserlog(UserRoll.MEDICALOFFICER,loginUser.getUserName(),"MedicalOfficer Record deleted");
 
                         break;
                     default:
@@ -850,7 +866,7 @@ public class UserAction {
         }
     }
 
-    //write a method for remove user data
+    //method for remove user data
     private static void removeUserRecord(String filePath, String serachTerm,LoginUser loginUser,String loginDataPath){
         ArrayList<String> tempPatientList =new ArrayList<>();
 
@@ -1145,6 +1161,28 @@ public class UserAction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /* =============================================================================================================
+       User Log Action  tasks
+      =============================================================================================================*/
+
+    private static void adduserlog(UserRoll userRoll,String userName,String actiontaken){
+        SystemDataWriter systemDataWriter =new SystemDataWriter();
+
+        UserActionLog userActionLog = new UserActionLog(
+                LocalDate.now(),
+                LocalTime.now(),
+                Main.getCurrentSystemUser().getUserRoll(),
+                decryptUserData(Main.getCurretUserName()),
+                userRoll,
+                decryptUserData(userName),
+                actiontaken
+        );
+
+        systemDataWriter.writeDataToFile(userActionLog.toString(),userActionLogFile,5);
+
     }
 
 

@@ -1,0 +1,6 @@
+2021-01-06~01:35:29.445467~ADMIN~k/0bdE3XsZMUHNEryPnfow==~ADMIN~k/0bdE3XsZMUHNEryPnfow==~Admin Record UpdatedBy k/0bdE3XsZMUHNEryPnfow==userRoll : ADMIN
+2021-01-06~01:37:54.725133900~ADMIN~admin~ADMIN~k/0bdE3XsZMUHNEryPnfow==~Admin Record deletedBy adminuserRoll : ADMIN
+2021-01-06~01:39:05.130404500~ADMIN~admin~ADMIN~k/0bdE3XsZMUHNEryPnfow==~Admin Record AddedBy adminuserRoll : ADMIN
+2021-01-06~01:41:52.283875100~ADMIN~admin~ADMIN~k/0bdE3XsZMUHNEryPnfow==~Admin Record UpdatedBy adminuserRoll : ADMIN
+2021-01-06~01:44:02.378612800~ADMIN~admin~ADMIN~k/0bdE3XsZMUHNEryPnfow==~Admin Record UpdatedBy adminuserRoll : ADMIN
+2021-01-06~01:46:15.865492200~ADMIN~admin~PATIENT~anne_perera~Patient Record UpdatedBy adminuserRoll : ADMIN

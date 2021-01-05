@@ -463,6 +463,7 @@ public class UserViewController implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 Patient patient =userV_PatientTable.getSelectionModel().getSelectedItem();
+                userView_searchField.setText(patient.getIdCardNumber());
                 displayPatientData(patient);
             }
         });
@@ -480,6 +481,7 @@ public class UserViewController implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 Receptionist receptionist =receptiontable_mainTable.getSelectionModel().getSelectedItem();
+                userView_searchField.setText(receptionist.getIdCardNumber());
                 displayReceptionistData(receptionist);
             }
         });
@@ -488,6 +490,7 @@ public class UserViewController implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 MedicalOfficer medicalOfficer =medicalOfficer_mainTable.getSelectionModel().getSelectedItem();
+                userView_searchField.setText(medicalOfficer.getIdCardNumber());
                 displayMedicalOfficerData(medicalOfficer);
             }
         });
@@ -555,6 +558,7 @@ public class UserViewController implements Initializable {
         userView_staffEmail.setText(medicalOfficer.getStaffEmailAddress());
         userView_staffdoj.setValue(medicalOfficer.getDateOfJoining());
         userView_speciality.setValue(medicalOfficer.getSpeciality().trim());
+
 
     }
 

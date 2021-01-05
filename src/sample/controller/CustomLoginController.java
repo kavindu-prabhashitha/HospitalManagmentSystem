@@ -15,18 +15,22 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import sample.Main;
 import sample.controller.actionTask.UserAction;
+import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 
-import static sample.Main.liveClock;
+import static sample.Main.*;
 
 public class CustomLoginController {
 
+    private static String userLogFile ="src/sample/fileStorage/logData/loginDataLog.txt";
     private String userRoll;
 
     @FXML private ResourceBundle resources;
@@ -126,6 +130,7 @@ public class CustomLoginController {
 
     private void openDashBoard(String fileName){
         userLogin_SigninButoon.getScene().getWindow().hide();
+        UserLoginLog userLoginLog =null;
 
         Stage dashBoardStage = new Stage();
         FXMLLoader loader = new FXMLLoader();
@@ -149,6 +154,10 @@ public class CustomLoginController {
                 systemUser.setUserRoll(UserRoll.PATIENT);
                 systemUser.setPatient(patientDetails);
                 Main.setCurrentSystemUser(systemUser);
+                userLoginLog = new UserLoginLog(LocalDate.now(),
+                        Main.getLocalTimeFromString(LocalTime.now().toString()),
+                        userLogin_userName.getText(),
+                        UserRoll.PATIENT);
                 PatientViewController patientViewController = loader.getController();
                 patientViewController.setCurrentpatient(patientDetails);
                 dashBoardTitile="User Dashboard";
@@ -160,6 +169,10 @@ public class CustomLoginController {
                 receptionSystemUser.setUserRoll(UserRoll.RECEPTIONIST);
                 receptionSystemUser.setReceptionist(receptionRecord);
                 Main.setCurrentSystemUser(receptionSystemUser);
+                userLoginLog = new UserLoginLog(LocalDate.now(),
+                        LocalTime.now(),
+                        userLogin_userName.getText(),
+                        UserRoll.RECEPTIONIST);
                 ReceptionMainViewController receptionMainViewController = loader.getController();
                 receptionMainViewController.setCurrentreceptionist(receptionRecord);
                 dashBoardTitile="Receptionist Dashboard";
@@ -173,6 +186,10 @@ public class CustomLoginController {
                 adminSysUser.setUserRoll(UserRoll.ADMIN);
                 adminSysUser.setAdmin(adminDetails);
                 Main.setCurrentSystemUser(adminSysUser);
+                userLoginLog = new UserLoginLog(LocalDate.now(),
+                        LocalTime.now(),
+                        userLogin_userName.getText(),
+                        UserRoll.ADMIN);
                 adminMainController.setCurrentAdmin(adminDetails);
                 dashBoardTitile="Admin Dashboard";
                 break;
@@ -182,6 +199,10 @@ public class CustomLoginController {
                 medicalSysUser.setUserRoll(UserRoll.MEDICALOFFICER);
                 medicalSysUser.setMedicalOfficer(medicalOfficer);
                 Main.setCurrentSystemUser(medicalSysUser);
+                userLoginLog = new UserLoginLog(LocalDate.now(),
+                        LocalTime.now(),
+                        userLogin_userName.getText(),
+                        UserRoll.MEDICALOFFICER);
                 MedicalOfficerController medicalOfficerController = loader.getController();
                 medicalOfficerController.setCurrentmedicalofficer(medicalOfficer);
                 dashBoardTitile="Medical Officer Dashboard";
@@ -189,6 +210,9 @@ public class CustomLoginController {
             default:
                 break;
         }
+        SystemDataWriter systemDataWriter=new SystemDataWriter();
+        systemDataWriter.writeDataToFile(userLoginLog.toString(),userLogFile,5);
+
         dashBoardStage.setTitle(dashBoardTitile);
         dashBoardStage.setResizable(false);
         dashBoardStage.show();
