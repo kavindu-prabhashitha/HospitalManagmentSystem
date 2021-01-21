@@ -55,37 +55,53 @@ public class CustomLoginController {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                //get data from the view and store it int variables
-                String inputUserName = userLogin_userName.getText().trim();
-                String inputPassword = userLogin_userPassword.getText().trim();
-
-                int i = UserAction.verifyLogin(inputUserName,inputPassword, userRoll.toLowerCase().trim());
-
-                if (i == 1){
-                    switch (userRoll){
-                        case "Admin":
-                            openDashBoard("adminMainView");
-                            break;
-                        case "Reception":
-                            openDashBoard("receptionistMainView");
-                            break;
-                        case "Patient":
-                            openDashBoard("patientMainView");
-                            break;
-                        case "MedicalOfficer":
-                            openDashBoard("medicalOfficerView");
-                            break;
-
-                        default:
-                            customLogin_invalidMessage.setText("Invalid User Input !!!");
-
-                    }
+                if (userLogin_userName.getText().length() <= 0) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null, "User Name is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (userLogin_userPassword.getText().length() <= 0) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null, "Password is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    customLogin_invalidMessage.setText("Invalid User Input !!!");
+
+                    //get data from the view and store it int variables
+                    String inputUserName = userLogin_userName.getText().trim();
+                    String inputPassword = userLogin_userPassword.getText().trim();
+
+                    int i = UserAction.verifyLogin(inputUserName,inputPassword, userRoll.toLowerCase().trim());
+
+                    if (i == 1){
+                        switch (userRoll){
+                            case "Admin":
+                                openDashBoard("adminMainView");
+                                break;
+                            case "Reception":
+                                openDashBoard("receptionistMainView");
+                                break;
+                            case "Patient":
+                                openDashBoard("patientMainView");
+                                break;
+                            case "MedicalOfficer":
+                                openDashBoard("medicalOfficerView");
+                                break;
+
+                            default:
+                                customLogin_invalidMessage.setText("Invalid User Input !!!");
+
+                        }
+                    }
+                    else {
+                        Toolkit.getDefaultToolkit().beep();
+                        customLogin_invalidMessage.setText("Invalid User Input !!!");
+                        JOptionPane.showMessageDialog(null, "Invalid User Input", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+
+
             }
         });
+
         userLogin_backButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -155,7 +171,7 @@ public class CustomLoginController {
                 systemUser.setPatient(patientDetails);
                 Main.setCurrentSystemUser(systemUser);
                 userLoginLog = new UserLoginLog(LocalDate.now(),
-                        Main.getLocalTimeFromString(LocalTime.now().toString()),
+                        LocalTime.now(),
                         userLogin_userName.getText(),
                         UserRoll.PATIENT);
                 PatientViewController patientViewController = loader.getController();
