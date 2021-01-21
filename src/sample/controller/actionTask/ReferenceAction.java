@@ -15,7 +15,6 @@ public class ReferenceAction {
     public static final String referenceFile = "src/sample/fileStorage/moduleData/referenceData.txt";
 
     //Constant Value arrays
-
     public static ArrayList<UserRoll> userRolls =new ArrayList<>();
     public static ArrayList<Gender> gender = new ArrayList<>();
     public static ArrayList<BloodGroup> bloogGroup = new ArrayList<>();
@@ -25,14 +24,14 @@ public class ReferenceAction {
     public static ArrayList<String> complaintRefStringArrayList = new ArrayList<>();
     public static ArrayList<String> doctorSpecialityStringList = new ArrayList<>();
 
-    //Changable type Arrays
+    //Changeable type Arrays
     public static ArrayList<Reference> complaintRefArrayList = new ArrayList<>();
     public static ArrayList<Reference> doctorSpecialityArray = new ArrayList<>();
 
 
 /*
 =======================================================================================================================
-=============   Complaint Type and Speciallity type Reference
+                              Complaint Type and Speciality type Reference
 =======================================================================================================================
  */
 
@@ -58,7 +57,6 @@ public class ReferenceAction {
     setRefDataToStringList();
 }
 
-
     public static void updateReference(Reference reference){
         Object[] options = { "OK", "CANCEL" };
         Toolkit.getDefaultToolkit().beep();
@@ -70,6 +68,7 @@ public class ReferenceAction {
             updateOrDeleteReference(reference,1);
         }
     }
+
     public static void deleteReference(Reference reference){
         Object[] options = { "OK", "CANCEL" };
         Toolkit.getDefaultToolkit().beep();
@@ -88,6 +87,7 @@ public class ReferenceAction {
 
         File file = new File(referenceFile);
         ArrayList<String> tempRefeArrya = new ArrayList<>();
+
         boolean found =false;
         boolean isDeleted =false;
 
@@ -105,11 +105,13 @@ public class ReferenceAction {
                 }else if (operation==1)
                     {
                         System.out.println("matched record found");
-
                         line=newReference.toString();
                         tempRefeArrya.add(line);
+                        JOptionPane.showMessageDialog(null,"Reference Update Successfully");
                         System.out.println("Reference updated success , Line = "+line);
-                    }else {
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null,"Reference Delete Successfully");
                         System.out.println("Reference deleted success , LinerDeleted = "+line);
 
                     }
@@ -145,7 +147,6 @@ public class ReferenceAction {
 
     }
 
-
     private static void writeListToRefFile(String fileName,ArrayList<String> RefArray) {
         File fileNew = new File(fileName);
 
@@ -168,10 +169,9 @@ public class ReferenceAction {
 
     }
 
-
-    /*
+ /*
 =======================================================================================================================
-=============  ********************************************************************************************************
+***********************************************************************************************************************
 =======================================================================================================================
  */
     public static ArrayList<BloodGroup> getBloogGroup() {
@@ -198,6 +198,7 @@ public class ReferenceAction {
     public static ArrayList<String > getComplaintStringArray(){
         return  complaintRefStringArrayList;
     }
+
     public static ArrayList<String> getDocSpecialityStringArray() {
         return doctorSpecialityStringList;
     }

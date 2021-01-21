@@ -11,6 +11,7 @@ public class Complaint {
     private String description;
     private String note;
     private String actiontaken;
+    private String filePath;
 
     public Complaint() {
     }
@@ -18,6 +19,15 @@ public class Complaint {
     public LocalDate getComplaintDate() {
         return complaintDate;
     }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
 
     public void setComplaintDate(LocalDate complaintDate) {
         this.complaintDate = complaintDate;

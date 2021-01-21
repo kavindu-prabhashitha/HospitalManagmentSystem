@@ -1,5 +1,8 @@
 package sample.controller.actionTask;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import org.jetbrains.annotations.NotNull;
 import sample.Main;
 import sample.controller.SystemDataReader;
@@ -12,9 +15,13 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.spec.KeySpec;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -160,14 +167,78 @@ public class UserAction {
       =============================================================================================================*/
 
     //method for add patient data
-    public static void  addPatient(Patient user, UserRoll roll) {
+    public static void addPatient(Patient user,UserRoll roll) {
 
         if (roll.equals(UserRoll.ADMIN) || roll.equals(UserRoll.RECEPTIONIST)) {
             savePatient(user);
+            savePatientPhoto_File(user);
             JOptionPane.showMessageDialog(null,"Record Add Successfully");
             adduserlog(user.getUserRoll(),user.getUserName(),"Patient Record Added");
         }
 
+    }
+
+    //write a method for save Patient photo and file
+    private static void savePatientPhoto_File(Patient patient){
+
+        try{
+
+            String staffId = patient.getIdCardNumber();
+
+            if (patient.getPhotoPath()!=null){
+                String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/patient";
+                String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+
+                File imageFile = new File(patient.getPhotoPath());
+                BufferedImage image = ImageIO.read(imageFile);
+                ImageIO.write(image, "jpg",new File(photoSavePath));
+                System.out.println("Save PHOTO");
+            }else {
+                System.out.println("No Photo");
+            }
+
+            if (patient.getFilePath()!=null){
+                String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/patient";
+                String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+
+                OutputStream savePath = new FileOutputStream(new File(fileSavePath));
+                FileInputStream inputPath = new FileInputStream(patient.getFilePath());
+                PdfReader pdfReader = new PdfReader(inputPath);
+                new PdfStamper(pdfReader, savePath).close();
+                System.out.println("Save PDF");
+            }else {
+                System.out.println("No Pdf");
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete files
+    private static void deleteUserFile(String  userID,String usertype){
+
+        try{
+            String staffId = userID;
+
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/"+usertype;
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+            Files.delete(Path.of(photoSavePath));
+            System.out.println("Delete PHOTO");
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/"+usertype;
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+            System.out.println("Delete PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //method for save patient data
@@ -181,6 +252,14 @@ public class UserAction {
 
     //method for update patient data
     public static void updatePatientRecord(UserRoll userRoll,Patient patientRecord,String searchedID,LoginUser loginUser){
+/*
+        String staffId = patientRecord.getIdCardNumber();
+        String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/patient";
+        String photosavePath = photoPath + "\\" + staffId + ".jpg";
+        if (Files.isReadable(Path.of(photosavePath))){
+            JOptionPane.showMessageDialog(null,"Photo");
+        }
+*/
         if (userRoll.equals(UserRoll.RECEPTIONIST) || userRoll.equals(UserRoll.ADMIN)){
 
             Object[] options = { "OK", "CANCEL" };
@@ -192,6 +271,7 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editPatientRecord(patientDataFilePath,patientRecord,searchedID,loginUser);
+                savePatientPhoto_File(patientRecord);
                 adduserlog(patientRecord.getUserRoll(),patientRecord.getUserName(),"Patient Record Updated");
             }
         }else {
@@ -202,24 +282,24 @@ public class UserAction {
     //method for edit patient data
     private static void editPatientRecord(String filePath,Patient patientEdit,String searchPetientid,LoginUser loginUser){
 
-        Boolean recordFound=false;
+        Boolean recordFound = false;
+
         ArrayList<Patient> updatedPAtientList =new ArrayList<>();
         ArrayList<Patient> allPatientRecord =getAllPatients();
 
         for (int i=0;i<allPatientRecord.size();i++){
             if (allPatientRecord.get(i).getIdCardNumber().equals(searchPetientid)){
                 updatedPAtientList.add(patientEdit);
-                JOptionPane.showMessageDialog(null,"Patient Record Updated Successfully");
+                recordFound=true;
             }
             updatedPAtientList.add(allPatientRecord.get(i));
-            recordFound=true;
         }
 
         SystemDataWriter systemDataWriter =new SystemDataWriter();
         systemDataWriter.writeDataToFile(getStringArrayFromPatientArray(updatedPAtientList),patientDataFilePath,10);
 
         if (recordFound){
-            JOptionPane.showMessageDialog(null,"Patient Record Updated Success");
+            JOptionPane.showMessageDialog(null,"Patient Record Update Successfully");
         }
         else {
             JOptionPane.showMessageDialog(null,
@@ -241,6 +321,7 @@ public class UserAction {
 
     //method for search patient data
     private static Patient searchPatientRecord(String searchTerm, String userName,String password){
+
         Patient foundpatient=null;
         boolean found = false;
 
@@ -261,9 +342,10 @@ public class UserAction {
             if (password==null){
                 JOptionPane.showMessageDialog(null,"Patient Record Found");
             }
-        }else {
+        }
+        else {
             if (password==null){
-                JOptionPane.showMessageDialog(null,"Patient  Record Not Found");
+                JOptionPane.showMessageDialog(null,"Patient Record Not Found");
             }
         }
 
@@ -332,8 +414,71 @@ public class UserAction {
 
         if (roll.equals(UserRoll.ADMIN)){
             saveReceptionist(receptionist);
+            saveReceptionistPhoto_File(receptionist);
             JOptionPane.showMessageDialog(null,"Record Add Successfully");
             adduserlog(receptionist.getUserRoll(),receptionist.getUserName(),"Receptionist Record Added");
+        }
+    }
+
+    //write a method for save Receptionist photo and file
+    private static void saveReceptionistPhoto_File(Receptionist receptionist){
+
+        try{
+
+            String staffId = receptionist.getIdCardNumber();
+
+            if (receptionist.getPhotoPath()!=null){
+                String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/reception";
+                String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+
+                File imagefile = new File(receptionist.getPhotoPath());
+                BufferedImage image = ImageIO.read(imagefile);
+                ImageIO.write(image, "jpg",new File(photoSavePath));
+                System.out.println("Save PHOTO");
+            }else {
+                System.out.println("No Photo");
+            }
+
+            if (receptionist.getFilePath()!=null){
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+
+            OutputStream savePath = new FileOutputStream(new File(fileSavePath));
+            FileInputStream inputPath = new FileInputStream(receptionist.getFilePath());
+            PdfReader pdfReader = new PdfReader(inputPath);
+            new PdfStamper(pdfReader, savePath).close();
+            System.out.println("Save PDF");
+            }else {
+                System.out.println("No Pdf");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete file
+    public static void deleteReceptionistFile(Receptionist receptionist){
+
+        try{
+            String staffId = receptionist.getIdCardNumber();
+
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/reception";
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+            Files.delete(Path.of(photoSavePath));
+            System.out.println("Delete PHOTO");
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+            System.out.println("Delete PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -361,6 +506,7 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editReceptionRecord(receptionist,searchedID,loginUser);
+                saveReceptionistPhoto_File(receptionist);
                 adduserlog(receptionist.getUserRoll(),receptionist.getUserName(),"Receptionist Record Updated");
             }
 
@@ -373,6 +519,7 @@ public class UserAction {
     private static void editReceptionRecord(Receptionist receptionist,String searchPetientid,LoginUser loginUser){
 
         Boolean isUpdated =false;
+
         ArrayList<Receptionist> allReceptionRecords = getAllReceptionist();
         ArrayList<Receptionist> finalEditedArray =new ArrayList<>();
 
@@ -384,9 +531,10 @@ public class UserAction {
             finalEditedArray.add(allReceptionRecords.get(i));
         }
 
-        if (!isUpdated){
+        if (isUpdated){
             JOptionPane.showMessageDialog(null,"Update Successfully");
-        }else {
+        }
+        else {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null,
                     "Record Not Found"+"\nPlease Check ID Number in Search Box",
@@ -438,7 +586,8 @@ public class UserAction {
 
         if (found && !isPassWordPresent){
             JOptionPane.showMessageDialog(null,"Record Found");
-        }else if (!isPassWordPresent){
+        }
+        else if (!isPassWordPresent){
             JOptionPane.showMessageDialog(null,"Record Not Found");
         }
 
@@ -495,10 +644,73 @@ public class UserAction {
 
         if (userRoll.equals(UserRoll.ADMIN)) {
             saveAdmin(admin);
+            saveAdminPhoto_File(admin);
             JOptionPane.showMessageDialog(null,"Record Add Successfully");
         }
         else {
             System.out.println("cannot save");}
+    }
+
+    //write a method for save admin photo and file
+    private static void saveAdminPhoto_File(Admin admin){
+
+        try{
+
+            String staffId = admin.getIdCardNumber();
+
+            if (admin.getPhotoPath()!=null){
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/admin";
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+
+            File imagefile = new File(admin.getPhotoPath());
+            BufferedImage image = ImageIO.read(imagefile);
+            ImageIO.write(image, "jpg",new File(photoSavePath));
+            System.out.println("Save PHOTO");
+            }else {
+                System.out.println("No Photo");
+            }
+
+            if (admin.getFilePath()!=null){
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+
+            OutputStream savePath = new FileOutputStream(new File(fileSavePath));
+            FileInputStream inputPath = new FileInputStream(admin.getFilePath());
+            PdfReader pdfReader = new PdfReader(inputPath);
+            new PdfStamper(pdfReader, savePath).close();
+            System.out.println("Save PDF");
+            }else {
+                System.out.println("No Pdf");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete file
+    public static void deleteAdminFile(Admin admin){
+
+        try{
+            String staffId = admin.getIdCardNumber();
+
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/admin";
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+            Files.delete(Path.of(photoSavePath));
+            System.out.println("Delete PHOTO");
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+            System.out.println("Delete PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //method for save admin data
@@ -524,11 +736,13 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editAdminRecord(adminRecord,searchedID,loginUser);
+                saveAdminPhoto_File(adminRecord);
                 adduserlog(adminRecord.getUserRoll(),adminRecord.getUserName(),"Admin Record Updated");
             }
 
-        }else {
-            System.out.println("acces denied(cannot update)");
+        }
+        else {
+            System.out.println("access denied(cannot update)");
         }
     }
 
@@ -537,7 +751,8 @@ public class UserAction {
 
         ArrayList<Admin> allAdminRecord =getAllAdmin();
         ArrayList<Admin> finalEditedAdminArray=new ArrayList<>();
-        boolean isUpdated=false;
+
+        boolean isUpdated = false;
 
         for (int i=0;i<allAdminRecord.size();i++){
             if (allAdminRecord.get(i).getIdCardNumber().equals(searchAdminRec)){
@@ -554,7 +769,8 @@ public class UserAction {
             systemDataWriter.writeDataToFile(getStringArrayFromAdminArray(finalEditedAdminArray),adminFilePath,10);
             updateUserLoginData(adminloginData,loginUser);
             JOptionPane.showMessageDialog(null,"Update Successfully");
-        }else {
+        }
+        else {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null,
                     "Record Not Found"+"\nPlease Check ID Number in Search Box",
@@ -601,10 +817,10 @@ public class UserAction {
 
         if (found && !PassPresent){
             JOptionPane.showMessageDialog(null,"Record Found");
-        }else if (!PassPresent){
+        }
+        else if (!PassPresent){
             JOptionPane.showMessageDialog(null,"Record Not Found");
         }
-
 
         return searchedAdmin;
     }
@@ -651,15 +867,78 @@ public class UserAction {
 
         if (userRoll.equals(UserRoll.ADMIN)) {
             saveMedicalOfficer(medicalOfficer);
+            saveMedicalOfficerPhoto_File(medicalOfficer);
             JOptionPane.showMessageDialog(null,"Record Add Successfully");
         }
 
+    }
+
+    //write a method for save medicalofficer photo and file
+    private static void saveMedicalOfficerPhoto_File(MedicalOfficer medicalOfficer){
+
+        try{
+            String staffId = medicalOfficer.getIdCardNumber();
+
+            if (medicalOfficer.getPhotoPath()!=null){
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/medicalOfficer";
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+
+            File imagefile = new File(medicalOfficer.getPhotoPath());
+            BufferedImage image = ImageIO.read(imagefile);
+            ImageIO.write(image, "jpg",new File(photoSavePath));
+            System.out.println("Save PHOTO");
+            }else {
+                System.out.println("No Photo");
+            }
+
+            if (medicalOfficer.getFilePath()!=null){
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+
+            OutputStream savePath = new FileOutputStream(new File(fileSavePath));
+            FileInputStream inputPath = new FileInputStream(medicalOfficer.getFilePath());
+            PdfReader pdfReader = new PdfReader(inputPath);
+            new PdfStamper(pdfReader, savePath).close();
+            System.out.println("Save PDF");
+            }else {
+                System.out.println("No Pdf");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete file
+    public static void deleteMedicalOfficerFile(MedicalOfficer medicalOfficer){
+
+        try{
+            String staffId = medicalOfficer.getIdCardNumber();
+
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/medicalOfficer";
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+            Files.delete(Path.of(photoSavePath));
+            System.out.println("Delete PHOTO");
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+            System.out.println("Delete PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //method for save medicalofficer data
     private static void saveMedicalOfficer(MedicalOfficer medicalOfficer) {
      SystemDataWriter systemDataWriter=new SystemDataWriter();
      systemDataWriter.writeDataToFile(medicalOfficer.toString(),medicalOfficerFilePath,5);
+     addUserLoginData(medicalLoginData,new LoginUser(medicalOfficer.getUserName(),medicalOfficer.getUserPassword()));
      adduserlog(medicalOfficer.getUserRoll(),medicalOfficer.getUserName(),"MedicalOfficer record Added ");
     }
 
@@ -677,6 +956,7 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 editMedicalOfficerRecord(medicalOfficerRecord,searchedID,loginUser);
+                saveMedicalOfficerPhoto_File(medicalOfficerRecord);
             }
 
         }
@@ -701,12 +981,14 @@ public class UserAction {
         }
 
         if (recordUpdated){
+
             SystemDataWriter systemDataWriter =new SystemDataWriter();
             systemDataWriter.writeDataToFile(getStringArrayFromMedicalArray(finalEditedMedicalArray),medicalOfficerFilePath,10);
             updateUserLoginData(medicalLoginData,loginUser);
             adduserlog(UserRoll.MEDICALOFFICER,loginUser.getUserName(),"MedicalOfficer Record Updated");
             JOptionPane.showMessageDialog(null,"Update Successfully");
-        }else {
+        }
+        else {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null,
                     "Record Not Found"+"\nPlease Check ID Number in Search Box",
@@ -739,14 +1021,15 @@ public class UserAction {
             boolean isSearchTermMatched= allMedicalOfficer.get(i).getIdCardNumber().equals(seachTermOrUserName);
 
             if (isPassMatched||isSearchTermMatched){
-                found=true;
                 searchedMedicalOfficer =allMedicalOfficer.get(i);
+                found=true;
             }
         }
 
-        if (found && !passPresent){
+        if (found){
             JOptionPane.showMessageDialog(null,"Record Found");
-        }else if ( !passPresent){
+        }
+        else{
             JOptionPane.showMessageDialog(null,"Record Not Found");
         }
 
@@ -825,6 +1108,7 @@ public class UserAction {
 
             if (selectedValue == JOptionPane.WHEN_FOCUSED) {
                 removeUserRecord(patientDataFilePath,searchTerm,loginUser,patientloginData);
+                deleteUserFile(searchTerm,"patient");
             }
 
         }
@@ -841,6 +1125,7 @@ public class UserAction {
                     case ADMIN:
                         removeUserRecord(adminFilePath,searchTerm,loginUser,adminloginData);
                         adduserlog(UserRoll.ADMIN,loginUser.getUserName(),"Admin Record deleted");
+                        deleteUserFile(searchTerm,"admin");
 
                         break;
                     case RECEPTIONIST:

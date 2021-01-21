@@ -4,8 +4,13 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.validation.NumberValidator;
+import com.jfoenix.validation.RegexValidator;
+import com.jfoenix.validation.StringLengthValidator;
+import javafx.application.HostServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -15,11 +20,21 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import sample.Main;
+import sample.controller.actionTask.AppointmentAction;
 import sample.controller.actionTask.ComplaintAction;
+import sample.controller.actionTask.PostalAction;
 import sample.controller.actionTask.ReferenceAction;
+import sample.model.Appointment;
+import sample.model.AppointmentStatus;
 import sample.model.Complaint;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -120,9 +135,21 @@ public class ComplaintViewController {
     @FXML
     private TableColumn<Complaint, String> Cview_TactionTaken;
 
+    @FXML
+    private Label CView_UploadFile_Path;
+
+    @FXML private Window primaryStage;
+
 
     @FXML
     void initialize() {
+
+        //Validate input Data
+        validateInitialize();
+
+        //Reset all Data
+        resetDisplay();
+
         currentComplaint =new Complaint();
         Cview_DateCurrent.setText(Main.getStringfromLocalDate(LocalDate.now()));
         Cview_complaintDropDown.getItems().addAll(ReferenceAction.getComplaintStringArray());
@@ -130,24 +157,118 @@ public class ComplaintViewController {
         Cview_addBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                ComplaintAction.addComplaintRecord(getInitialComplaintData());
-                resetDisplay();
+
+                if(checkInputs()) {
+
+                    if(validateInputs()){
+                        if (CView_UploadFile_Path.getText() == null){
+                            Object[] options = { "OK", "CANCEL" };
+                            Toolkit.getDefaultToolkit().beep();
+                            int selectedValue = JOptionPane.showOptionDialog(null,
+                                    "Do You Want to Add This Record With Out Document", "Warning",
+                                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                    null, options, options[0]);
+
+                            if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+                                ComplaintAction.addComplaintRecord(getInitialComplaintData());
+                                resetDisplay();
+                            }
+                        }else {
+                            ComplaintAction.addComplaintRecord(getInitialComplaintData());
+                            resetDisplay();
+                        }
+                    }
+                    else {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
+
             }
         });
 
         Cview_updateBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                ComplaintAction.updateComplaintRecord(getComplaintDetails());
-                resetDisplay();
+
+                if (Cview_complaintID.getText()==null){
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter Complaint ID and Search"+"\nor\n"+"Please Select a Complaint from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else if(checkInputs()){
+
+                    if(validateInputs()){
+                        ComplaintAction.updateComplaintRecord(getComplaintDetails());
+                        resetDisplay();
+                    }
+                    else {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
         });
 
         Cview_deleteBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                ComplaintAction.deleteComplaintRecord(getComplaintDetails());
-                resetDisplay();
+
+            /*    if ((Cview_idSearchFiled.getText().length() <= 0) && (Cview_mainTable.getSelectionModel().getSelectedIndex() < 0)){
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter Complaint ID and Search"+"\nor\n"+"Please Select a Complaint from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
+                } */
+                if (Cview_complaintID.getText()==null){
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter Complaint ID and Search"+"\nor\n"+"Please Select a Complaint from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    ComplaintAction.deleteComplaintRecord(getComplaintDetails());
+                    resetDisplay();
+                }
+
+            }
+        });
+
+        Cview_searchButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
+                if (Cview_idSearchFiled.getText().length() <= 0) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null,
+                            "Complaint ID is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else{
+                    String searchTerm =Cview_idSearchFiled.getText();
+                    Complaint foundComplaint = ComplaintAction.searchComplaintRecord(searchTerm,searchTerm);
+                    setComplaintViewData(foundComplaint);
+                    displayComplaintDetails(foundComplaint);
+
+                }
+            }
+        });
+
+        Cview_uploadFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                FileChooser fileChooser = new FileChooser();
+                // Set title for FileChooser
+                fileChooser.setTitle("Select File");
+                // Add Extension Filters
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+
+                File file = fileChooser.showOpenDialog(primaryStage);
+                CView_UploadFile_Path.setText(file.getAbsolutePath());
+
             }
         });
 
@@ -176,15 +297,6 @@ public class ComplaintViewController {
             }
         });
 
-        Cview_searchButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                String searchTerm =Cview_idSearchFiled.getText();
-                Complaint foundComplaint = ComplaintAction.searchComplaintRecord(searchTerm,searchTerm);
-                setComplaintViewData(foundComplaint);
-                displayComplaintDetails(foundComplaint);
-            }
-        });
     }
 
     public Complaint getInitialComplaintData(){
@@ -196,6 +308,7 @@ public class ComplaintViewController {
         newComplaint.setPhoneNumber(Cview_phoneNumber.getText());
         newComplaint.setDescription(Cview_description.getText());
         newComplaint.setNote(Cview_note.getText());
+        newComplaint.setFilePath(CView_UploadFile_Path.getText());
         newComplaint.setActiontaken("PENDING");
 
         return newComplaint;
@@ -210,6 +323,7 @@ public class ComplaintViewController {
         complaint.setDescription(Cview_description.getText());
         complaint.setNote(Cview_note.getText());
         complaint.setActiontaken(Cview_actionTaken.getText());
+        complaint.setFilePath(CView_UploadFile_Path.getText());
 
         return complaint;
     }
@@ -225,6 +339,7 @@ public class ComplaintViewController {
         Cview_complaitBy.setText(null);
         Cview_actionTaken.setText(null);
         Cview_note.setText(null);
+        CView_UploadFile_Path.setText(null);
     }
 
     public void setComplaintViewData(Complaint complaintRecord){
@@ -269,4 +384,117 @@ public class ComplaintViewController {
 
         Cview_mainTable.setItems(observableList);
     }
+
+
+    public void validateInitialize(){
+
+        //Check Input Field Of is text
+        RegexValidator regexValidator = new RegexValidator();
+        regexValidator.setRegexPattern("[A-Za-z\\s]+");
+        regexValidator.setMessage("Only Text");
+
+        Cview_complaitBy.getValidators().add(regexValidator);
+        Cview_complaitBy.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Cview_complaitBy.validate();
+        });
+        Cview_description.getValidators().add(regexValidator);
+        Cview_description.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Cview_description.validate();
+        });
+        Cview_actionTaken.getValidators().add(regexValidator);
+        Cview_actionTaken.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Cview_actionTaken.validate();
+        });
+
+        //Check Input Field Of Phone Number is number
+        NumberValidator numbValid = new NumberValidator();
+        numbValid.setMessage("Only Number");
+        Cview_phoneNumber.getValidators().add(numbValid);
+        Cview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Cview_phoneNumber.validate();
+        });
+
+        //Check Length Of Phone Number
+        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+        Cview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Cview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Cview_phoneNumber.validate();
+        });
+
+    }
+
+    public Boolean validateInputs(){
+
+        boolean dataInputs = false;
+
+        //Check Input Field Of is text
+        RegexValidator regexValidator = new RegexValidator();
+        regexValidator.setRegexPattern("[A-Za-z\\s]+");
+        regexValidator.setMessage("Only Text");
+
+        Cview_complaitBy.getValidators().add(regexValidator);
+        Cview_complaitBy.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Cview_complaitBy.validate();
+        });
+        Cview_description.getValidators().add(regexValidator);
+        Cview_description.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Cview_description.validate();
+        });
+        Cview_actionTaken.getValidators().add(regexValidator);
+        Cview_actionTaken.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Cview_actionTaken.validate();
+        });
+
+        //Check Input Field Of Phone Number is number
+        NumberValidator numbValid = new NumberValidator();
+        numbValid.setMessage("Only Number");
+        Cview_phoneNumber.getValidators().add(numbValid);
+        Cview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Cview_phoneNumber.validate();
+        });
+
+        //Check Length Of Phone Number
+        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+        Cview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Cview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Cview_phoneNumber.validate();
+        });
+
+        if (Cview_complaitBy.validate() && Cview_phoneNumber.validate() && Cview_description.validate() && Cview_actionTaken.validate()){
+            dataInputs = true;
+        }
+        return dataInputs;
+    }
+
+    public Boolean checkInputs(){
+
+        boolean allCheck =false;
+
+        if (Cview_complaintDropDown.getSelectionModel().getSelectedIndex() < 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Complaint Type is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Cview_complaitBy.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Complainer is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Cview_phoneNumber.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Phone Number is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Cview_description.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Description is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Cview_note.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Note is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            allCheck = true;
+        }
+        return allCheck;
+    }
+
+
 }

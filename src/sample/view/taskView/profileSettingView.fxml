@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
@@ -23,15 +24,16 @@
             <Font size="32.0" />
          </font>
       </Label>
-      <Pane layoutX="611.0" layoutY="27.0" prefHeight="234.0" prefWidth="214.0">
+      <Pane layoutX="572.0" layoutY="16.0" prefHeight="245.0" prefWidth="262.0">
          <children>
-            <ImageView fitHeight="188.0" fitWidth="188.0" layoutX="9.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="200.0" fitWidth="200.0" layoutX="31.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../assets/profilePics/default-profile-picture.jpg" />
                </image>
             </ImageView>
-            <Label fx:id="profile_userNameLabel" layoutX="10.0" layoutY="185.0" prefHeight="26.0" prefWidth="169.0" style="-fx-background-color: #11999e;" text="User Name" textFill="WHITE" />
-            <JFXButton fx:id="profile_changePicButton" layoutX="150.0" layoutY="167.0" style="-fx-background-color: green;" text="Change" textFill="WHITE" />
+            <HBox fx:id="profile_userPhoto" layoutX="31.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" />
+            <Label fx:id="profile_userNameLabel" layoutX="31.0" layoutY="213.0" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: #11999e;" text="User Photo" textFill="WHITE" />
+            <JFXButton fx:id="profile_changePicButton" layoutX="190.0" layoutY="186.0" opacity="0.0" style="-fx-background-color: green;" text="Change" textFill="WHITE" />
          </children>
       </Pane>
       <AnchorPane layoutY="646.0" prefHeight="40.0" prefWidth="850.0">
@@ -93,7 +95,7 @@
             <Label prefHeight="25.0" prefWidth="76.0" text="Allergies" GridPane.rowIndex="1" />
          </children>
       </GridPane>
-      <GridPane fx:id="profileView_empExtraGrid" layoutX="464.0" layoutY="288.0" prefHeight="113.0" prefWidth="348.0">
+      <GridPane fx:id="profileView_empExtraGrid" layoutX="464.0" layoutY="340.0" prefHeight="113.0" prefWidth="348.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="169.0" minWidth="10.0" prefWidth="138.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="219.0" minWidth="10.0" prefWidth="210.0" />
@@ -112,7 +114,7 @@
             <DatePicker fx:id="profile_dateOfJoin" prefHeight="25.0" prefWidth="199.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
-      <GridPane fx:id="profileView_doctorExtraGrid" layoutX="464.0" layoutY="426.0" prefHeight="25.0" prefWidth="354.0">
+      <GridPane fx:id="profileView_doctorExtraGrid" layoutX="464.0" layoutY="470.0" prefHeight="25.0" prefWidth="354.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="172.0" minWidth="10.0" prefWidth="140.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="214.0" minWidth="10.0" prefWidth="214.0" />
@@ -125,5 +127,11 @@
             <Label prefHeight="25.0" prefWidth="76.0" text="Speciality" />
          </children>
       </GridPane>
+      <Label layoutX="464.0" layoutY="303.0" prefHeight="25.0" prefWidth="130.0" text="Open User Document" />
+      <JFXButton fx:id="profile_OpenDocument" layoutX="600.0" layoutY="305.0" prefHeight="2.0" prefWidth="82.0" style="-fx-background-color: silver;" text="OPEN">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </JFXButton>
    </children>
 </AnchorPane>

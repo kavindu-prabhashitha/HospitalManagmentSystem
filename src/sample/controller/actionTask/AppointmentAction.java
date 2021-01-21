@@ -5,6 +5,8 @@ import sample.controller.SystemDataReader;
 import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.*;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,17 +17,39 @@ public class AppointmentAction {
 
     public static void addAppointment(Appointment appointment){
         saveAppointment(appointment);
+        JOptionPane.showMessageDialog(null,"Appointment Add Successfully");
         System.out.println("Appointment saved success");
     }
 
     public static void updateAppointment(Appointment appointment){
-        updateDeleteAppointment(appointment,1);
-        System.out.println("Appointment updated success");
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            updateDeleteAppointment(appointment,1);
+            System.out.println("Appointment updated success");
+        }
+
     }
 
     public static void deleteAppointment(Appointment appointment){
-        updateDeleteAppointment(appointment,10);
-        System.out.println("Appointment delete success");
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null,
+                "Are You Sure Delete This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            updateDeleteAppointment(appointment,10);
+            System.out.println("Appointment delete success");
+        }
+
     }
 
 
@@ -122,13 +146,25 @@ public class AppointmentAction {
     }
 
     private static Appointment searchAppointment(int id){
+
+        boolean isFound = false;
+
         Appointment foundAppointment = new Appointment();
         ArrayList<Appointment> allRecords = getAppointmentArrayList();
         for (int i=0;i<allRecords.size();i++){
             if (allRecords.get(i).getAppointmentID() == id){
                 foundAppointment = allRecords.get(i);
+                isFound= true;
                 break;
             }
+        }
+        if(isFound){
+            //found
+            JOptionPane.showMessageDialog(null,"Appointment Found");
+        }
+        else{
+            //not found
+            JOptionPane.showMessageDialog(null,"Appointment Not Found");
         }
         return foundAppointment;
     }
@@ -141,12 +177,16 @@ public class AppointmentAction {
         for (int i=0;i<allAppRecords.size();i++){
             if (!(allAppRecords.get(i).getAppointmentID() == updatedAppointment.getAppointmentID())){
                 newAppointmentArray.add(allAppRecords.get(i));
-            }else {
+            }
+            else {
                 if (operation==1){
                     newAppointmentArray.add(updatedAppointment);
+                    JOptionPane.showMessageDialog(null,"Appointment Update Successfully");
                     System.out.println("Appointment updated success");
-                }else {
-                    System.out.println("Appointment Deleted succes");
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Appointment Delete Successfully");
+                    System.out.println("Appointment Deleted success");
                 }
 
             }

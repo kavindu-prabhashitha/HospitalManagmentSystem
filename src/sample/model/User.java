@@ -16,6 +16,22 @@ public abstract class User extends SystemUser{
     private String maritalStatus;
     private String userPassword;
 
+    private String photoPath;
+    private String filePath;
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+    public String getFilePath() {
+        return filePath;
+    }
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
     public UserRoll getUserRoll() {
         return userRoll;
     }

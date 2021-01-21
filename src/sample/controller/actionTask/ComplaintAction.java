@@ -1,10 +1,19 @@
 package sample.controller.actionTask;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import sample.Main;
 import sample.controller.SystemDataReader;
 import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.Complaint;
+import sample.model.Postal;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,14 +24,81 @@ public class ComplaintAction {
 
     public static void addComplaintRecord(Complaint complaint){
         addComplaint(complaint);
+        saveFile(complaint);
+        JOptionPane.showMessageDialog(null,"Complaint Add Successfully");
     }
 
     public static void updateComplaintRecord(Complaint complaint){
-        editDeleteComplaint(complaint,1);
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            editDeleteComplaint(complaint,1);
+            saveFile(complaint);
+        }
+
     }
 
     public static void deleteComplaintRecord(Complaint complaint){
-        editDeleteComplaint(complaint,10);
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Delete This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            editDeleteComplaint(complaint,10);
+            deleteFile(complaint);
+        }
+
+    }
+
+    //write a method for save file
+    public static void saveFile(Complaint complaint){
+
+        try{
+            int referenceNo = complaint.getComplaintID();
+
+            if (complaint.getFilePath()!=null){
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/complaintData";
+            String fileSavePath = moFilePath + "\\" + referenceNo + ".pdf";
+
+            OutputStream savePath = new FileOutputStream(new File(fileSavePath));
+            FileInputStream inputPath = new FileInputStream(complaint.getFilePath());
+            PdfReader pdfReader = new PdfReader(inputPath);
+            new PdfStamper(pdfReader, savePath).close();
+            System.out.println("Save PDF");
+            }else {
+                System.out.println("No Pdf");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete file
+    public static void deleteFile(Complaint complaint){
+
+        try{
+            int referenceNo = complaint.getComplaintID();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/complaintData";
+            String fileSavePath = moFilePath + "\\" + referenceNo + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+
+            System.out.println("Delete PDF");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static Complaint searchComplaintRecord(String complaintID,String complaintBy){
@@ -34,14 +110,26 @@ public class ComplaintAction {
     }
 
     private static Complaint searchComplaint(String complaintID, String vName){
+
+        boolean isFound = false;
+
         ArrayList<Complaint> allComplaint =getAllComplaints();
         Complaint foundComplaint =null;
         for (int i=0;i<allComplaint.size();i++){
-            if (String.valueOf(allComplaint.get(i).getComplaintID()).equals(complaintID) ||
-                    allComplaint.get(i).getComplaintBy().equals(vName)){
+            if (String.valueOf(allComplaint.get(i).getComplaintID()).equals(complaintID) || allComplaint.get(i).getComplaintBy().equals(vName)){
                 foundComplaint=allComplaint.get(i);
+                isFound= true;
                 System.out.println("Complaint Record Found in Complaint file");
             }
+        }
+
+        if(isFound){
+            //found
+            JOptionPane.showMessageDialog(null,"Complaint Found");
+        }
+        else{
+            //not found
+            JOptionPane.showMessageDialog(null,"Complaint Not Found");
         }
 
         return foundComplaint;
@@ -63,8 +151,11 @@ public class ComplaintAction {
             if (tempComplaint.getComplaintID() == complaint.getComplaintID()){
                 if(operationType==1){
                     finalEditedDataArray.add(complaint);
+                    JOptionPane.showMessageDialog(null,"Complaint Update Successfully");
                     System.out.println("Complaint Update Record added Success");
-                }else {
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Complaint Delete Successfully");
                     System.out.println("Complaint Deleted Success");
                 }
             }

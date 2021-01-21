@@ -8,7 +8,6 @@ public abstract class Employee extends User{
     private int staffID;
     private String staffEmailAddress;
     private LocalDate dateOfJoining;
-    private Image staffPhoto;
 
     public int getStaffID() {
         return staffID;
@@ -20,10 +19,6 @@ public abstract class Employee extends User{
 
     public LocalDate getDateOfJoining() {
         return dateOfJoining;
-    }
-
-    public Image getStaffPhoto() {
-        return staffPhoto;
     }
 
     public void setStaffID(int staffID) {
@@ -38,9 +33,7 @@ public abstract class Employee extends User{
         this.dateOfJoining = dateOfJoining;
     }
 
-    public void setStaffPhoto(Image staffPhoto) {
-        this.staffPhoto = staffPhoto;
-    }
+
 
     @Override
     public String toString() {
