@@ -1,6 +1,7 @@
 package sample.controller.taskControllers;
 
 import com.jfoenix.controls.*;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
@@ -13,8 +14,19 @@ import sample.controller.actionTask.ReferenceAction;
 import sample.controller.actionTask.UserAction;
 import sample.model.*;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ResourceBundle;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+
+import javax.swing.*;
 
 public class ProfileViewController {
 
@@ -46,6 +58,8 @@ public class ProfileViewController {
     @FXML private GridPane profileView_doctorExtraGrid;
     @FXML private JFXComboBox<String> profile_specialityDrop;
     @FXML private JFXComboBox<String> profile_maritalDrop;
+    @FXML private HBox profile_userPhoto;
+    @FXML private JFXButton profile_OpenDocument;
 
 
     @FXML void initialize() {
@@ -56,6 +70,7 @@ public class ProfileViewController {
         profile_bloodGropDrop.getItems().addAll(ReferenceAction.getBloogGroup());
         System.out.println("initialize() in profileViewController currentUser"+ Main.getCurrentSystemUser());
         setUserProfileData(Main.getCurrentSystemUser());
+
 
         profile_editProfileButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -106,6 +121,15 @@ public class ProfileViewController {
             }
         });
 
+        profile_OpenDocument.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                setUserDocument(Main.getCurrentSystemUser());
+
+            }
+        });
+
     }
 
     public void setInitialView(){
@@ -119,19 +143,23 @@ public class ProfileViewController {
             case ADMIN :
                 setViewForAdmin();
                 setAdminDataToView(systemUser.getAdmin());
+                viewAdminPhoto(systemUser.getAdmin());
                 break;
             case RECEPTIONIST:
                 setViewForReception();
                 setReceptionDataToView(systemUser.getReceptionist());
+                viewReceptionPhoto(systemUser.getReceptionist());
                 break;
             case PATIENT:
                 System.out.println("setUser for patient called");
                 setViewForPatient();
                 setPatientDataToView(systemUser.getPatient());
+                viewPatientPhoto(systemUser.getPatient());
                 break;
             case MEDICALOFFICER:
                 setViewForMedicalOfficer();
                 setMedicalDataToView(systemUser.getMedicalOfficer());
+                viewMedicalOfficerPhoto(systemUser.getMedicalOfficer());
                 break;
             default:
                 break;
@@ -139,7 +167,27 @@ public class ProfileViewController {
         }
     }
 
-    private void setAdminDataToView(Admin admin) {
+    public void setUserDocument(SystemUser systemUser){
+
+        switch (systemUser.getUserRoll()){
+            case ADMIN :
+                viewAdminFile(systemUser.getAdmin());
+                break;
+            case RECEPTIONIST:
+                viewReceptionFile(systemUser.getReceptionist());
+                break;
+            case PATIENT:
+                viewPatientFile(systemUser.getPatient());
+                break;
+            case MEDICALOFFICER:
+                viewMedicalOfficerFile(systemUser.getMedicalOfficer());
+                break;
+        }
+
+    }
+
+    //write a method for view Admin Data
+    private void setAdminDataToView(Admin admin){
         profile_name.setText(admin.getName());
         profile_nicNumber.setText(admin.getIdCardNumber());
         profile_phoneNumber.setText(admin.getPhoneNumber());
@@ -151,6 +199,58 @@ public class ProfileViewController {
         profile_userPassword.setText(UserAction.decryptUserData(admin.getUserPassword()));
     }
 
+    //write a method for view Admin photo
+    private void viewAdminPhoto(Admin admin) {
+
+        try {
+            String staffId = admin.getIdCardNumber();
+
+            String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/admin";
+            String photosavePath = photoPath + "\\" + staffId + ".jpg";
+
+            if (Files.isReadable(Path.of(photosavePath))){
+                FileInputStream imageStream = new FileInputStream(photosavePath);
+                Image image = new Image(imageStream);
+                ImageView view = new ImageView();
+                view.setImage(image);
+                view.setFitWidth(200);
+                view.setFitHeight(200);
+                view.setSmooth(true);
+                //view.setPreserveRatio(true);
+                profile_userPhoto.getChildren().add(view);
+                System.out.println("Preview PHOTO");
+            }else {
+                System.out.println("No Profile Photo");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for view Admin File
+    private void viewAdminFile(Admin admin) {
+
+        try {
+
+            String staffId = admin.getIdCardNumber();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            if (Files.isReadable(Path.of(fileSavePath))){
+                Desktop.getDesktop().open(new File(fileSavePath));
+            }else {
+                JOptionPane.showMessageDialog(null,"NO Document");
+            }
+            System.out.println("Preview PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //write a method for view Patient Data
     public void setPatientDataToView(Patient passPatient){
         System.out.println( "setViewForPatient();-----> method called");
         profile_name.setText(passPatient.getName());
@@ -165,6 +265,58 @@ public class ProfileViewController {
         profile_allergies.setText(passPatient.getAllergies());
     }
 
+    //write a method for view Patient photo
+    private void viewPatientPhoto(Patient patient) {
+
+        try {
+
+            String staffId = patient.getIdCardNumber();
+
+            String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/patient";
+            String photosavePath = photoPath + "\\" + staffId + ".jpg";
+
+            if (Files.isReadable(Path.of(photosavePath))){
+                FileInputStream imageStream = new FileInputStream(photosavePath);
+                Image image = new Image(imageStream);
+                ImageView view = new ImageView();
+                view.setImage(image);
+                view.setFitWidth(200);
+                view.setFitHeight(200);
+                view.setSmooth(true);
+                //view.setPreserveRatio(true);
+                profile_userPhoto.getChildren().add(view);
+                System.out.println("Preview PHOTO");
+            }else {
+                System.out.println("No Profile Photo");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for view Patient File
+    private void viewPatientFile(Patient patient) {
+
+        try {
+
+            String staffId = patient.getIdCardNumber();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/patient";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            if (Files.isReadable(Path.of(fileSavePath))){
+                Desktop.getDesktop().open(new File(fileSavePath));
+            }else {
+                JOptionPane.showMessageDialog(null,"NO Document");
+            }
+            System.out.println("Preview PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //write a method for view Reception Data
     public void setReceptionDataToView(Receptionist currentReceptionist){
         profile_name.setText(currentReceptionist.getName());
         profile_nicNumber.setText(currentReceptionist.getIdCardNumber());
@@ -179,6 +331,59 @@ public class ProfileViewController {
         profile_dateOfJoin.setValue(currentReceptionist.getDateOfJoining());
     }
 
+    //write a method for view Reception photo
+    private void viewReceptionPhoto(Receptionist receptionist) {
+
+        try {
+
+            String staffId = receptionist.getIdCardNumber();
+
+            String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/reception";
+            String photosavePath = photoPath + "\\" + staffId + ".jpg";
+
+            if (Files.isReadable(Path.of(photosavePath))){
+                FileInputStream imageStream = new FileInputStream(photosavePath);
+                Image image = new Image(imageStream);
+                ImageView view = new ImageView();
+                view.setImage(image);
+                view.setFitWidth(200);
+                view.setFitHeight(200);
+                view.setSmooth(true);
+                //view.setPreserveRatio(true);
+                profile_userPhoto.getChildren().add(view);
+                System.out.println("Preview PHOTO");
+            }else {
+                System.out.println("No Profile Photo");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for view Reception File
+    private void viewReceptionFile(Receptionist receptionist) {
+
+        try {
+
+            String staffId = receptionist.getIdCardNumber();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            if (Files.isReadable(Path.of(fileSavePath))){
+                Desktop.getDesktop().open(new File(fileSavePath));
+            }else {
+                JOptionPane.showMessageDialog(null,"NO Document");
+            }
+            System.out.println("Preview PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //write a method for view MedicalOfficer Data
     public void setMedicalDataToView(MedicalOfficer medicalOfficerData){
         profile_name.setText(medicalOfficerData.getName());
         profile_nicNumber.setText(medicalOfficerData.getIdCardNumber());
@@ -193,6 +398,59 @@ public class ProfileViewController {
         profile_dateOfJoin.setValue(medicalOfficerData.getDateOfJoining());
         profile_specialityDrop.setValue(medicalOfficerData.getSpeciality());
     }
+
+    //write a method for view MedicalOfficer photo
+    private void viewMedicalOfficerPhoto(MedicalOfficer medicalOfficer) {
+
+        try {
+
+            String staffId = medicalOfficer.getIdCardNumber();
+
+            String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/medicalOfficer";
+            String photoSavePath = photoPath + "\\" + staffId + ".jpg";
+
+            if (Files.isReadable(Path.of(photoSavePath))){
+                FileInputStream imageStream = new FileInputStream(photoSavePath);
+                Image image = new Image(imageStream);
+                ImageView view = new ImageView();
+                view.setImage(image);
+                view.setFitWidth(200);
+                view.setFitHeight(200);
+                view.setSmooth(true);
+                //view.setPreserveRatio(true);
+                profile_userPhoto.getChildren().add(view);
+                System.out.println("Preview PHOTO");
+            }else {
+                System.out.println("No Profile Photo");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for view Reception File
+    private void viewMedicalOfficerFile(MedicalOfficer medicalOfficer) {
+
+        try {
+
+            String staffId = medicalOfficer.getIdCardNumber();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            if (Files.isReadable(Path.of(fileSavePath))){
+                Desktop.getDesktop().open(new File(fileSavePath));
+            }else {
+                JOptionPane.showMessageDialog(null,"NO Document");
+            }
+            System.out.println("Preview PDF");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     private void setViewForAdmin() {
         profileView_patientExtraGrid.setVisible(false);

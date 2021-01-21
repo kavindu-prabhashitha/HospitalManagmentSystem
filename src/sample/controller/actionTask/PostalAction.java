@@ -1,10 +1,23 @@
 package sample.controller.actionTask;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import sample.Main;
 import sample.controller.SystemDataReader;
 import sample.controller.taskControllers.SystemDataWriter;
+import sample.model.Complaint;
+import sample.model.Patient;
 import sample.model.Postal;
 import sample.model.PostalType;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,15 +30,85 @@ public class PostalAction{
 
     public static void addPostaRecord(Postal postal){
         addPostal(postal);
+        saveFile(postal);
+        JOptionPane.showMessageDialog(null,"Postal Record Add Successfully");
     }
 
     public static void updatePostalRecord(Postal postal){
-        System.out.println("passes postal from viewController "+postal);
-        editDeletePostal(postal,1);
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            System.out.println("passes postal from viewController "+postal);
+            editDeletePostal(postal,1);
+            saveFile(postal);
+        }
+
     }
 
     public static void deletePostalRecord(Postal postal){
-        editDeletePostal(postal,5);
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Delete This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            System.out.println("passes postal from viewController "+postal);
+            editDeletePostal(postal,5);
+            deleteFile(postal);
+        }
+
+    }
+
+    //write a method for save file
+    public static void saveFile(Postal postal){
+
+        try{
+
+            int referenceNo = postal.getReferenceNo();
+
+            if (postal.getFilePath()!=null){
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/postalData";
+            String fileSavePath = moFilePath + "\\" + referenceNo + ".pdf";
+
+            OutputStream savePath = new FileOutputStream(new File(fileSavePath));
+            FileInputStream inputPath = new FileInputStream(postal.getFilePath());
+            PdfReader pdfReader = new PdfReader(inputPath);
+            new PdfStamper(pdfReader, savePath).close();
+            System.out.println("Save PDF");
+            }else {
+                System.out.println("No Pdf");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete file
+    public static void deleteFile(Postal postal){
+
+        try{
+            int referenceNo = postal.getReferenceNo();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/postalData";
+            String fileSavePath = moFilePath + "\\" + referenceNo + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+
+            System.out.println("Delete PDF");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static Postal searchPostalRecord(int postalReference){
@@ -55,8 +138,11 @@ public class PostalAction{
             if(getAllPostals.get(i).getReferenceNo()==(postal.getReferenceNo())){
                 if (operation==1){
                     editedorDeletedArray.add(postal);
+                    JOptionPane.showMessageDialog(null,"Postal Record Update Successfully");
                     System.out.println("postal updated success in --->  editDeletePostal() "+postal);
-                }else {
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Postal Record Delete Successfully");
                     System.out.println("postal deleted success");
                 }
             }else {
@@ -72,14 +158,26 @@ public class PostalAction{
     }
 
     private static Postal searchPostal(int searchTerm){
+
+        boolean isFound = false;
+
         ArrayList<Postal> allPostals = getAllPostalFromFile();
         Postal foundPostal =null;
 
         for (int i=0;i<allPostals.size();i++){
             if (allPostals.get(i).getReferenceNo()==(searchTerm)){
                 foundPostal=allPostals.get(i);
+                isFound= true;
                 System.out.println("Record found for search ----->searchTerm "+foundPostal);
             }
+        }
+        if(isFound){
+            //found
+            JOptionPane.showMessageDialog(null,"Postal Record Found");
+        }
+        else{
+            //not found
+            JOptionPane.showMessageDialog(null,"Postal Record Not Found");
         }
 
         return foundPostal;

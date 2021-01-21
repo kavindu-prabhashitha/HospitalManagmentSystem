@@ -4,6 +4,9 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.validation.NumberValidator;
+import com.jfoenix.validation.RegexValidator;
+import com.jfoenix.validation.StringLengthValidator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -15,11 +18,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import sample.Main;
+import sample.controller.actionTask.PostalAction;
 import sample.controller.actionTask.ReferenceAction;
 import sample.controller.actionTask.VisitorAction;
 import sample.model.Gender;
 import sample.model.Visitor;
 
+import javax.swing.*;
+import java.awt.*;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -140,14 +146,112 @@ public class VisitorViewController {
     @FXML
     void initialize() {
 
+        //Validate User Inputs
+        validateInitialize();
+
+        //Reset Label Data
+        Vview_recordID.setText(null);
+
         currentVisitor =new Visitor();
 
-        Vview_gender.getItems().addAll(ReferenceAction.getGender());
+        Vview_searchButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
+                if (Vview_idSearch.getText().length() <= 0) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null, "Search ID is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    ArrayList<Visitor> foundVisitors =VisitorAction.searchVisitorRecords(Vview_idSearch.getText(),null);
+
+                    System.out.println("search term : "+Vview_idSearch.getText()+" found Records : "+foundVisitors);
+                    ObservableList<Visitor> observableList =FXCollections.observableList(foundVisitors);
+                    setTable();
+                    Vview_mainTable.setItems(observableList);
+                }
+
+            }
+        });
+
 
         Vview_addBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                VisitorAction.addVisitorRecord(getInitialVisitorRecord());
+
+                if(checkInputs()) {
+
+                    if(validateInputs()){
+                        VisitorAction.addVisitorRecord(getInitialVisitorRecord());
+                    }
+                    else {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+            }
+        });
+
+        Vview_updateBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
+                if (Vview_recordID.getText()==null){
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter Visitor ID and Search"+"\nor\n"+"Please Select a Record from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else if(checkInputs()){
+
+                    if(validateInputs()){
+                        VisitorAction.updateVisitorRecord(getVisitorRecord());
+                    }
+                    else {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+
+            }
+        });
+
+        Vview_deleteBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+
+                if (Vview_recordID.getText()==null){
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter Reference No and Search"+"\nor\n"+"Please Select a Record from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    VisitorAction.deleteVisitorRecord(getVisitorRecord());
+                    resetDisplay();
+                }
+
+            }
+        });
+
+        Vview_resetBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                resetDisplay();
+            }
+        });
+
+        Vview_inVisitorsBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                resetRecords();
+                ArrayList<Visitor> getINVisitorRecords = VisitorAction.getInVisitorRecords();
+                ObservableList<Visitor> visitorObservableList =FXCollections.observableList(getINVisitorRecords);
+                setTable();
+                Vview_mainTable.setItems(visitorObservableList);
+
             }
         });
 
@@ -161,6 +265,9 @@ public class VisitorViewController {
 
             }
         });
+
+
+        Vview_gender.getItems().addAll(ReferenceAction.getGender());
 
         Vview_inTimeAddBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -181,39 +288,6 @@ public class VisitorViewController {
             }
         });
 
-        Vview_resetBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                resetDisplay();
-            }
-        });
-
-        Vview_searchButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                ArrayList<Visitor> foundVisitors =VisitorAction.searchVisitorRecords(Vview_idSearch.getText(),null);
-
-                System.out.println("search term : "+Vview_idSearch.getText()+" found Records : "+foundVisitors);
-                ObservableList<Visitor> observableList =FXCollections.observableList(foundVisitors);
-                setTable();
-                Vview_mainTable.setItems(observableList);
-            }
-        });
-
-        Vview_updateBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                VisitorAction.updateVisitorRecord(getVisitorRecord());
-            }
-        });
-
-        Vview_deleteBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                VisitorAction.deleteVisitorRecord(getVisitorRecord());
-                resetDisplay();
-            }
-        });
 
         Vview_mainTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -229,17 +303,7 @@ public class VisitorViewController {
             }
         });
 
-        Vview_inVisitorsBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                resetRecords();
-                ArrayList<Visitor> getINVisitorRecords = VisitorAction.getInVisitorRecords();
-                ObservableList<Visitor> visitorObservableList =FXCollections.observableList(getINVisitorRecords);
-                setTable();
-                Vview_mainTable.setItems(visitorObservableList);
 
-            }
-        });
     }
 
     public Visitor getInitialVisitorRecord(){
@@ -377,4 +441,142 @@ public class VisitorViewController {
     public void setCurrentVisitor(Visitor currentVisitor) {
         this.currentVisitor = currentVisitor;
     }
+
+
+    public void validateInitialize(){
+
+        //Check Input Field Of Name is text
+        RegexValidator regexValidator = new RegexValidator();
+        regexValidator.setRegexPattern("[A-Za-z\\s]+");
+        regexValidator.setMessage("Only Text");
+
+        Vview_vName.getValidators().add(regexValidator);
+        Vview_vName.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_vName.validate();
+        });
+        Vview_purpose.getValidators().add(regexValidator);
+        Vview_purpose.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_purpose.validate();
+        });
+
+        //Check Input Field is number
+        NumberValidator numbValid = new NumberValidator();
+        numbValid.setMessage("Only Number");
+
+        Vview_idNumber.getValidators().add(numbValid);
+        Vview_idNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Vview_idNumber.validate();
+        });
+        Vview_phoneNumber.getValidators().add(numbValid);
+        Vview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Vview_phoneNumber.validate();
+        });
+        Vview_idSearch.getValidators().add(numbValid);
+        Vview_idSearch.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Vview_idSearch.validate();
+        });
+
+        //Check Length Of Number
+        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+        Vview_idNumber.getValidators().add(lengthValidatorNumb);
+        Vview_idNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Vview_idNumber.validate();
+        });
+        Vview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Vview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Vview_phoneNumber.validate();
+        });
+        Vview_idSearch.getValidators().add(lengthValidatorNumb);
+        Vview_idSearch.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Vview_idSearch.validate();
+        });
+
+    }
+
+    public Boolean validateInputs(){
+
+        Boolean dataInputs = false;
+
+        //Check Input Field Of Name is text
+        RegexValidator regexValidator = new RegexValidator();
+        regexValidator.setRegexPattern("[A-Za-z\\s]+");
+
+        Vview_vName.getValidators().add(regexValidator);
+        Vview_vName.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_vName.validate();
+        });
+        Vview_purpose.getValidators().add(regexValidator);
+        Vview_purpose.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_purpose.validate();
+        });
+
+        //Check Input Field is number
+        NumberValidator numbValid = new NumberValidator();
+
+        Vview_idNumber.getValidators().add(numbValid);
+        Vview_idNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Vview_idNumber.validate();
+        });
+        Vview_phoneNumber.getValidators().add(numbValid);
+        Vview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) Vview_phoneNumber.validate();
+        });
+
+        //Check Length Of Number
+        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+        Vview_idNumber.getValidators().add(lengthValidatorNumb);
+        Vview_idNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Vview_idNumber.validate();
+        });
+        Vview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Vview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) Vview_phoneNumber.validate();
+        });
+
+
+        if (Vview_vName.validate() && Vview_purpose.validate() && Vview_idNumber.validate() && Vview_phoneNumber.validate() ){
+            dataInputs = true;
+        }
+        return dataInputs;
+    }
+
+    public Boolean checkInputs(){
+
+        Boolean allCheck =false;
+
+        if (Vview_date.getValue()==null){
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Date is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Vview_idNumber.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "ID Number is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Vview_vName.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Name is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Vview_purpose.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Purpose is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Vview_phoneNumber.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Phone Number is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Vview_gender.getSelectionModel().getSelectedIndex() < 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Gender is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (Vview_note.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Note is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            allCheck = true;
+        }
+        return allCheck;
+    }
+
+
 }

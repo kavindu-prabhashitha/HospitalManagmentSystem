@@ -158,7 +158,6 @@ public class AdminMainController {
 
     }
 
-
     public Admin getCurrentAdmin() {
         return currentAdmin;
     }
@@ -168,5 +167,6 @@ public class AdminMainController {
         this.currentAdmin =currentAdmin;
         System.out.println("admin set in adminView : "+currentAdmin);
     }
+
 
 }

@@ -15,6 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 import sample.Main;
 import sample.controller.actionTask.ReferenceAction;
@@ -23,6 +25,7 @@ import sample.model.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -66,19 +69,21 @@ public class UserViewController implements Initializable {
     @FXML private JFXComboBox<UserRoll> userView_userTypeDrop;
     @FXML private JFXPasswordField userView_userPassword;
     @FXML private  TabPane userView_mainTabPane;
-    @FXML public void initialize(URL url, ResourceBundle rb) {
 
-//      ObservableList<Admin> adminData = FXCollections.observableArrayList(UserAction.getAllAdmin());
-//      System.out.println(adminData.toString());
-//
-//        TableColumn id =new TableColumn("NIC_Number");
-//        userView_userTable.getColumns().add(id);
-//        id.setCellValueFactory(new PropertyValueFactory<Admin,String>("idCardNumber"));
-//
-//        userView_userTable.setItems(adminData);
+    @FXML private JFXButton userView_UploadPhoto;
+    @FXML private Label userView_UploadPhoto_Path;
+    @FXML private JFXButton userView_UploadFile;
+    @FXML private Label userView_UploadFile_Path;
+    @FXML private Label userView_label_name;
+    @FXML private Window primaryStage;
+
+    @FXML public void initialize(URL url, ResourceBundle rb) {
 
         //Validate User Inputs
         validateInitialize();
+
+        //Reset All Data
+        resetDisplay();
 
         //set the drop down wit the data taken by the reference module
         userView_userTypeDrop.getItems().addAll(ReferenceAction.getUserRolls());
@@ -156,8 +161,44 @@ public class UserViewController implements Initializable {
                                 JOptionPane.showMessageDialog(null, "Allergies is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
-                                    UserAction.addPatient(getPatient(), UserRoll.ADMIN);
+                                //Check Input Field Of Allergy is text
+                                RegexValidator regexValidator = new RegexValidator();
+                                regexValidator.setRegexPattern("[A-Za-z\\s]+");
+                                userView_allergies.getValidators().add(regexValidator);
+                                userView_allergies.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  userView_allergies.validate();
+                                });
+
+                                if (validateInputs() && userView_allergies.validate()) {
+
+                                    if (userView_UploadPhoto_Path.getText() == null){
+                                        Object[] options = { "OK", "CANCEL" };
+                                        Toolkit.getDefaultToolkit().beep();
+                                        int selectedValue = JOptionPane.showOptionDialog(null,
+                                                "Do You Want to Add This Record With Out UserPhoto", "Warning",
+                                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                                null, options, options[0]);
+
+                                        if ((selectedValue == JOptionPane.WHEN_FOCUSED)&&(userView_UploadFile_Path.getText() != null)) {
+                                            UserAction.addPatient(getPatient(), UserRoll.ADMIN);
+                                        }
+                                    }
+                                    if (userView_UploadFile_Path.getText() == null){
+                                        Object[] options = { "OK", "CANCEL" };
+                                        Toolkit.getDefaultToolkit().beep();
+                                        int selectedValue = JOptionPane.showOptionDialog(null,
+                                                "Do You Want to Add This Record With Out Document", "Warning",
+                                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                                null, options, options[0]);
+
+                                        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+                                            UserAction.addPatient(getPatient(), UserRoll.ADMIN);
+                                        }
+                                    }
+                                    if ((userView_UploadPhoto_Path.getText()!=null)&&(userView_UploadFile_Path.getText()!=null)){
+                                        UserAction.addPatient(getPatient(), UserRoll.ADMIN);
+                                    }
+
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -180,7 +221,35 @@ public class UserViewController implements Initializable {
                             }
                             else {
                                 if (validateInputs()) {
-                                    UserAction.addReceptionist(getInitialReceptionist(), UserRoll.ADMIN);
+
+                                    if (userView_UploadPhoto_Path.getText() == null){
+                                        Object[] options = { "OK", "CANCEL" };
+                                        Toolkit.getDefaultToolkit().beep();
+                                        int selectedValue = JOptionPane.showOptionDialog(null,
+                                                "Do You Want to Add This Record With Out UserPhoto", "Warning",
+                                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                                null, options, options[0]);
+
+                                        if ((selectedValue == JOptionPane.WHEN_FOCUSED)&&(userView_UploadFile_Path.getText() != null)) {
+                                            UserAction.addReceptionist(getInitialReceptionist(), UserRoll.ADMIN);
+                                        }
+                                    }
+                                    if (userView_UploadFile_Path.getText() == null){
+                                        Object[] options = { "OK", "CANCEL" };
+                                        Toolkit.getDefaultToolkit().beep();
+                                        int selectedValue = JOptionPane.showOptionDialog(null,
+                                                "Do You Want to Add This Record With Out Document", "Warning",
+                                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                                null, options, options[0]);
+
+                                        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+                                            UserAction.addReceptionist(getInitialReceptionist(), UserRoll.ADMIN);
+                                        }
+                                    }
+                                    if ((userView_UploadPhoto_Path.getText()!=null)&&(userView_UploadFile_Path.getText()!=null)){
+                                        UserAction.addReceptionist(getInitialReceptionist(), UserRoll.ADMIN);
+                                    }
+
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -193,7 +262,35 @@ public class UserViewController implements Initializable {
                         case ADMIN:
 
                             if (validateInputs()) {
-                                UserAction.addAdmin(getAdmin(), UserRoll.ADMIN);
+
+                                if (userView_UploadPhoto_Path.getText() == null){
+                                    Object[] options = { "OK", "CANCEL" };
+                                    Toolkit.getDefaultToolkit().beep();
+                                    int selectedValue = JOptionPane.showOptionDialog(null,
+                                            "Do You Want to Add This Record With Out UserPhoto", "Warning",
+                                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                            null, options, options[0]);
+
+                                    if ((selectedValue == JOptionPane.WHEN_FOCUSED)&&(userView_UploadFile_Path.getText() != null)) {
+                                        UserAction.addAdmin(getAdmin(), UserRoll.ADMIN);
+                                    }
+                                }
+                                if (userView_UploadFile_Path.getText() == null){
+                                    Object[] options = { "OK", "CANCEL" };
+                                    Toolkit.getDefaultToolkit().beep();
+                                    int selectedValue = JOptionPane.showOptionDialog(null,
+                                            "Do You Want to Add This Record With Out Document", "Warning",
+                                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                            null, options, options[0]);
+
+                                    if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+                                        UserAction.addAdmin(getAdmin(), UserRoll.ADMIN);
+                                    }
+                                }
+                                if ((userView_UploadPhoto_Path.getText()!=null)&&(userView_UploadFile_Path.getText()!=null)){
+                                    UserAction.addAdmin(getAdmin(), UserRoll.ADMIN);
+                                }
+
                             }
                             else {
                                 Toolkit.getDefaultToolkit().beep();
@@ -218,7 +315,35 @@ public class UserViewController implements Initializable {
                             }
                             else {
                                 if (validateInputs()) {
-                                    UserAction.addMedicalOfficer(getInitialMedicalOfficer(), UserRoll.ADMIN);
+
+                                    if (userView_UploadPhoto_Path.getText() == null){
+                                        Object[] options = { "OK", "CANCEL" };
+                                        Toolkit.getDefaultToolkit().beep();
+                                        int selectedValue = JOptionPane.showOptionDialog(null,
+                                                "Do You Want to Add This Record With Out UserPhoto", "Warning",
+                                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                                null, options, options[0]);
+
+                                        if ((selectedValue == JOptionPane.WHEN_FOCUSED)&&(userView_UploadFile_Path.getText() != null)) {
+                                            UserAction.addMedicalOfficer(getInitialMedicalOfficer(), UserRoll.ADMIN);
+                                        }
+                                    }
+                                    if (userView_UploadFile_Path.getText() == null){
+                                        Object[] options = { "OK", "CANCEL" };
+                                        Toolkit.getDefaultToolkit().beep();
+                                        int selectedValue = JOptionPane.showOptionDialog(null,
+                                                "Do You Want to Add This Record With Out Document", "Warning",
+                                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                                null, options, options[0]);
+
+                                        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+                                            UserAction.addMedicalOfficer(getInitialMedicalOfficer(), UserRoll.ADMIN);
+                                        }
+                                    }
+                                    if ((userView_UploadPhoto_Path.getText()!=null)&&(userView_UploadFile_Path.getText()!=null)){
+                                        UserAction.addMedicalOfficer(getInitialMedicalOfficer(), UserRoll.ADMIN);
+                                    }
+
                                 }
                                 else {
                                     Toolkit.getDefaultToolkit().beep();
@@ -229,7 +354,6 @@ public class UserViewController implements Initializable {
                             break;
 
                     }
-
 
                 }
 
@@ -288,9 +412,11 @@ public class UserViewController implements Initializable {
                     Toolkit.getDefaultToolkit().beep();
                     JOptionPane.showMessageDialog(null, "User Type is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
-                else if (userView_searchField.getText().length() <= 0) {
+                else if (userView_label_name.getText()==null){
                     Toolkit.getDefaultToolkit().beep();
-                    JOptionPane.showMessageDialog(null, "Search ID is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter ID No and Search"+"\nor\n"+"Please Select a Record from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
                     UserAction.deleteUserRecord(UserRoll.ADMIN, userView_searchField.getText(), userView_userTypeDrop.getValue(), getLoginUser());
@@ -308,9 +434,11 @@ public class UserViewController implements Initializable {
                     Toolkit.getDefaultToolkit().beep();
                     JOptionPane.showMessageDialog(null, "User Type is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
-                else if (userView_searchField.getText().length() <= 0) {
+                else if (userView_label_name.getText()==null){
                     Toolkit.getDefaultToolkit().beep();
-                    JOptionPane.showMessageDialog(null, "Search ID is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Please Enter ID No and Search"+"\nor\n"+"Please Select a Record from the Table",
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
                 else if(checkInputs()) {
 
@@ -327,7 +455,16 @@ public class UserViewController implements Initializable {
                                 JOptionPane.showMessageDialog(null, "Allergies is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Allergy is text
+                                RegexValidator regexValidator = new RegexValidator();
+                                regexValidator.setRegexPattern("[A-Za-z\\s]+");
+                                userView_allergies.getValidators().add(regexValidator);
+                                userView_allergies.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  userView_allergies.validate();
+                                });
+
+                                if (validateInputs() && userView_allergies.validate()) {
                                     UserAction.updatePatientRecord(UserRoll.ADMIN, getPatient(), userView_searchField.getText(), getLoginUser());
                                     resetDisplay();
                                 }
@@ -416,46 +553,55 @@ public class UserViewController implements Initializable {
         userView_viewAll.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                switch (userView_userTypeDrop.getValue()){
-                    case ADMIN:
-                        reception_Tab.setDisable(true);
-                        medical_tab.setDisable(true);
-                        patientTable_Tab.setDisable(true);
-                        admin_tab.setDisable(false);
-                        userView_mainTabPane.getSelectionModel().select(admin_tab);
-                        userView_mainTabPane.setDisable(false);
-                        setAdminTable(UserAction.getAllAdmin());
-                        break;
-                    case RECEPTIONIST:
-                        userView_mainTabPane.setDisable(false);
-                        reception_Tab.setDisable(false);
-                        admin_tab.setDisable(true);
-                        medical_tab.setDisable(true);
-                        patientTable_Tab.setDisable(true);
-                        userView_mainTabPane.getSelectionModel().select(reception_Tab);
-                        setReceptionTable(UserAction.getAllReceptionist());
-                        break;
-                    case MEDICALOFFICER:
-                        userView_mainTabPane.setDisable(false);
-                        medical_tab.setDisable(false);
-                        admin_tab.setDisable(true);
-                        patientTable_Tab.setDisable(true);
-                        reception_Tab.setDisable(true);
-                        userView_mainTabPane.getSelectionModel().select(medical_tab);
-                        setMedicalOfficerTable(UserAction.getAllMedicalOfficer());
-                        break;
-                    case PATIENT:
-                        userView_mainTabPane.setDisable(false);
-                        patientTable_Tab.setDisable(false);
-                        admin_tab.setDisable(true);
-                        reception_Tab.setDisable(true);
-                        medical_tab.setDisable(true);
-                        userView_mainTabPane.getSelectionModel().select(patientTable_Tab);
-                        setPatientTable(UserAction.getAllPatients());
-                        break;
-                    default:
-                        break;
+
+                if (userView_userTypeDrop.getSelectionModel().getSelectedIndex() < 0) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(null, "User Type is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
+                else{
+                    switch (userView_userTypeDrop.getValue()){
+                        case ADMIN:
+                            reception_Tab.setDisable(true);
+                            medical_tab.setDisable(true);
+                            patientTable_Tab.setDisable(true);
+                            admin_tab.setDisable(false);
+                            userView_mainTabPane.getSelectionModel().select(admin_tab);
+                            userView_mainTabPane.setDisable(false);
+                            setAdminTable(UserAction.getAllAdmin());
+                            break;
+                        case RECEPTIONIST:
+                            userView_mainTabPane.setDisable(false);
+                            reception_Tab.setDisable(false);
+                            admin_tab.setDisable(true);
+                            medical_tab.setDisable(true);
+                            patientTable_Tab.setDisable(true);
+                            userView_mainTabPane.getSelectionModel().select(reception_Tab);
+                            setReceptionTable(UserAction.getAllReceptionist());
+                            break;
+                        case MEDICALOFFICER:
+                            userView_mainTabPane.setDisable(false);
+                            medical_tab.setDisable(false);
+                            admin_tab.setDisable(true);
+                            patientTable_Tab.setDisable(true);
+                            reception_Tab.setDisable(true);
+                            userView_mainTabPane.getSelectionModel().select(medical_tab);
+                            setMedicalOfficerTable(UserAction.getAllMedicalOfficer());
+                            break;
+                        case PATIENT:
+                            userView_mainTabPane.setDisable(false);
+                            patientTable_Tab.setDisable(false);
+                            admin_tab.setDisable(true);
+                            reception_Tab.setDisable(true);
+                            medical_tab.setDisable(true);
+                            userView_mainTabPane.getSelectionModel().select(patientTable_Tab);
+                            setPatientTable(UserAction.getAllPatients());
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+
             }
         });
 
@@ -496,8 +642,61 @@ public class UserViewController implements Initializable {
         });
 
 
+        userView_UploadPhoto.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                FileChooser fileChooser = new FileChooser();
+                // Set title for FileChooser
+                fileChooser.setTitle("Select Your Picture");
+                // Add Extension Filters
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                        new FileChooser.ExtensionFilter("JPEG", "*.jpeg"));
+
+                switch (userView_userTypeDrop.getValue()) {
+
+                    case ADMIN:
+                    case RECEPTIONIST:
+                    case PATIENT:
+                    case MEDICALOFFICER:
+
+                        File file = fileChooser.showOpenDialog(primaryStage);
+                        userView_UploadPhoto_Path.setText(file.getAbsolutePath());
+                        break;
+
+                }
+            }
+        });
+
+        userView_UploadFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                FileChooser fileChooser = new FileChooser();
+                // Set title for FileChooser
+                fileChooser.setTitle("Select File");
+                // Add Extension Filters
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+
+                switch (userView_userTypeDrop.getValue()) {
+
+                    case ADMIN:
+                    case RECEPTIONIST:
+                    case PATIENT:
+                    case MEDICALOFFICER:
+
+                        File file = fileChooser.showOpenDialog(primaryStage);
+                        userView_UploadFile_Path.setText(file.getAbsolutePath());
+                        break;
+
+                }
+            }
+        });
 
     }
+
 
     public void setViewForSystemUser(){
         switch (Main.getCurrentSystemUser().getUserRoll()){
@@ -541,6 +740,7 @@ public class UserViewController implements Initializable {
         userView_userPassword.setText(UserAction.decryptUserData(patient.getUserPassword()));
         userView_bloodGroup.setValue(patient.getBloodGroup());
         userView_allergies.setText(patient.getAllergies());
+        userView_label_name.setText(patient.getName());
     }
 
     public void displayMedicalOfficerData(MedicalOfficer medicalOfficer){
@@ -558,6 +758,7 @@ public class UserViewController implements Initializable {
         userView_staffEmail.setText(medicalOfficer.getStaffEmailAddress());
         userView_staffdoj.setValue(medicalOfficer.getDateOfJoining());
         userView_speciality.setValue(medicalOfficer.getSpeciality().trim());
+        userView_label_name.setText(medicalOfficer.getName());
 
 
     }
@@ -573,6 +774,7 @@ public class UserViewController implements Initializable {
         userView_address.setText(admin.getAddress());
         userView_userName.setText(UserAction.decryptUserData(admin.getUserName()));
         userView_userPassword.setText(UserAction.decryptUserData(admin.getUserPassword()));
+        userView_label_name.setText(admin.getName());
     }
 
     public void displayReceptionistData(Receptionist receptionist){
@@ -589,6 +791,7 @@ public class UserViewController implements Initializable {
         userView_staffdoj.setValue(receptionist.getDateOfJoining());
         userView_staffEmail.setText(receptionist.getStaffEmailAddress());
         userView_staffID.setText(String.valueOf(receptionist.getStaffID()));
+        userView_label_name.setText(receptionist.getName());
     }
 
     public Patient getPatient(){
@@ -605,6 +808,9 @@ public class UserViewController implements Initializable {
         patient.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
         patient.setBloodGroup(userView_bloodGroup.getValue());
         patient.setAllergies(userView_allergies.getText());
+
+        patient.setPhotoPath(userView_UploadPhoto_Path.getText());
+        patient.setFilePath(userView_UploadFile_Path.getText());
 
         return patient;
     }
@@ -625,6 +831,9 @@ public class UserViewController implements Initializable {
         receptionist.setStaffEmailAddress(userView_staffEmail.getText());
         receptionist.setDateOfJoining(userView_staffdoj.getValue());
 
+        receptionist.setPhotoPath(userView_UploadPhoto_Path.getText());
+        receptionist.setFilePath(userView_UploadFile_Path.getText());
+
         return receptionist;
     }
 
@@ -644,6 +853,10 @@ public class UserViewController implements Initializable {
         receptionist.setStaffEmailAddress(userView_staffEmail.getText());
         receptionist.setDateOfJoining(userView_staffdoj.getValue());
 
+        receptionist.setPhotoPath(userView_UploadPhoto_Path.getText());
+        receptionist.setFilePath(userView_UploadFile_Path.getText());
+
+
         return receptionist;
     }
 
@@ -659,6 +872,10 @@ public class UserViewController implements Initializable {
         admin.setIdCardNumber(userView_NIC.getText());
         admin.setUserName(UserAction.encryptUserData(userView_userName.getText()));
         admin.setUserPassword(UserAction.encryptUserData(userView_userPassword.getText()));
+
+        admin.setPhotoPath(userView_UploadPhoto_Path.getText());
+        admin.setFilePath(userView_UploadFile_Path.getText());
+
 
         return admin;
 
@@ -682,6 +899,9 @@ public class UserViewController implements Initializable {
         medicalOfficer.setSpeciality(userView_speciality.getValue());
         medicalOfficer.setDateOfJoining(userView_staffdoj.getValue());
 
+        medicalOfficer.setPhotoPath(userView_UploadPhoto_Path.getText());
+        medicalOfficer.setFilePath(userView_UploadFile_Path.getText());
+
         return medicalOfficer;
     }
 
@@ -704,7 +924,10 @@ public class UserViewController implements Initializable {
         medicalOfficer.setSpeciality(userView_speciality.getValue());
         medicalOfficer.setDateOfJoining(userView_staffdoj.getValue());
 
-       return medicalOfficer;
+        medicalOfficer.setPhotoPath(userView_UploadPhoto_Path.getText());
+        medicalOfficer.setFilePath(userView_UploadFile_Path.getText());
+
+        return medicalOfficer;
 
     }
 
@@ -732,6 +955,9 @@ public class UserViewController implements Initializable {
         receptiontable_mainTable.setItems(null);
         medicalOfficer_mainTable.setItems(null);
         userView_mainTabPane.setDisable(true);
+        userView_label_name.setText(null);
+        userView_UploadPhoto_Path.setText(null);
+        userView_UploadFile_Path.setText(null);
 
 
     }
@@ -808,20 +1034,27 @@ public class UserViewController implements Initializable {
         userView_speciality.setDisable(false);
     }
 
+
     public void validateInitialize(){
 
         //Check Input Field Of Name is text
         RegexValidator regexValidator = new RegexValidator();
         regexValidator.setRegexPattern("[A-Za-z\\s]+");
         regexValidator.setMessage("Only Text");
+
         userView_name.getValidators().add(regexValidator);
         userView_name.focusedProperty().addListener((o, oldValue, newValue) -> {
             if(!newValue)  userView_name.validate();
+        });
+        userView_allergies.getValidators().add(regexValidator);
+        userView_allergies.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  userView_allergies.validate();
         });
 
         //Check Input Field Of Phone Number is number
         NumberValidator numbValid = new NumberValidator();
         numbValid.setMessage("Only Number");
+
         userView_phoneNum.getValidators().add(numbValid);
         userView_phoneNum.focusedProperty().addListener((o, oldVal,newVal)->{
             if(!newVal) userView_phoneNum.validate();
@@ -843,7 +1076,7 @@ public class UserViewController implements Initializable {
         //Check Input Field Of Name is text
         RegexValidator regexValidator = new RegexValidator();
         regexValidator.setRegexPattern("[A-Za-z\\s]+");
-        regexValidator.setMessage("Only Text");
+
         userView_name.getValidators().add(regexValidator);
         userView_name.focusedProperty().addListener((o, oldValue, newValue) -> {
             if(!newValue)  userView_name.validate();
@@ -851,7 +1084,7 @@ public class UserViewController implements Initializable {
 
         //Check Input Field Of Phone Number is number
         NumberValidator numbValid = new NumberValidator();
-        numbValid.setMessage("Only Number");
+
         userView_phoneNum.getValidators().add(numbValid);
         userView_phoneNum.focusedProperty().addListener((o, oldVal,newVal)->{
             if(!newVal) userView_phoneNum.validate();
@@ -859,12 +1092,13 @@ public class UserViewController implements Initializable {
 
         //Check Length Of Phone Number
         StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+
         userView_phoneNum.getValidators().add(lengthValidatorNumb);
         userView_phoneNum.focusedProperty().addListener((o, oldValue, newValue) -> {
             if(!newValue) userView_phoneNum.validate();
         });
 
-        if ((userView_name.validate() && userView_phoneNum.validate())){
+        if (userView_name.validate() && userView_phoneNum.validate()){
             dataInputs = true;
         }
             return dataInputs;
@@ -919,6 +1153,7 @@ public class UserViewController implements Initializable {
         }
         return allCheck;
     }
+
 
     //Patient Table details
     @FXML private Tab patientTable_Tab;

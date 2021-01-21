@@ -6,6 +6,8 @@ import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.Gender;
 import sample.model.Visitor;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,17 +20,38 @@ public class VisitorAction {
 
     public static void addVisitorRecord(Visitor visitor){
         addVisitor(visitor);
+        JOptionPane.showMessageDialog(null,"Record Add Successfully");
         System.out.println("visitor Record Added : "+visitor.toString());
     }
 
     public static void updateVisitorRecord(Visitor visitor){
-        editDeleteVisitor(visitor,1);
-        System.out.println("visitor Record Updated : "+visitor.toString());
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Update This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            editDeleteVisitor(visitor,1);
+            System.out.println("visitor Record Updated : "+visitor.toString());
+        }
+
     }
 
     public static void deleteVisitorRecord(Visitor visitor){
-        editDeleteVisitor(visitor,2);
-        System.out.println("visitor Record Deleted : "+visitor.toString());
+
+        Object[] options = { "OK", "CANCEL" };
+        Toolkit.getDefaultToolkit().beep();
+        int selectedValue = JOptionPane.showOptionDialog(null, "Are You Sure Delete This Record"+"\nClick OK to continue", "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+
+        if (selectedValue == JOptionPane.WHEN_FOCUSED) {
+            editDeleteVisitor(visitor,2);
+            System.out.println("visitor Record Deleted : "+visitor.toString());
+        }
+
     }
 
     public static ArrayList<Visitor> getInVisitorRecords(){
@@ -77,9 +100,12 @@ public class VisitorAction {
             if (visitorFromFile.getVisitorID() ==visitor.getVisitorID()){
                 if (operatrion==1){
                     returnVisitorArray.add(visitor);
-                    System.out.println("visitor record updated succes : editDeleteVIsitor()-->VisitorAction");
-                }else {
-                    System.out.println("visitor record deleted succes : editDeleteVIsitor()-->VisitorAction");
+                    JOptionPane.showMessageDialog(null,"Visitor Record Update Successfully");
+                    System.out.println("visitor record updated success : editDeleteVisitor()-->VisitorAction");
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,"Visitor Record Delete Successfully");
+                    System.out.println("visitor record deleted success : editDeleteVisitor()-->VisitorAction");
                 }
             }else {
                 returnVisitorArray.add(visitorFromFile);
@@ -156,14 +182,26 @@ public class VisitorAction {
     }
 
     private static ArrayList<Visitor> searchMultipleRecords(String idNumber,String name){
+
+        boolean isFound = false;
+
         ArrayList<Visitor> allAvailableVisitors =viewAllVisitors();
         ArrayList<Visitor> sameVisitor =new ArrayList<>();
         for (int i=0;i<allAvailableVisitors.size();i++){
             if ((allAvailableVisitors.get(i).getIdNumber().equals(idNumber))){
                 Visitor foundVisitor =allAvailableVisitors.get(i);
                 sameVisitor.add(foundVisitor);
+                isFound= true;
                 System.out.println("VisitorRecord Found in visitorFile.txt");
             }
+        }
+        if(isFound){
+            //found
+            JOptionPane.showMessageDialog(null,"Postal Record Found");
+        }
+        else{
+            //not found
+            JOptionPane.showMessageDialog(null,"Postal Record Not Found");
         }
 
         return sameVisitor;

@@ -14,9 +14,17 @@ public  class Postal {
     private String name;
     private String address;
     private String note;
+    private String filePath;
 
 //getters and setters
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
     public PostalType getPostalType() {
         return postalType;

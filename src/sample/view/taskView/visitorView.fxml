@@ -26,7 +26,7 @@
                   <Label layoutX="15.0" layoutY="200.0" prefHeight="26.0" prefWidth="94.0" text="Phone Number" textFill="#575757" />
                   <Label layoutX="15.0" layoutY="238.0" prefHeight="26.0" prefWidth="58.0" text="Gender" textFill="#575757" />
                   <Label layoutX="396.0" layoutY="36.0" prefHeight="26.0" prefWidth="57.0" text="In Time" textFill="#575757" />
-                  <JFXTextArea fx:id="Vview_note" focusColor="#474849" layoutX="129.0" layoutY="273.0" prefHeight="86.0" prefWidth="200.0" style="-fx-border-color: #999b84;" unFocusColor="WHITE" />
+                  <JFXTextArea fx:id="Vview_note" focusColor="#474849" layoutX="131.0" layoutY="273.0" prefHeight="86.0" prefWidth="200.0" style="-fx-border-color: #999b84;" unFocusColor="WHITE" />
                   <DatePicker fx:id="Vview_date" layoutX="130.0" layoutY="45.0" prefHeight="28.0" prefWidth="200.0" style="-fx-border-color: #999b84;" />
                   <Label layoutX="396.0" layoutY="75.0" prefHeight="26.0" prefWidth="80.0" text="Out Time" textFill="#575757" />
                   <Label layoutX="15.0" layoutY="278.0" prefHeight="26.0" prefWidth="67.0" text="Notes" textFill="#575757" />
@@ -38,7 +38,7 @@
                   <JFXComboBox fx:id="Vview_gender" layoutX="131.0" layoutY="237.0" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: e8e8e8;" />
                   <Label fx:id="Vview_inTime" layoutX="461.0" layoutY="33.0" prefHeight="31.0" prefWidth="252.0" style="-fx-background-color: #c9cbff;" />
                   <Label fx:id="Vview_outTime" layoutX="462.0" layoutY="72.0" prefHeight="31.0" prefWidth="238.0" style="-fx-background-color: #c9cbff;" />
-                  <JFXButton fx:id="Vview_inTimeAddBtn" layoutX="712.0" layoutY="33.0" prefHeight="31.0" prefWidth="78.0" style="-fx-background-color: #949cdf;" text="Set IN Time" />
+                  <JFXButton fx:id="Vview_inTimeAddBtn" layoutX="700.0" layoutY="33.0" prefHeight="31.0" prefWidth="90.0" style="-fx-background-color: #949cdf;" text="Set IN Time" />
                   <JFXButton fx:id="Vview_outTimeAddBtn" layoutX="700.0" layoutY="71.0" prefHeight="31.0" prefWidth="90.0" style="-fx-background-color: #6155a6;" text="Set OUT Time" textFill="WHITE" />
                   <AnchorPane layoutX="396.0" layoutY="115.0" prefHeight="271.0" prefWidth="393.0" style="-fx-background-color: #d9e4dd;">
                      <children>
