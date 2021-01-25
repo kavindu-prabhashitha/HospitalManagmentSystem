@@ -66,3 +66,9 @@
 2021-01-22~09:49:14.298732100~ADMIN~0~PATIENT~4~Patient Record deletedBy 0userRoll : ADMIN
 2021-01-22~09:52:36.401254300~ADMIN~0~RECEPTIONIST~0~Receptionist Record UpdatedBy 0userRoll : ADMIN
 2021-01-22~09:53:18.437731600~ADMIN~0~MEDICALOFFICER~0~MedicalOfficer Record UpdatedBy 0userRoll : ADMIN
+2021-01-25~16:10:09.947501900~ADMIN~0~PATIENT~supuni_perera~Patient Record UpdatedBy 0userRoll : ADMIN
+2021-01-25~16:26:37.862868300~ADMIN~0~RECEPTIONIST~0~Receptionist Record UpdatedBy 0userRoll : ADMIN
+2021-01-25~16:30:20.639708500~ADMIN~0~RECEPTIONIST~reception~Receptionist Record AddedBy 0userRoll : ADMIN
+2021-01-25~16:30:26.559161200~ADMIN~0~RECEPTIONIST~0~Receptionist Record deletedBy 0userRoll : ADMIN
+2021-01-25~16:32:19.674840600~ADMIN~0~RECEPTIONIST~reception~Receptionist Record AddedBy 0userRoll : ADMIN
+2021-01-25~16:32:38.424978400~ADMIN~0~RECEPTIONIST~reception~Receptionist Record UpdatedBy 0userRoll : ADMIN
