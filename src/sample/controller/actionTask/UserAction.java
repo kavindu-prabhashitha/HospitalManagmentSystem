@@ -220,27 +220,6 @@ public class UserAction {
         }
     }
 
-    //write a method for Delete files
-    private static void deleteUserFile(String  userID,String usertype){
-
-        try{
-            String staffId = userID;
-
-            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/"+usertype;
-            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
-            Files.delete(Path.of(photoSavePath));
-            System.out.println("Delete PHOTO");
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/"+usertype;
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            Files.delete(Path.of(fileSavePath));
-            System.out.println("Delete PDF");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     //method for save patient data
     private static void savePatient(Patient user) {
        SystemDataWriter systemDataWriter = new SystemDataWriter();
@@ -461,27 +440,6 @@ public class UserAction {
         }
     }
 
-    //write a method for Delete file
-    public static void deleteReceptionistFile(Receptionist receptionist){
-
-        try{
-            String staffId = receptionist.getIdCardNumber();
-
-            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/reception";
-            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
-            Files.delete(Path.of(photoSavePath));
-            System.out.println("Delete PHOTO");
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            Files.delete(Path.of(fileSavePath));
-            System.out.println("Delete PDF");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     //method for save receptionist data
     private static  void  saveReceptionist(Receptionist receptionist){
 
@@ -552,7 +510,7 @@ public class UserAction {
     public static Receptionist searchReceptionRecord(String seachTerm,String userName,String userPass){
 
         Receptionist foundReception = searchReceptionist(seachTerm,userName,userPass);
-        System.out.println("return Patient :"+foundReception.toString());
+        System.out.println("return Reception :"+foundReception.toString());
         return foundReception;
     }
 
@@ -692,27 +650,6 @@ public class UserAction {
         }
     }
 
-    //write a method for Delete file
-    public static void deleteAdminFile(Admin admin){
-
-        try{
-            String staffId = admin.getIdCardNumber();
-
-            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/admin";
-            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
-            Files.delete(Path.of(photoSavePath));
-            System.out.println("Delete PHOTO");
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            Files.delete(Path.of(fileSavePath));
-            System.out.println("Delete PDF");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     //method for save admin data
     private static void saveAdmin(Admin admin) {
         SystemDataWriter systemDataWriter = new SystemDataWriter();
@@ -793,7 +730,7 @@ public class UserAction {
     public static Admin searchAdmin(String seachTermOrUserName,String userPassword){
 
         Admin foundAdmin = searchAdminRecord(seachTermOrUserName,userPassword);
-        System.out.println("return Patient :"+foundAdmin.toString());
+        System.out.println("return Admin :"+foundAdmin.toString());
         return foundAdmin;
     }
 
@@ -913,27 +850,6 @@ public class UserAction {
         }
     }
 
-    //write a method for Delete file
-    public static void deleteMedicalOfficerFile(MedicalOfficer medicalOfficer){
-
-        try{
-            String staffId = medicalOfficer.getIdCardNumber();
-
-            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/medicalOfficer";
-            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
-            Files.delete(Path.of(photoSavePath));
-            System.out.println("Delete PHOTO");
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            Files.delete(Path.of(fileSavePath));
-            System.out.println("Delete PDF");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     //method for save medicalofficer data
     private static void saveMedicalOfficer(MedicalOfficer medicalOfficer) {
      SystemDataWriter systemDataWriter=new SystemDataWriter();
@@ -1008,6 +924,18 @@ public class UserAction {
         return strinMedicalArray;
     }
 
+
+
+    //method for search MedicalOfficer
+    public static MedicalOfficer searchMedicalOfficerRecord(String searchTerm,String userPass){
+
+        MedicalOfficer foundMedicalOfficer = searchMedicalOfficer(searchTerm,userPass);
+        System.out.println("return MedicalOfficer :"+foundMedicalOfficer.toString());
+        return foundMedicalOfficer;
+    }
+
+
+
     //method for Search medicalofficer data record
     public static MedicalOfficer searchMedicalOfficer(String seachTermOrUserName, String password) {
         boolean found = false;
@@ -1026,10 +954,10 @@ public class UserAction {
             }
         }
 
-        if (found){
+        if (found && !passPresent){
             JOptionPane.showMessageDialog(null,"Record Found");
         }
-        else{
+        else if (!passPresent){
             JOptionPane.showMessageDialog(null,"Record Not Found");
         }
 
@@ -1126,22 +1054,21 @@ public class UserAction {
                         removeUserRecord(adminFilePath,searchTerm,loginUser,adminloginData);
                         adduserlog(UserRoll.ADMIN,loginUser.getUserName(),"Admin Record deleted");
                         deleteUserFile(searchTerm,"admin");
-
                         break;
                     case RECEPTIONIST:
                         removeUserRecord(receptionistFilePath,searchTerm,loginUser,receptionLoginData);
                         adduserlog(UserRoll.RECEPTIONIST,loginUser.getUserName(),"Receptionist Record deleted");
-
+                        deleteUserFile(searchTerm,"reception");
                         break;
                     case PATIENT:
                         removeUserRecord(patientDataFilePath,searchTerm,loginUser,patientloginData);
                         adduserlog(UserRoll.PATIENT,loginUser.getUserName(),"Patient Record deleted");
-
+                        deleteUserFile(searchTerm,"patient");
                         break;
                     case MEDICALOFFICER:
                         removeUserRecord(medicalOfficerFilePath,searchTerm,loginUser,medicalLoginData);
                         adduserlog(UserRoll.MEDICALOFFICER,loginUser.getUserName(),"MedicalOfficer Record deleted");
-
+                        deleteUserFile(searchTerm,"medicalOfficer");
                         break;
                     default:
                         break;
@@ -1216,6 +1143,27 @@ public class UserAction {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //write a method for Delete files
+    private static void deleteUserFile(String  userID,String usertype){
+
+        try{
+            String staffId = userID;
+
+            String moPhotoPath ="src/sample/fileStorage/moduleData/userData/userPhoto/"+usertype;
+            String photoSavePath =moPhotoPath + "\\" + staffId + ".jpg";
+            Files.delete(Path.of(photoSavePath));
+            System.out.println("Delete PHOTO");
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/"+usertype;
+            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
+            Files.delete(Path.of(fileSavePath));
+            System.out.println("Delete PDF");
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1432,7 +1380,7 @@ public class UserAction {
                     }
                     newbufferedWriter.close();
                     fileWriter.close();
-                    System.out.println("Userlogin record deleted success");
+                    System.out.println("User login record deleted success");
                     System.out.println(tempLoginList.toString());
 
                 } catch (IOException e) {

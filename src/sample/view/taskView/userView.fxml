@@ -18,6 +18,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
@@ -40,66 +41,69 @@
       <Line endX="185.0" endY="-104.0" layoutX="643.0" layoutY="560.0" startX="-623.0" startY="-104.0" stroke="#d9d9d9" />
       <AnchorPane layoutX="-2.0" prefHeight="454.0" prefWidth="850.0" style="-fx-background-color: white;">
          <children>
-            <Label alignment="CENTER" layoutX="21.0" layoutY="13.0" prefHeight="44.0" prefWidth="126.0" text="USER DETAILS" textFill="#4f5b62">
+            <Label alignment="CENTER" layoutX="21.0" layoutY="10.0" prefHeight="44.0" prefWidth="146.0" text="USER DETAILS" textFill="#4f5b62">
                <font>
-                  <Font name="System Bold" size="17.0" />
+                  <Font name="System Bold" size="20.0" />
                </font>
             </Label>
-            <Label fx:id="userView_label_name" layoutX="21.0" layoutY="48.0" opacity="0.0" prefHeight="18.0" prefWidth="120.0" />
-            <Label layoutX="155.0" layoutY="67.0" prefHeight="21.0" prefWidth="106.0" text="Person Details">
+            <Label fx:id="userView_label_name" layoutX="176.0" layoutY="31.0" opacity="0.0" prefHeight="1.0" prefWidth="18.0">
                <font>
-                  <Font name="Bookshelf Symbol 7" size="15.0" />
-               </font>
-            </Label>
-            <Line endX="-507.300048828125" endY="-471.0" layoutX="1192.0" layoutY="726.0" startX="-548.9000244140625" startY="-471.0" stroke="#d9d9d9" />
-            <Label layoutX="533.0" layoutY="66.0" text="Patient Details">
+                  <Font size="5.0" />
+               </font></Label>
+            <Label layoutX="155.0" layoutY="46.0" prefHeight="21.0" prefWidth="106.0" text="Person Details">
                <font>
                   <Font name="Bookshelf Symbol 7" size="15.0" />
                </font>
             </Label>
-            <Line endX="-61.300048828125" endY="-468.0" layoutX="564.0" layoutY="633.0" startX="-127.70001220703125" startY="-468.0" stroke="#d9d9d9" />
-            <Label layoutX="515.0" layoutY="156.0" text="Staff Details">
+            <Line endX="-502.10003662109375" endY="-471.0" layoutX="1192.0" layoutY="740.0" startX="-566.5" startY="-471.0" stroke="#d9d9d9" />
+            <Label layoutX="521.0" layoutY="49.0" text="Patient Details">
                <font>
                   <Font name="Bookshelf Symbol 7" size="15.0" />
                </font>
             </Label>
-            <Line endX="-169.0999755859375" endY="-468.0" layoutX="689.0" layoutY="545.0" opacity="0.57" startX="-252.99996948242188" startY="-468.0" stroke="#d9d9d9" />
-            <Line endX="201.699951171875" endY="-322.0" layoutX="477.0" layoutY="486.0" startX="125.699951171875" startY="-322.0" stroke="#d9d9d9" />
-            <Line endX="-362.9000244140625" endY="-458.0" layoutX="878.0" layoutY="713.0" startX="-436.3999938964844" startY="-458.0" stroke="#d9d9d9" />
-            <Label layoutX="528.0" layoutY="244.0" text=" Medical Officer">
+            <Line endX="-41.70001220703125" endY="-468.0" layoutX="564.0" layoutY="635.0" startX="-143.70001220703125" startY="-468.0" stroke="#d9d9d9" />
+            <Label layoutX="528.0" layoutY="158.0" text="Staff Details">
+               <font>
+                  <Font name="Bookshelf Symbol 7" size="15.0" />
+               </font>
+            </Label>
+            <Line endX="-178.69998168945312" endY="-468.0" layoutX="690.0" layoutY="527.0" opacity="0.57" startX="-269.70001220703125" startY="-468.0" stroke="#d9d9d9" />
+            <Line endX="207.00006103515625" endY="-322.0" layoutX="477.0" layoutY="488.0" startX="137.29998779296875" startY="-322.0" stroke="#d9d9d9" />
+            <Line endX="-362.9000244140625" endY="-458.0" layoutX="865.0" layoutY="727.0" startX="-439.0999755859375" startY="-458.0" stroke="#d9d9d9" />
+            <Label layoutX="512.0" layoutY="258.0" text=" Medical Officer">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <JFXButton fx:id="userView_searchButton" layoutX="737.0" layoutY="21.0" prefHeight="26.0" prefWidth="82.0" style="-fx-background-color: #1e90ff;" text="search" textFill="WHITE">
+            <JFXButton fx:id="userView_searchButton" layoutX="747.0" layoutY="17.0" prefHeight="26.0" prefWidth="82.0" style="-fx-background-color: #1e90ff;" text="search" textFill="WHITE">
                <graphic>
                   <ImageView fitHeight="18.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../../../../../assets/icons/icons8-search-512.png" />
+                        <Image url="@../../assets/icons/icons8-search-512.png" />
                      </image>
                   </ImageView>
                </graphic></JFXButton>
-            <Line endX="-101.9000244140625" endY="-467.5" layoutX="509.0" layoutY="546.0" startX="-244.29998779296875" startY="-467.5" stroke="#d9d9d9" />
-            <Line endX="175.699951171875" endY="-467.0" layoutX="497.0" layoutY="544.0" startX="137.5999755859375" startY="-467.0" stroke="#d9d9d9" />
+            <Line endX="-124.70001220703125" endY="-467.5" layoutX="509.0" layoutY="527.0" startX="-244.29998779296875" startY="-467.5" stroke="#d9d9d9" />
+            <Line endX="186.70001220703125" endY="-467.0" layoutX="500.0" layoutY="526.0" startX="123.699951171875" startY="-467.0" stroke="#d9d9d9" />
             <Line endX="157.0" endY="-561.0" layoutX="648.0" layoutY="568.0" startX="-648.0" startY="-561.0" stroke="#d9d9d9" />
-            <Line endX="-435.1000061035156" endY="-478.0" layoutX="575.0" layoutY="555.0" startX="-577.0" startY="-478.0" stroke="#d9d9d9" />
-            <Label layoutX="194.0" layoutY="23.0" prefHeight="22.0" prefWidth="54.0" text="User Type" />
-            <JFXComboBox fx:id="userView_userTypeDrop" layoutX="255.0" layoutY="21.0" prefHeight="26.0" prefWidth="215.0" promptText="usertype" style="-fx-background-color: e8e8e8;" />
-            <TextField fx:id="userView_searchField" layoutX="552.0" layoutY="22.0" prefHeight="26.0" prefWidth="164.0" promptText="ID Number" />
-            <GridPane layoutX="41.0" layoutY="92.0" prefHeight="326.0" prefWidth="334.0">
+            <Line endX="-435.1000061035156" endY="-478.0" layoutX="575.0" layoutY="535.0" startX="-545.0999755859375" startY="-478.0" stroke="#d9d9d9" />
+            <Label layoutX="247.0" layoutY="19.0" prefHeight="22.0" prefWidth="54.0" text="User Type" />
+            <JFXComboBox fx:id="userView_userTypeDrop" layoutX="308.0" layoutY="17.0" prefHeight="26.0" prefWidth="215.0" promptText="usertype" style="-fx-background-color: e8e8e8;" />
+            <TextField fx:id="userView_searchField" layoutX="573.0" layoutY="17.0" prefHeight="26.0" prefWidth="164.0" promptText="ID Number" />
+            <GridPane layoutX="41.0" layoutY="46.0" prefHeight="397.0" prefWidth="334.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="162.20001220703125" minWidth="10.0" prefWidth="86.20001220703125" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="247.79998779296875" minWidth="10.0" prefWidth="247.79998779296875" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="95.20001068115235" minHeight="7.600012207031249" prefHeight="75.99999084472657" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="89.6" minHeight="0.0" prefHeight="24.799990844726565" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="61.39999999999999" minHeight="10.0" prefHeight="48.80000915527343" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="40.00000610351563" minHeight="10.0" prefHeight="33.59998779296876" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="56.79998168945312" minHeight="10.0" prefHeight="52.800012207031244" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="89.19999999999999" minHeight="0.0" prefHeight="51.9999938964844" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="89.19999999999999" minHeight="0.0" prefHeight="46.199993896484386" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="65.60001220703123" minHeight="10.0" prefHeight="37.400006103515636" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
@@ -112,25 +116,25 @@
                   <Label text="Date Of Birth" GridPane.rowIndex="3" />
                   <DatePicker fx:id="userView_dob" prefHeight="26.0" prefWidth="190.0" promptText="MM/DD/YYYY" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <Label text="Phone No" GridPane.rowIndex="4" />
-                  <JFXTextField fx:id="userView_phoneNum" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="270.0" promptText="Phone No" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <JFXTextField fx:id="userView_phoneNum" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="248.0" promptText="Phone No" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                   <Label text="NIC No" GridPane.rowIndex="5" />
                   <JFXTextField fx:id="userView_NIC" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="270.0" promptText="NIC No" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label text="Address" GridPane.rowIndex="6" />
-                  <JFXTextArea fx:id="userView_address" prefHeight="52.0" prefWidth="270.0" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <JFXTextArea fx:id="userView_address" prefHeight="52.0" prefWidth="248.0" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <Label fx:id="userView_userNameLable" text="User Name" GridPane.rowIndex="7" />
-                  <JFXTextField fx:id="userView_userName" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="270.0" promptText="username" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                  <JFXTextField fx:id="userView_userName" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="248.0" promptText="username" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                   <Label text="Password" GridPane.rowIndex="8" />
                   <JFXPasswordField fx:id="userView_userPassword" prefHeight="26.0" prefWidth="270.0" promptText="password" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                </children>
             </GridPane>
-            <GridPane layoutX="433.0" layoutY="89.0" prefHeight="62.0" prefWidth="248.0">
+            <GridPane layoutX="433.0" layoutY="66.0" prefHeight="74.0" prefWidth="248.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="112.20001220703125" minWidth="10.0" prefWidth="76.8" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="170.39999999999998" minWidth="10.0" prefWidth="170.39999999999998" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="51.000006103515624" minHeight="10.0" prefHeight="40.599996948242186" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="50.99999084472656" minHeight="10.0" prefHeight="42.20000305175781" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <JFXComboBox fx:id="userView_bloodGroup" prefHeight="26.0" prefWidth="187.0" promptText="Blood Group" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" />
@@ -139,7 +143,7 @@
                   <Label text="Allergies" GridPane.rowIndex="1" />
                </children>
             </GridPane>
-            <GridPane layoutX="434.0" layoutY="174.0" prefHeight="62.0" prefWidth="248.0">
+            <GridPane layoutX="434.0" layoutY="176.0" prefHeight="74.0" prefWidth="248.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.999951171875" minWidth="10.0" prefWidth="73.59996337890625" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="175.20001220703125" minWidth="10.0" prefWidth="173.60003662109375" />
@@ -155,10 +159,10 @@
                   <Label text="Staff Email" GridPane.rowIndex="1" />
                </children>
             </GridPane>
-            <GridPane layoutX="433.0" layoutY="267.0" prefHeight="62.0" prefWidth="248.0">
+            <GridPane layoutX="433.0" layoutY="278.0" prefHeight="74.0" prefWidth="248.0">
               <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="138.39996337890625" minWidth="10.0" prefWidth="91.2" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="167.19996337890626" minWidth="10.0" prefWidth="156.8" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="138.39996337890625" minWidth="10.0" prefWidth="87.99998779296875" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="167.19996337890626" minWidth="10.0" prefWidth="160.80001220703127" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -166,12 +170,12 @@
               </rowConstraints>
                <children>
                   <Label text="Specialty Area" />
-                  <JFXComboBox fx:id="userView_speciality" prefHeight="30.0" prefWidth="162.0" promptText="Specialty Area" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" />
+                  <JFXComboBox fx:id="userView_speciality" prefHeight="26.0" prefWidth="187.0" promptText="Specialty Area" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" />
                   <Label text="Date Of Joining" GridPane.rowIndex="1" />
                   <DatePicker fx:id="userView_staffdoj" prefHeight="26.0" prefWidth="165.0" promptText="MM/DD/YYYY" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
-            <GridPane layoutX="431.0" layoutY="337.0" prefHeight="94.0" prefWidth="415.0">
+            <GridPane layoutX="431.0" layoutY="361.0" prefHeight="92.0" prefWidth="415.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.7999755859375" minWidth="0.0" prefWidth="91.20002441406251" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="322.99997558593753" minWidth="10.0" prefWidth="322.99997558593753" />
@@ -183,23 +187,38 @@
                   <RowConstraints maxHeight="32.79998779296875" minHeight="10.0" prefHeight="32.79998779296875" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <JFXButton fx:id="userView_UploadPhoto" prefHeight="26.0" prefWidth="147.0" style="-fx-background-color: silver;" text="Upload  " GridPane.columnIndex="1" />
+                  <JFXButton fx:id="userView_UploadPhoto" prefHeight="26.0" prefWidth="110.0" style="-fx-background-color: silver;" text="Upload  " GridPane.columnIndex="1" />
                   <Label text="Photograph" />
-                  <JFXButton fx:id="userView_UploadFile" prefHeight="26.0" prefWidth="146.0" style="-fx-background-color: silver;" text="Upload  File" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <JFXButton fx:id="userView_UploadFile" prefHeight="26.0" prefWidth="110.0" style="-fx-background-color: silver;" text="Upload  File" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Label text="Document" GridPane.rowIndex="2" />
                   <Label fx:id="userView_UploadPhoto_Path" prefHeight="22.0" prefWidth="323.0" textFill="#3300ff" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <font>
                         <Font size="7.0" />
                      </font>
                   </Label>
-                  <Label fx:id="userView_UploadFile_Path" prefHeight="22.0" prefWidth="327.0" textFill="#3300ff" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                  <Label fx:id="userView_UploadFile_Path" prefHeight="22.0" prefWidth="323.0" textFill="#3300ff" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <font>
                         <Font size="7.0" />
                      </font>
                   </Label>
                </children>
             </GridPane>
-            <ImageView fx:id="userView_profileImage" fitHeight="130.0" fitWidth="143.0" layoutX="698.0" layoutY="86.0" pickOnBounds="true" preserveRatio="true" />
+            <Pane layoutX="684.0" layoutY="65.0" prefHeight="183.0" prefWidth="157.0">
+               <children>
+                  <ImageView fitHeight="130.0" fitWidth="130.0" layoutX="18.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../assets/profilePics/default-profile-picture.jpg" />
+                     </image>
+                  </ImageView>
+                  <Label layoutX="52.0" layoutY="90.0" prefHeight="30.0" prefWidth="75.0" text="EMPTY">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <HBox fx:id="profile_userPhoto" layoutX="18.0" layoutY="14.0" prefHeight="130.0" prefWidth="130.0" />
+                  <Label alignment="CENTER" layoutX="18.0" layoutY="144.0" prefHeight="26.0" prefWidth="130.0" style="-fx-background-color: #11999e;" text="User Photo" textFill="WHITE" />
+               </children>
+            </Pane>
          </children>
       </AnchorPane>
       <TabPane fx:id="userView_mainTabPane" layoutX="12.0" layoutY="496.0" prefHeight="194.0" prefWidth="826.0" tabClosingPolicy="UNAVAILABLE">
@@ -208,7 +227,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="userV_PatientTable" layoutY="1.0" prefHeight="200.0" prefWidth="826.0">
+                        <TableView fx:id="userV_PatientTable" layoutY="1.0" prefHeight="200.0" prefWidth="838.0">
                           <columns>
                             <TableColumn fx:id="pTable_name" prefWidth="102.39999389648438" text="Name" />
                             <TableColumn fx:id="pTable_gender" prefWidth="71.20001220703125" text="Gender" />

@@ -323,7 +323,7 @@ public class PostalViewController {
         postalView_toName.setText(null);
         postalView_address.setText(null);
         postalView_note.setText(null);
-        postalView_searchBox.setText(null);
+        postalView_searchBox.clear();
         postalView_displayArea.setText(null);
         postalView_userTable.setItems(null);
         postalView_label_refecenceNo.setText(null);
