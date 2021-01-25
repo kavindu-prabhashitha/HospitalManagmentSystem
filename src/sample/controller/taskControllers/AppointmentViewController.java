@@ -443,7 +443,7 @@ public class AppointmentViewController {
         appointmentView_doctorShow.setText(null);
         appointmentView_patientShow.setText(null);
         appointmentView_patientID.setText(null);
-        appointmentView_searchID.setText(null);
+        appointmentView_searchID.clear();
         appointmentView_appointmentDetails.setText(null);
         appointmentView_apIDLabel.setText(null);
         appointmentView_mainTable.setItems(null);

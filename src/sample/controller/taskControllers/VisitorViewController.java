@@ -355,7 +355,7 @@ public class VisitorViewController {
         Vview_date.setValue(null);
         Vview_displayArea.setText(null);
         Vview_idNumber.setText(null);
-        Vview_idSearch.setText(null);
+        Vview_idSearch.clear();
         Vview_mainTable.setItems(null);
         Vview_inTime.setText(null);
         Vview_outTime.setText(null);
@@ -372,7 +372,7 @@ public class VisitorViewController {
         Vview_date.setValue(null);
         Vview_displayArea.setText(null);
         Vview_idNumber.setText(null);
-        Vview_idSearch.setText(null);
+        Vview_idSearch.clear();
         Vview_inTime.setText(null);
         Vview_outTime.setText(null);
         Vview_note.setText(null);

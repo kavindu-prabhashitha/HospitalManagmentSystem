@@ -60,3 +60,9 @@
 2021-01-21~13:07:32.398828700~ADMIN~admin~ADMIN~0~Admin Record deletedBy adminuserRoll : ADMIN
 2021-01-21~13:09:47.252422400~ADMIN~admin~ADMIN~0~Admin Record AddedBy adminuserRoll : ADMIN
 2021-01-21~13:10:32.312180300~ADMIN~admin~ADMIN~0~Admin Record UpdatedBy adminuserRoll : ADMIN
+2021-01-21~21:10:38.600059600~ADMIN~0~ADMIN~0~Admin Record UpdatedBy 0userRoll : ADMIN
+2021-01-22~09:45:49.441561300~ADMIN~0~ADMIN~admin~Admin Record UpdatedBy 0userRoll : ADMIN
+2021-01-22~09:48:39.579535100~ADMIN~0~PATIENT~0~Patient Record AddedBy 0userRoll : ADMIN
+2021-01-22~09:49:14.298732100~ADMIN~0~PATIENT~4~Patient Record deletedBy 0userRoll : ADMIN
+2021-01-22~09:52:36.401254300~ADMIN~0~RECEPTIONIST~0~Receptionist Record UpdatedBy 0userRoll : ADMIN
+2021-01-22~09:53:18.437731600~ADMIN~0~MEDICALOFFICER~0~MedicalOfficer Record UpdatedBy 0userRoll : ADMIN

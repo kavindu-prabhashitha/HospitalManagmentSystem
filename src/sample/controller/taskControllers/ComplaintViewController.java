@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ComplaintViewController {
@@ -267,7 +268,14 @@ public class ComplaintViewController {
                         new FileChooser.ExtensionFilter("PDF", "*.pdf"));
 
                 File file = fileChooser.showOpenDialog(primaryStage);
-                CView_UploadFile_Path.setText(file.getAbsolutePath());
+
+                if (file != null)
+                {
+                    CView_UploadFile_Path.setText(file.getAbsolutePath());
+                }
+                else {
+                    System.out.println("No Select Document");
+                }
 
             }
         });
@@ -332,7 +340,7 @@ public class ComplaintViewController {
         Cview_complaintDropDown.setValue(null);
         Cview_actionTaken.setText(null);
         Cview_complaintID.setText(null);
-        Cview_idSearchFiled.setText(null);
+        Cview_idSearchFiled.clear();
         Cview_description.setText(null);
         Cview_displayArea.setText(null);
         Cview_phoneNumber.setText(null);

@@ -32,7 +32,7 @@
                </image>
             </ImageView>
             <HBox fx:id="profile_userPhoto" layoutX="31.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" />
-            <Label fx:id="profile_userNameLabel" layoutX="31.0" layoutY="213.0" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: #11999e;" text="User Photo" textFill="WHITE" />
+            <Label fx:id="profile_userNameLabel" alignment="CENTER" layoutX="31.0" layoutY="213.0" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: #11999e;" text="User Photo" textFill="WHITE" />
             <JFXButton fx:id="profile_changePicButton" layoutX="190.0" layoutY="186.0" opacity="0.0" style="-fx-background-color: green;" text="Change" textFill="WHITE" />
          </children>
       </Pane>
