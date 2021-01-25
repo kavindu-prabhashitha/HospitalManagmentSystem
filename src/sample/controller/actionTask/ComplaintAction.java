@@ -7,7 +7,6 @@ import sample.Main;
 import sample.controller.SystemDataReader;
 import sample.controller.taskControllers.SystemDataWriter;
 import sample.model.Complaint;
-import sample.model.Postal;
 
 import javax.swing.*;
 import java.awt.*;
@@ -158,8 +157,10 @@ public class ComplaintAction {
                     JOptionPane.showMessageDialog(null,"Complaint Delete Successfully");
                     System.out.println("Complaint Deleted Success");
                 }
+            }else{
+                finalEditedDataArray.add(allComplaints.get(i));
             }
-            finalEditedDataArray.add(allComplaints.get(i));
+
         }
 
         SystemDataWriter systemDataWriter = new SystemDataWriter();

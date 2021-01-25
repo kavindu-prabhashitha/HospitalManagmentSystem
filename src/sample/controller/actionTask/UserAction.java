@@ -485,8 +485,9 @@ public class UserAction {
             if (allReceptionRecords.get(i).getIdCardNumber().equals(searchPetientid)){
                 finalEditedArray.add(receptionist);
                 isUpdated=true;
+            }else {
+                finalEditedArray.add(allReceptionRecords.get(i));
             }
-            finalEditedArray.add(allReceptionRecords.get(i));
         }
 
         if (isUpdated){
