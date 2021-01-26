@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,7 +83,10 @@ public class UserViewController implements Initializable {
     @FXML private Label userView_UploadFile_Path;
     @FXML private Label userView_label_name;
     @FXML private HBox profile_userPhoto;
+    @FXML private Label noDocument;
+    @FXML private JFXButton openDocument;
     @FXML private Window primaryStage;
+    
 
     @FXML public void initialize(URL url, ResourceBundle rb) {
 
@@ -387,27 +391,27 @@ public class UserViewController implements Initializable {
                         case RECEPTIONIST:
                             Receptionist receptionist = UserAction.searchReceptionRecord(serachID, null, null);
                             displayReceptionistData(receptionist);
-                            viewReceptionPhoto(receptionist);
+                            viewReceptionPhoto_File(receptionist);
                             break;
 
                         case MEDICALOFFICER:
                             //MedicalOfficer medicalOfficer = UserAction.searchMedicalOfficer(serachID, UserAction.medicalOfficerFilePath);
                             MedicalOfficer medicalOfficer = UserAction.searchMedicalOfficerRecord(serachID,null);
                             displayMedicalOfficerData(medicalOfficer);
-                            viewMedicalOfficerPhoto(medicalOfficer);
+                            viewMedicalOfficerPhoto_File(medicalOfficer);
                             break;
 
                         case PATIENT:
 
                             Patient patient = UserAction.searchPatient(serachID, null, null);
                             displayPatientData(patient);
-                            viewPatientPhoto(patient);
+                            viewPatientPhoto_File(patient);
                             break;
 
                         case ADMIN:
                             Admin admin = UserAction.searchAdmin(serachID, null);
                             displayAdminData(admin);
-                            viewAdminPhoto(admin);
+                            viewAdminPhoto_File(admin);
                             break;
 
                     }
@@ -623,7 +627,7 @@ public class UserViewController implements Initializable {
                 Patient patient =userV_PatientTable.getSelectionModel().getSelectedItem();
                 userView_searchField.setText(patient.getIdCardNumber());
                 displayPatientData(patient);
-                viewPatientPhoto(patient);
+                viewPatientPhoto_File(patient);
             }
         });
 
@@ -633,7 +637,7 @@ public class UserViewController implements Initializable {
                 Admin admin = admin_mainTable.getSelectionModel().getSelectedItem();
                 userView_searchField.setText(admin.getIdCardNumber());
                 displayAdminData(admin);
-                viewAdminPhoto(admin);
+                viewAdminPhoto_File(admin);
             }
         });
 
@@ -643,7 +647,7 @@ public class UserViewController implements Initializable {
                 Receptionist receptionist =receptiontable_mainTable.getSelectionModel().getSelectedItem();
                 userView_searchField.setText(receptionist.getIdCardNumber());
                 displayReceptionistData(receptionist);
-                viewReceptionPhoto(receptionist);
+                viewReceptionPhoto_File(receptionist);
             }
         });
 
@@ -653,7 +657,7 @@ public class UserViewController implements Initializable {
                 MedicalOfficer medicalOfficer =medicalOfficer_mainTable.getSelectionModel().getSelectedItem();
                 userView_searchField.setText(medicalOfficer.getIdCardNumber());
                 displayMedicalOfficerData(medicalOfficer);
-                viewMedicalOfficerPhoto(medicalOfficer);
+                viewMedicalOfficerPhoto_File(medicalOfficer);
             }
         });
 
@@ -749,14 +753,40 @@ public class UserViewController implements Initializable {
                             if (file != null)
                             {
                                 userView_UploadFile_Path.setText(file.getAbsolutePath());
+                                noDocument.setVisible(false);
+                                openDocument.setVisible(true);
                             }
                             else {
+                                noDocument.setVisible(true);
+                                openDocument.setVisible(false);
                                 System.out.println("No Select Document");
                             }
 
                             break;
 
                     }
+                }
+            }
+        });
+
+        openDocument.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if (userView_UploadFile_Path.getText()!=null){
+                        Desktop.getDesktop().open(new File(userView_UploadFile_Path.getText()));
+                    }
+                    else {
+                         if (Files.isReadable(Path.of(path))){
+                             Desktop.getDesktop().open(new File(path));
+                             System.out.println("Preview PDF");
+                         }else {
+                             JOptionPane.showMessageDialog(null,"NO Document");
+                         }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -1025,6 +1055,8 @@ public class UserViewController implements Initializable {
         userView_UploadPhoto_Path.setText(null);
         userView_UploadFile_Path.setText(null);
         profile_userPhoto.getChildren().clear();
+        noDocument.setVisible(false);
+        openDocument.setVisible(false);
 
 
     }
@@ -1101,8 +1133,11 @@ public class UserViewController implements Initializable {
         userView_speciality.setDisable(false);
     }
 
+
+    public String path;
+
     //write a method for view photo
-    private void viewAdminPhoto(Admin admin) {
+    private void viewAdminPhoto_File(Admin admin) {
 
         profile_userPhoto.getChildren().clear();
 
@@ -1127,13 +1162,26 @@ public class UserViewController implements Initializable {
                 System.out.println("No Profile Photo");
             }
 
+            String adminFilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
+            String fileSavePath = adminFilePath + "\\" + staffId + ".pdf";
+
+            if (Files.isReadable(Path.of(fileSavePath))){
+                noDocument.setVisible(false);
+                openDocument.setVisible(true);
+                path =fileSavePath;
+            }else {
+
+                noDocument.setVisible(true);
+                openDocument.setVisible(false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //write a method for view Patient photo
-    private void viewPatientPhoto(Patient patient) {
+    private void viewPatientPhoto_File(Patient patient) {
 
         profile_userPhoto.getChildren().clear();
 
@@ -1158,13 +1206,27 @@ public class UserViewController implements Initializable {
             }else {
                 System.out.println("No Profile Photo");
             }
+
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/patient";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
+
+            if (Files.isReadable(Path.of(fileSavePath))){
+                noDocument.setVisible(false);
+                openDocument.setVisible(true);
+                path =fileSavePath;
+            }else {
+
+                noDocument.setVisible(true);
+                openDocument.setVisible(false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //write a method for view Reception photo
-    private void viewReceptionPhoto(Receptionist receptionist) {
+    private void viewReceptionPhoto_File(Receptionist receptionist) {
 
         profile_userPhoto.getChildren().clear();
 
@@ -1190,13 +1252,26 @@ public class UserViewController implements Initializable {
                 System.out.println("No Profile Photo");
             }
 
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
+
+            if (Files.isReadable(Path.of(fileSavePath))){
+                noDocument.setVisible(false);
+                openDocument.setVisible(true);
+                path =fileSavePath;
+            }else {
+
+                noDocument.setVisible(true);
+                openDocument.setVisible(false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //write a method for view MedicalOfficer photo
-    private void viewMedicalOfficerPhoto(MedicalOfficer medicalOfficer) {
+    private void viewMedicalOfficerPhoto_File(MedicalOfficer medicalOfficer) {
 
         profile_userPhoto.getChildren().clear();
 
@@ -1222,10 +1297,24 @@ public class UserViewController implements Initializable {
                 System.out.println("No Profile Photo");
             }
 
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
+
+            if (Files.isReadable(Path.of(fileSavePath))){
+                noDocument.setVisible(false);
+                openDocument.setVisible(true);
+                path =fileSavePath;
+            }else {
+
+                noDocument.setVisible(true);
+                openDocument.setVisible(false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     public void validateInitialize(){
 

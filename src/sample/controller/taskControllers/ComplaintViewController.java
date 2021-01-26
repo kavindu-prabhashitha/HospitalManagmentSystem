@@ -7,7 +7,6 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RegexValidator;
 import com.jfoenix.validation.StringLengthValidator;
-import javafx.application.HostServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,12 +22,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import sample.Main;
-import sample.controller.actionTask.AppointmentAction;
 import sample.controller.actionTask.ComplaintAction;
-import sample.controller.actionTask.PostalAction;
 import sample.controller.actionTask.ReferenceAction;
-import sample.model.Appointment;
-import sample.model.AppointmentStatus;
 import sample.model.Complaint;
 
 import javax.swing.*;
@@ -36,9 +31,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class ComplaintViewController {
@@ -138,6 +134,12 @@ public class ComplaintViewController {
 
     @FXML
     private Label CView_UploadFile_Path;
+
+    @FXML
+    private Label noDocument;
+
+    @FXML
+    private JFXButton openDocument;
 
     @FXML private Window primaryStage;
 
@@ -251,6 +253,7 @@ public class ComplaintViewController {
                     Complaint foundComplaint = ComplaintAction.searchComplaintRecord(searchTerm,searchTerm);
                     setComplaintViewData(foundComplaint);
                     displayComplaintDetails(foundComplaint);
+                    viewFile(foundComplaint);
 
                 }
             }
@@ -272,11 +275,39 @@ public class ComplaintViewController {
                 if (file != null)
                 {
                     CView_UploadFile_Path.setText(file.getAbsolutePath());
+                    noDocument.setVisible(false);
+                    openDocument.setVisible(true);
                 }
                 else {
+                    noDocument.setVisible(true);
+                    openDocument.setVisible(false);
                     System.out.println("No Select Document");
                 }
 
+            }
+        });
+
+        openDocument.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if (CView_UploadFile_Path.getText()!=null){
+                        Desktop.getDesktop().open(new File(CView_UploadFile_Path.getText()));
+                    }
+                    else {
+                        if (Files.isReadable(Path.of(path))){
+                            Desktop.getDesktop().open(new File(path));
+                            System.out.println("Preview PDF");
+                        }else {
+                            JOptionPane.showMessageDialog(null,"NO Document");
+                        }
+
+
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -301,6 +332,7 @@ public class ComplaintViewController {
                 Complaint selectedComplaint =Cview_mainTable.getSelectionModel().getSelectedItem();
                 displayComplaintDetails(selectedComplaint);
                 setComplaintViewData(selectedComplaint);
+                viewFile(selectedComplaint);
 
             }
         });
@@ -348,6 +380,8 @@ public class ComplaintViewController {
         Cview_actionTaken.setText(null);
         Cview_note.setText(null);
         CView_UploadFile_Path.setText(null);
+        noDocument.setVisible(false);
+        openDocument.setVisible(false);
     }
 
     public void setComplaintViewData(Complaint complaintRecord){
@@ -393,6 +427,31 @@ public class ComplaintViewController {
         Cview_mainTable.setItems(observableList);
     }
 
+    public String path;
+
+    public void viewFile(Complaint complaint) {
+
+        try {
+
+            int referenceNo = complaint.getComplaintID();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/complaintData";
+            String fileSavePath = moFilePath + "\\" + referenceNo + ".pdf";
+
+            if (Files.isReadable(Path.of(fileSavePath))){
+                noDocument.setVisible(false);
+                openDocument.setVisible(true);
+                path =fileSavePath;
+            }else {
+
+                noDocument.setVisible(true);
+                openDocument.setVisible(false);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void validateInitialize(){
 
