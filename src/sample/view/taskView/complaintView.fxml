@@ -79,6 +79,8 @@
                   <Font size="7.0" />
                </font>
             </Label>
+            <JFXButton fx:id="openDocument" layoutX="283.0" layoutY="351.0" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #00eeff;" text="open" />
+            <Label fx:id="noDocument" alignment="CENTER" layoutX="283.0" layoutY="351.0" prefHeight="26.0" prefWidth="80.0" text="No Document" textFill="RED" />
          </children>
       </AnchorPane>
       <AnchorPane layoutY="473.0" prefHeight="40.0" prefWidth="850.0" style="-fx-background-color: f3f2da;">

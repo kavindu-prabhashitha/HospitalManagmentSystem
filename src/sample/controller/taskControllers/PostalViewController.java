@@ -23,15 +23,16 @@ import javafx.stage.Window;
 import sample.Main;
 import sample.controller.actionTask.PostalAction;
 import sample.controller.actionTask.ReferenceAction;
-import sample.controller.actionTask.UserAction;
 import sample.model.Postal;
 import sample.model.PostalType;
-import sample.model.UserRoll;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -121,6 +122,12 @@ public class PostalViewController {
     private Label postalView_UploadFile_Path;
 
     @FXML
+    private Label noDocument;
+
+    @FXML
+    private JFXButton openDocument;
+
+    @FXML
     private Window primaryStage;
 
     @FXML
@@ -131,7 +138,6 @@ public class PostalViewController {
 
         //Reset all Data
         resetDisplay();
-
 
         postalView_type.getItems().addAll(ReferenceAction.getPostalTypes());
 
@@ -241,6 +247,7 @@ public class PostalViewController {
                         Postal foundPostal = PostalAction.searchPostalRecord(searchTerm);
                         dislpayPostalRecord(foundPostal);
                         setPostaDatainView(foundPostal);
+                        viewFile(foundPostal);
                     }
                 }
             }
@@ -267,6 +274,7 @@ public class PostalViewController {
                 Postal postal = postalView_userTable.getSelectionModel().getSelectedItem();
                 dislpayPostalRecord(postal);
                 setPostaDatainView(postal);
+                viewFile(postal);
             }
         });
 
@@ -282,13 +290,50 @@ public class PostalViewController {
                         new FileChooser.ExtensionFilter("PDF", "*.pdf"));
 
                 File file = fileChooser.showOpenDialog(primaryStage);
-                postalView_UploadFile_Path.setText(file.getAbsolutePath());
 
+
+
+                if (file != null)
+                {
+                    postalView_UploadFile_Path.setText(file.getAbsolutePath());
+                    noDocument.setVisible(false);
+                    openDocument.setVisible(true);
+                }
+                else {
+                    noDocument.setVisible(true);
+                    openDocument.setVisible(false);
+                    System.out.println("No Select Document");
+                }
+
+            }
+        });
+
+        openDocument.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if (postalView_UploadFile_Path.getText()!=null){
+                        Desktop.getDesktop().open(new File(postalView_UploadFile_Path.getText()));
+                    }
+                    else {
+                        if (Files.isReadable(Path.of(path))){
+                            Desktop.getDesktop().open(new File(path));
+                            System.out.println("Preview PDF");
+                        }else {
+                            JOptionPane.showMessageDialog(null,"NO Document");
+                        }
+
+                        }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
 
     }
+
 
     public Postal getInitialPostal() {
         Postal postal = new Postal();
@@ -328,6 +373,8 @@ public class PostalViewController {
         postalView_userTable.setItems(null);
         postalView_label_refecenceNo.setText(null);
         postalView_UploadFile_Path.setText(null);
+        noDocument.setVisible(false);
+        openDocument.setVisible(false);
     }
 
     public void dislpayPostalRecord(Postal postal) {
@@ -484,10 +531,29 @@ public class PostalViewController {
         return allCheck;
     }
 
-    public void savFileMassage() {
+    public String path;
 
-        if (postalView_UploadFile_Path.getText() == null) {
-            postalView_UploadFile_Path.setText("Not Select");
+    public void viewFile(Postal postal) {
+
+        try {
+
+            int referenceNo = postal.getReferenceNo();
+
+            String moFilePath ="src/sample/fileStorage/moduleData/userData/postalData";
+            String fileSavePath = moFilePath + "\\" + referenceNo + ".pdf";
+
+            if (Files.isReadable(Path.of(fileSavePath))){
+                noDocument.setVisible(false);
+                openDocument.setVisible(true);
+                path =fileSavePath;
+            }else {
+
+                noDocument.setVisible(true);
+                openDocument.setVisible(false);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
