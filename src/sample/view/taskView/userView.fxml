@@ -189,7 +189,6 @@
                <children>
                   <JFXButton fx:id="userView_UploadPhoto" prefHeight="26.0" prefWidth="110.0" style="-fx-background-color: silver;" text="Upload  " GridPane.columnIndex="1" />
                   <Label text="Photograph" />
-                  <JFXButton fx:id="userView_UploadFile" prefHeight="26.0" prefWidth="110.0" style="-fx-background-color: silver;" text="Upload  File" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Label text="Document" GridPane.rowIndex="2" />
                   <Label fx:id="userView_UploadPhoto_Path" prefHeight="22.0" prefWidth="323.0" textFill="#3300ff" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <font>
@@ -201,6 +200,13 @@
                         <Font size="7.0" />
                      </font>
                   </Label>
+                  <AnchorPane prefHeight="26.0" prefWidth="208.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <children>
+                        <JFXButton fx:id="userView_UploadFile" prefHeight="26.0" prefWidth="110.0" style="-fx-background-color: silver;" text="Upload  File" />
+                        <JFXButton fx:id="openDocument" layoutX="122.0" layoutY="-1.0" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #00eeff;" text="open" />
+                        <Label fx:id="noDocument" alignment="CENTER" layoutX="122.0" layoutY="-1.0" prefHeight="26.0" prefWidth="80.0" text="No Document" textFill="RED" />
+                     </children>
+                  </AnchorPane>
                </children>
             </GridPane>
             <Pane layoutX="684.0" layoutY="65.0" prefHeight="183.0" prefWidth="157.0">
@@ -219,8 +225,6 @@
                   <Label alignment="CENTER" layoutX="18.0" layoutY="144.0" prefHeight="26.0" prefWidth="130.0" style="-fx-background-color: #11999e;" text="User Photo" textFill="WHITE" />
                </children>
             </Pane>
-            <JFXButton fx:id="openDocument" layoutX="720.0" layoutY="254.0" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: #00eeff;" text="open" />
-            <Label fx:id="noDocument" alignment="CENTER" layoutX="720.0" layoutY="255.0" prefHeight="26.0" prefWidth="80.0" text="No Document" textFill="RED" />
          </children>
       </AnchorPane>
       <TabPane fx:id="userView_mainTabPane" layoutX="12.0" layoutY="496.0" prefHeight="194.0" prefWidth="826.0" tabClosingPolicy="UNAVAILABLE">
