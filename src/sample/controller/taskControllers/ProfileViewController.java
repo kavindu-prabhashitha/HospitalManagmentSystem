@@ -1,6 +1,9 @@
 package sample.controller.taskControllers;
 
 import com.jfoenix.controls.*;
+import com.jfoenix.validation.NumberValidator;
+import com.jfoenix.validation.RegexValidator;
+import com.jfoenix.validation.StringLengthValidator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -8,6 +11,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import sample.Main;
 import sample.controller.actionTask.ProfileAction;
 import sample.controller.actionTask.ReferenceAction;
@@ -17,6 +22,7 @@ import sample.model.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +43,7 @@ public class ProfileViewController {
     @FXML private URL location;
     @FXML private Label profile_userNameLabel;
     @FXML private JFXButton profile_changePicButton;
+    @FXML private JFXButton profile_UploadDocument;
     @FXML private GridPane profileView_userdataGrid;
     @FXML private JFXTextField profile_name;
     @FXML private JFXTextField profile_nicNumber;
@@ -60,9 +67,15 @@ public class ProfileViewController {
     @FXML private JFXComboBox<String> profile_maritalDrop;
     @FXML private HBox profile_userPhoto;
     @FXML private JFXButton profile_OpenDocument;
-
+    @FXML private JFXButton profile_resetProfileButton;
+    @FXML private Label profile_UploadPhoto_Path;
+    @FXML private Label profile_UploadFile_Path;
+    @FXML private Window primaryStage;
 
     @FXML void initialize() {
+
+        //Validate User Inputs
+        validateInitialize();
 
         profile_maritalDrop.getItems().addAll(ReferenceAction.getMaritalStatus());
         profile_genderDrop.getItems().addAll(ReferenceAction.getGender());
@@ -78,19 +91,35 @@ public class ProfileViewController {
                 switch (Main.getCurrentSystemUser().getUserRoll()){
                     case ADMIN :
                        profileView_userdataGrid.setDisable(false);
+                        profile_UploadDocument.setVisible(true);
+                        profile_changePicButton.setVisible(true);
+                        profile_saveProfileButton.setDisable(false);
+                        profile_resetProfileButton.setDisable(false);
                        break;
                     case RECEPTIONIST:
                         profileView_userdataGrid.setDisable(false);
                         profileView_empExtraGrid.setDisable(false);
+                        profile_UploadDocument.setVisible(true);
+                        profile_changePicButton.setVisible(true);
+                        profile_saveProfileButton.setDisable(false);
+                        profile_resetProfileButton.setDisable(false);
                         break;
                     case PATIENT:
                         profileView_userdataGrid.setDisable(false);
                         profileView_patientExtraGrid.setDisable(false);
+                        profile_UploadDocument.setVisible(true);
+                        profile_changePicButton.setVisible(true);
+                        profile_saveProfileButton.setDisable(false);
+                        profile_resetProfileButton.setDisable(false);
                         break;
                     case MEDICALOFFICER:
                         profileView_userdataGrid.setDisable(false);
                         profileView_empExtraGrid.setDisable(false);
                         profileView_doctorExtraGrid.setDisable(false);
+                        profile_UploadDocument.setVisible(true);
+                        profile_changePicButton.setVisible(true);
+                        profile_saveProfileButton.setDisable(false);
+                        profile_resetProfileButton.setDisable(false);
                         break;
                     default:
                         break;
@@ -102,21 +131,96 @@ public class ProfileViewController {
             @Override
             public void handle(MouseEvent mouseEvent) {
 
-                switch (Main.getCurrentSystemUser().getUserRoll()){
-                    case ADMIN :
-                        ProfileAction.updateCurrentUserData(getAdminDataFromView());
-                        break;
-                    case RECEPTIONIST:
-                        ProfileAction.updateCurrentUserData(getReceptionistFromView());
-                        break;
-                    case PATIENT:
-                        ProfileAction.updateCurrentUserData(getPatientDataFromView());
-                        break;
-                    case MEDICALOFFICER:
-                        ProfileAction.updateCurrentUserData(getMedicalOffFromView());
-                        break;
-                    default:
-                        break;
+                if(checkInputs()) {
+
+                    switch (Main.getCurrentSystemUser().getUserRoll()) {
+
+                        case ADMIN:
+                            if (validateInputs()) {
+                                ProfileAction.updateCurrentUserData(getAdminDataFromView());
+                            }
+                            else {
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            break;
+
+                        case RECEPTIONIST:
+                            if (profile_emailAddress.getText().length() <= 0) {
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Staff Email is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else if (profile_dateOfJoin.getValue()==null){
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Join Date is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else {
+                                if (validateInputs()) {
+                                    ProfileAction.updateCurrentUserData(getReceptionistFromView());
+                                }
+                                else {
+                                    Toolkit.getDefaultToolkit().beep();
+                                    JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                            break;
+
+                        case PATIENT:
+                            if (profile_bloodGropDrop.getSelectionModel().getSelectedIndex() < 0) {
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Blood Group is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else if (profile_allergies.getText().length() <= 0) {
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Allergies is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else {
+
+                                //Check Input Field Of Allergy is text
+                                RegexValidator regexValidator = new RegexValidator();
+                                regexValidator.setRegexPattern("[A-Za-z\\s]+");
+                                profile_allergies.getValidators().add(regexValidator);
+                                profile_allergies.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  profile_allergies.validate();
+                                });
+
+                                if (validateInputs() && profile_allergies.validate()) {
+                                    ProfileAction.updateCurrentUserData(getPatientDataFromView());
+                                }
+                                else {
+                                    Toolkit.getDefaultToolkit().beep();
+                                    JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                            break;
+                        case MEDICALOFFICER:
+                            if (profile_emailAddress.getText().length() <= 0) {
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Staff Email is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else if (profile_dateOfJoin.getValue()==null){
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Join Date is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else if (profile_specialityDrop.getSelectionModel().getSelectedIndex() < 0) {
+                                Toolkit.getDefaultToolkit().beep();
+                                JOptionPane.showMessageDialog(null, "Speciality is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else {
+                                if (validateInputs()) {
+                                    ProfileAction.updateCurrentUserData(getMedicalOffFromView());
+                                }
+                                else {
+                                    Toolkit.getDefaultToolkit().beep();
+                                    JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
                 }
             }
         });
@@ -125,8 +229,101 @@ public class ProfileViewController {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                setUserDocument(Main.getCurrentSystemUser());
+                //setUserDocument(Main.getCurrentSystemUser());
+                //setUserProfileData(Main.getCurrentSystemUser());
+                try {
+                    if (Files.isReadable(Path.of(path))){
+                        System.out.println("Preview Document");
+                        Desktop.getDesktop().open(new File(path));
+                    }else {
+                        System.out.println("No Document");
+                        JOptionPane.showMessageDialog(null,"NO Document");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
+        profile_changePicButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                FileChooser fileChooser = new FileChooser();
+                // Set title for FileChooser
+                fileChooser.setTitle("Select Your Picture");
+                // Add Extension Filters
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                        new FileChooser.ExtensionFilter("JPEG", "*.jpeg"));
+
+                File file = fileChooser.showOpenDialog(primaryStage);
+
+                if (file != null)
+                {
+                    profile_UploadPhoto_Path.setText(file.getAbsolutePath());
+                    profile_userPhoto.getChildren().clear();
+
+                    try {
+
+                        if (Files.isReadable(Path.of(file.getAbsolutePath()))){
+                            FileInputStream imageStream = new FileInputStream(file.getAbsoluteFile());
+                            javafx.scene.image.Image image = new Image(imageStream);
+                            ImageView view = new ImageView();
+                            view.setImage(image);
+                            view.setFitWidth(200);
+                            view.setFitHeight(200);
+                            view.setSmooth(true);
+                            //view.setPreserveRatio(true);
+                            profile_userPhoto.getChildren().add(view);
+                            System.out.println("Preview PHOTO");
+                        }else {
+                            System.out.println("No Profile Photo");
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    System.out.println("No Select Photo");
+                }
+            }
+
+        });
+
+        profile_UploadDocument.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                FileChooser fileChooser = new FileChooser();
+                // Set title for FileChooser
+                fileChooser.setTitle("Select File");
+                // Add Extension Filters
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+
+
+                File file = fileChooser.showOpenDialog(primaryStage);
+
+                if (file != null)
+                {
+                    profile_UploadFile_Path.setText(file.getAbsolutePath());
+                }
+                else {
+                    System.out.println("No Select Document");
+                }
+
+            }
+        });
+
+        profile_resetProfileButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                profile_userPhoto.getChildren().clear();
+                profile_UploadFile_Path.setText(null);
+                profile_UploadPhoto_Path.setText(null);
+                setUserProfileData(Main.getCurrentSystemUser());
             }
         });
 
@@ -139,22 +336,23 @@ public class ProfileViewController {
     }
 
     public void setUserProfileData(SystemUser systemUser){
+
         switch (systemUser.getUserRoll()){
             case ADMIN :
                 setViewForAdmin();
                 setAdminDataToView(systemUser.getAdmin());
-                viewAdminPhoto(systemUser.getAdmin());
+                viewAdminPhoto_File(systemUser.getAdmin());
                 break;
             case RECEPTIONIST:
                 setViewForReception();
                 setReceptionDataToView(systemUser.getReceptionist());
-                viewReceptionPhoto(systemUser.getReceptionist());
+                viewReceptionPhoto_File(systemUser.getReceptionist());
                 break;
             case PATIENT:
                 System.out.println("setUser for patient called");
                 setViewForPatient();
                 setPatientDataToView(systemUser.getPatient());
-                viewPatientPhoto(systemUser.getPatient());
+                viewPatientPhoto_File(systemUser.getPatient());
                 break;
             case MEDICALOFFICER:
                 setViewForMedicalOfficer();
@@ -167,24 +365,8 @@ public class ProfileViewController {
         }
     }
 
-    public void setUserDocument(SystemUser systemUser){
+    public String path;
 
-        switch (systemUser.getUserRoll()){
-            case ADMIN :
-                viewAdminFile(systemUser.getAdmin());
-                break;
-            case RECEPTIONIST:
-                viewReceptionFile(systemUser.getReceptionist());
-                break;
-            case PATIENT:
-                viewPatientFile(systemUser.getPatient());
-                break;
-            case MEDICALOFFICER:
-                viewMedicalOfficerFile(systemUser.getMedicalOfficer());
-                break;
-        }
-
-    }
 
     //write a method for view Admin Data
     private void setAdminDataToView(Admin admin){
@@ -200,16 +382,16 @@ public class ProfileViewController {
     }
 
     //write a method for view Admin photo
-    private void viewAdminPhoto(Admin admin) {
+    private void viewAdminPhoto_File(Admin admin) {
 
         try {
             String staffId = admin.getIdCardNumber();
 
             String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/admin";
-            String photosavePath = photoPath + "\\" + staffId + ".jpg";
+            String photoSavePath = photoPath + "\\" + staffId + ".jpg";
 
-            if (Files.isReadable(Path.of(photosavePath))){
-                FileInputStream imageStream = new FileInputStream(photosavePath);
+            if (Files.isReadable(Path.of(photoSavePath))){
+                FileInputStream imageStream = new FileInputStream(photoSavePath);
                 Image image = new Image(imageStream);
                 ImageView view = new ImageView();
                 view.setImage(image);
@@ -223,26 +405,11 @@ public class ProfileViewController {
                 System.out.println("No Profile Photo");
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
 
-    //write a method for view Admin File
-    private void viewAdminFile(Admin admin) {
+            path=fileSavePath;
 
-        try {
-
-            String staffId = admin.getIdCardNumber();
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/admin";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            if (Files.isReadable(Path.of(fileSavePath))){
-                Desktop.getDesktop().open(new File(fileSavePath));
-            }else {
-                JOptionPane.showMessageDialog(null,"NO Document");
-            }
-            System.out.println("Preview PDF");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -266,17 +433,17 @@ public class ProfileViewController {
     }
 
     //write a method for view Patient photo
-    private void viewPatientPhoto(Patient patient) {
+    private void viewPatientPhoto_File(Patient patient) {
 
         try {
 
             String staffId = patient.getIdCardNumber();
 
             String photoPath = "src/sample/fileStorage/moduleData/userData/userPhoto/patient";
-            String photosavePath = photoPath + "\\" + staffId + ".jpg";
+            String photoSavePath = photoPath + "\\" + staffId + ".jpg";
 
-            if (Files.isReadable(Path.of(photosavePath))){
-                FileInputStream imageStream = new FileInputStream(photosavePath);
+            if (Files.isReadable(Path.of(photoSavePath))){
+                FileInputStream imageStream = new FileInputStream(photoSavePath);
                 Image image = new Image(imageStream);
                 ImageView view = new ImageView();
                 view.setImage(image);
@@ -289,26 +456,12 @@ public class ProfileViewController {
             }else {
                 System.out.println("No Profile Photo");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    //write a method for view Patient File
-    private void viewPatientFile(Patient patient) {
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/patient";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
 
-        try {
+            path=fileSavePath;
 
-            String staffId = patient.getIdCardNumber();
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/patient";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            if (Files.isReadable(Path.of(fileSavePath))){
-                Desktop.getDesktop().open(new File(fileSavePath));
-            }else {
-                JOptionPane.showMessageDialog(null,"NO Document");
-            }
-            System.out.println("Preview PDF");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -332,7 +485,7 @@ public class ProfileViewController {
     }
 
     //write a method for view Reception photo
-    private void viewReceptionPhoto(Receptionist receptionist) {
+    private void viewReceptionPhoto_File(Receptionist receptionist) {
 
         try {
 
@@ -356,26 +509,10 @@ public class ProfileViewController {
                 System.out.println("No Profile Photo");
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
 
-    //write a method for view Reception File
-    private void viewReceptionFile(Receptionist receptionist) {
-
-        try {
-
-            String staffId = receptionist.getIdCardNumber();
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/reception";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            if (Files.isReadable(Path.of(fileSavePath))){
-                Desktop.getDesktop().open(new File(fileSavePath));
-            }else {
-                JOptionPane.showMessageDialog(null,"NO Document");
-            }
-            System.out.println("Preview PDF");
+            path=fileSavePath;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -424,32 +561,16 @@ public class ProfileViewController {
                 System.out.println("No Profile Photo");
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+            String FilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
+            String fileSavePath = FilePath + "\\" + staffId + ".pdf";
 
-    //write a method for view Reception File
-    private void viewMedicalOfficerFile(MedicalOfficer medicalOfficer) {
+            path=fileSavePath;
 
-        try {
-
-            String staffId = medicalOfficer.getIdCardNumber();
-
-            String moFilePath ="src/sample/fileStorage/moduleData/userData/userFile/medicalOfficer";
-            String fileSavePath = moFilePath + "\\" + staffId + ".pdf";
-            if (Files.isReadable(Path.of(fileSavePath))){
-                Desktop.getDesktop().open(new File(fileSavePath));
-            }else {
-                JOptionPane.showMessageDialog(null,"NO Document");
-            }
-            System.out.println("Preview PDF");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
 
     private void setViewForAdmin() {
@@ -457,6 +578,10 @@ public class ProfileViewController {
         profileView_doctorExtraGrid.setVisible(false);
         profileView_empExtraGrid.setVisible(false);
         profileView_userdataGrid.setDisable(true);
+        profile_UploadDocument.setVisible(false);
+        profile_changePicButton.setVisible(false);
+        profile_saveProfileButton.setDisable(true);
+        profile_resetProfileButton.setDisable(true);
     }
 
     private void setViewForReception() {
@@ -464,6 +589,10 @@ public class ProfileViewController {
         profileView_empExtraGrid.setDisable(true);
         profileView_doctorExtraGrid.setVisible(false);
         profileView_userdataGrid.setDisable(true);
+        profile_UploadDocument.setVisible(false);
+        profile_changePicButton.setVisible(false);
+        profile_saveProfileButton.setDisable(true);
+        profile_resetProfileButton.setDisable(true);
     }
 
     private void setViewForPatient(){
@@ -473,6 +602,10 @@ public class ProfileViewController {
         profileView_doctorExtraGrid.setVisible(false);
         profileView_userdataGrid.setDisable(true);
         profileView_userdataGrid.setVisible(true);
+        profile_UploadDocument.setVisible(false);
+        profile_changePicButton.setVisible(false);
+        profile_saveProfileButton.setDisable(true);
+        profile_resetProfileButton.setDisable(true);
     }
 
     private void setViewForMedicalOfficer(){
@@ -480,7 +613,12 @@ public class ProfileViewController {
         profileView_empExtraGrid.setDisable(true);
         profileView_doctorExtraGrid.setDisable(true);
         profileView_userdataGrid.setDisable(true);
+        profile_UploadDocument.setVisible(false);
+        profile_changePicButton.setVisible(false);
+        profile_saveProfileButton.setDisable(true);
+        profile_resetProfileButton.setDisable(true);
     }
+
 
     private SystemUser getPatientDataFromView(){
         SystemUser systemUser = new SystemUser();
@@ -496,6 +634,8 @@ public class ProfileViewController {
         patient.setUserPassword(UserAction.encryptUserData(profile_userPassword.getText()));
         patient.setBloodGroup(profile_bloodGropDrop.getValue());
         patient.setAllergies(profile_allergies.getText());
+        patient.setPhotoPath(profile_UploadPhoto_Path.getText());
+        patient.setFilePath(profile_UploadFile_Path.getText());
 
         systemUser.setPatient(patient);
 
@@ -517,6 +657,8 @@ public class ProfileViewController {
         admin.setMaritalStatus(profile_maritalDrop.getValue());
         admin.setUserName(UserAction.encryptUserData(profile_userName.getText()));
         admin.setUserPassword(UserAction.encryptUserData(profile_userPassword.getText()));
+        admin.setPhotoPath(profile_UploadPhoto_Path.getText());
+        admin.setFilePath(profile_UploadFile_Path.getText());
 
         adminUser.setAdmin(admin);
         return adminUser;
@@ -540,6 +682,8 @@ public class ProfileViewController {
         receptionist.setStaffID(Integer.parseInt(profile_staffID.getText()));
         receptionist.setStaffEmailAddress(profile_emailAddress.getText());
         receptionist.setDateOfJoining(profile_dateOfJoin.getValue());
+        receptionist.setPhotoPath(profile_UploadPhoto_Path.getText());
+        receptionist.setFilePath(profile_UploadFile_Path.getText());
 
         systemUser.setReceptionist(receptionist);
 
@@ -566,9 +710,129 @@ public class ProfileViewController {
         medicalOfficer.setStaffEmailAddress(profile_emailAddress.getText());
         medicalOfficer.setDateOfJoining(profile_dateOfJoin.getValue());
         medicalOfficer.setSpeciality(profile_specialityDrop.getValue());
+        medicalOfficer.setPhotoPath(profile_UploadPhoto_Path.getText());
+        medicalOfficer.setFilePath(profile_UploadFile_Path.getText());
 
         systemUser.setMedicalOfficer(medicalOfficer);
 
         return systemUser;
     }
+
+
+    public void validateInitialize(){
+
+        //Check Input Field Of Name is text
+        RegexValidator regexValidator = new RegexValidator();
+        regexValidator.setRegexPattern("[A-Za-z\\s]+");
+        regexValidator.setMessage("Only Text");
+
+        profile_name.getValidators().add(regexValidator);
+        profile_name.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  profile_name.validate();
+        });
+        profile_allergies.getValidators().add(regexValidator);
+        profile_allergies.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  profile_allergies.validate();
+        });
+
+        //Check Input Field Of Phone Number is number
+        NumberValidator numbValid = new NumberValidator();
+        numbValid.setMessage("Only Number");
+
+        profile_phoneNumber.getValidators().add(numbValid);
+        profile_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) profile_phoneNumber.validate();
+        });
+
+        //Check Length Of Phone Number
+        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+        profile_phoneNumber.getValidators().add(lengthValidatorNumb);
+        profile_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) profile_phoneNumber.validate();
+        });
+
+    }
+
+    public Boolean validateInputs(){
+
+        Boolean dataInputs = false;
+
+        //Check Input Field Of Name is text
+        RegexValidator regexValidator = new RegexValidator();
+        regexValidator.setRegexPattern("[A-Za-z\\s]+");
+
+        profile_name.getValidators().add(regexValidator);
+        profile_name.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  profile_name.validate();
+        });
+
+        //Check Input Field Of Phone Number is number
+        NumberValidator numbValid = new NumberValidator();
+
+        profile_phoneNumber.getValidators().add(numbValid);
+        profile_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
+            if(!newVal) profile_phoneNumber.validate();
+        });
+
+        //Check Length Of Phone Number
+        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
+
+        profile_phoneNumber.getValidators().add(lengthValidatorNumb);
+        profile_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue) profile_phoneNumber.validate();
+        });
+
+        if (profile_name.validate() && profile_phoneNumber.validate()){
+            dataInputs = true;
+        }
+        return dataInputs;
+    }
+
+    public Boolean checkInputs(){
+
+        Boolean allCheck =false;
+
+        if (profile_name.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Name is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_genderDrop.getSelectionModel().getSelectedIndex() < 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Gender is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_maritalDrop.getSelectionModel().getSelectedIndex() < 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Marital is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_dobDatePicker.getValue()==null){
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Date of Birth is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_phoneNumber.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Phone Number is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_nicNumber.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "NIC is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_address.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Address is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_userName.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "User Name is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (profile_userPassword.getText().length() <= 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Password is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            allCheck = true;
+        }
+        return allCheck;
+    }
+
+
 }
