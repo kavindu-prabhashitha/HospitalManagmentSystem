@@ -231,7 +231,16 @@ public class UserViewController implements Initializable {
                                 JOptionPane.showMessageDialog(null, "Join Date is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Email Address
+                                RegexValidator regexValidator_email = new RegexValidator();
+                                regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+                                userView_staffEmail.getValidators().add(regexValidator_email);
+                                userView_staffEmail.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  userView_staffEmail.validate();
+                                });
+
+                                if (validateInputs() && userView_staffEmail.validate() ) {
 
                                     if (userView_UploadPhoto_Path.getText() == null){
                                         Object[] options = { "OK", "CANCEL" };
@@ -325,7 +334,16 @@ public class UserViewController implements Initializable {
                                 JOptionPane.showMessageDialog(null, "Speciality is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Email Address
+                                RegexValidator regexValidator_email = new RegexValidator();
+                                regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+                                userView_staffEmail.getValidators().add(regexValidator_email);
+                                userView_staffEmail.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  userView_staffEmail.validate();
+                                });
+
+                                if (validateInputs() && userView_staffEmail.validate() ) {
 
                                     if (userView_UploadPhoto_Path.getText() == null){
                                         Object[] options = { "OK", "CANCEL" };
@@ -385,6 +403,17 @@ public class UserViewController implements Initializable {
                     JOptionPane.showMessageDialog(null, "Search ID is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
+
+                    /*
+                    //Check Input Field Of NIC
+                    RegexValidator regexValidator_nic = new RegexValidator();
+                    regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+
+                    userView_searchField.getValidators().add(regexValidator_nic);
+                    userView_searchField.focusedProperty().addListener((o, oldValue, newValue) -> {
+                        if(!newValue)  userView_searchField.validate();
+                    });
+                    */
 
                     switch (userView_userTypeDrop.getValue()) {
 
@@ -503,7 +532,16 @@ public class UserViewController implements Initializable {
                                 JOptionPane.showMessageDialog(null, "Join Date is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Email Address
+                                RegexValidator regexValidator_email = new RegexValidator();
+                                regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+                                userView_staffEmail.getValidators().add(regexValidator_email);
+                                userView_staffEmail.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  userView_staffEmail.validate();
+                                });
+
+                                if (validateInputs() && userView_staffEmail.validate()) {
                                     UserAction.updateReceptionRecord(UserRoll.ADMIN, getReceptionist(), userView_searchField.getText(), getLoginUser());
                                     resetDisplay();
                                 }
@@ -543,7 +581,16 @@ public class UserViewController implements Initializable {
                                 JOptionPane.showMessageDialog(null, "Speciality is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Email Address
+                                RegexValidator regexValidator_email = new RegexValidator();
+                                regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+                                userView_staffEmail.getValidators().add(regexValidator_email);
+                                userView_staffEmail.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  userView_staffEmail.validate();
+                                });
+
+                                if (validateInputs() && userView_staffEmail.validate() ) {
                                     UserAction.updateMedicalOfficerRecord(UserRoll.ADMIN, getMedicalOfficer(), userView_searchField.getText(), getLoginUser());
                                     resetDisplay();
                                 }
@@ -1318,7 +1365,7 @@ public class UserViewController implements Initializable {
 
     public void validateInitialize(){
 
-        //Check Input Field Of Name is text
+        //Check Input Fields Of User Name and Allergies is text
         RegexValidator regexValidator = new RegexValidator();
         regexValidator.setRegexPattern("[A-Za-z\\s]+");
         regexValidator.setMessage("Only Text");
@@ -1327,25 +1374,41 @@ public class UserViewController implements Initializable {
         userView_name.focusedProperty().addListener((o, oldValue, newValue) -> {
             if(!newValue)  userView_name.validate();
         });
+
         userView_allergies.getValidators().add(regexValidator);
         userView_allergies.focusedProperty().addListener((o, oldValue, newValue) -> {
             if(!newValue)  userView_allergies.validate();
         });
 
-        //Check Input Field Of Phone Number is number
-        NumberValidator numbValid = new NumberValidator();
-        numbValid.setMessage("Only Number");
+        //Check Input Field Of Email Address
+        RegexValidator regexValidator_email = new RegexValidator();
+        //regexValidator_email.setRegexPattern("^[A-Za-z0-9+_.-]+@(.+)$");
+        regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+        regexValidator_email.setMessage("Invalid Please Check");
 
-        userView_phoneNum.getValidators().add(numbValid);
-        userView_phoneNum.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) userView_phoneNum.validate();
+        userView_staffEmail.getValidators().add(regexValidator_email);
+        userView_staffEmail.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  userView_staffEmail.validate();
         });
 
-        //Check Length Of Phone Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-        userView_phoneNum.getValidators().add(lengthValidatorNumb);
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
+
+        userView_phoneNum.getValidators().add(regexValidator_phone_number);
         userView_phoneNum.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) userView_phoneNum.validate();
+            if(!newValue)  userView_phoneNum.validate();
+        });
+
+        //Check Input Field Of NIC
+        RegexValidator regexValidator_nic = new RegexValidator();
+        regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+        regexValidator_nic.setMessage("Invalid Please Check");
+
+        userView_NIC.getValidators().add(regexValidator_nic);
+        userView_NIC.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  userView_NIC.validate();
         });
 
     }
@@ -1363,23 +1426,25 @@ public class UserViewController implements Initializable {
             if(!newValue)  userView_name.validate();
         });
 
-        //Check Input Field Of Phone Number is number
-        NumberValidator numbValid = new NumberValidator();
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
 
-        userView_phoneNum.getValidators().add(numbValid);
-        userView_phoneNum.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) userView_phoneNum.validate();
-        });
-
-        //Check Length Of Phone Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-
-        userView_phoneNum.getValidators().add(lengthValidatorNumb);
+        userView_phoneNum.getValidators().add(regexValidator_phone_number);
         userView_phoneNum.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) userView_phoneNum.validate();
+            if(!newValue)  userView_phoneNum.validate();
         });
 
-        if (userView_name.validate() && userView_phoneNum.validate()){
+        //Check Input Field Of NIC
+        RegexValidator regexValidator_nic = new RegexValidator();
+        regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+
+        userView_NIC.getValidators().add(regexValidator_nic);
+        userView_NIC.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  userView_NIC.validate();
+        });
+
+        if (userView_name.validate() && userView_phoneNum.validate() && userView_NIC.validate() ){
             dataInputs = true;
         }
             return dataInputs;

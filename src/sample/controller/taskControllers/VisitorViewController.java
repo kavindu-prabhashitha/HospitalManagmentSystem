@@ -163,12 +163,30 @@ public class VisitorViewController {
                     JOptionPane.showMessageDialog(null, "Search ID is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
+
+                    //Check Input Field Of NIC
+                    RegexValidator regexValidator_nic = new RegexValidator();
+                    regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+                    regexValidator_nic.setMessage("Invalid Please Check");
+
+                    Vview_idSearch.getValidators().add(regexValidator_nic);
+                    Vview_idSearch.focusedProperty().addListener((o, oldVal,newVal)->{
+                        if(!newVal) Vview_idSearch.validate();
+                    });
+
+                    if(Vview_idSearch.validate()){
+
                     ArrayList<Visitor> foundVisitors =VisitorAction.searchVisitorRecords(Vview_idSearch.getText(),null);
 
                     System.out.println("search term : "+Vview_idSearch.getText()+" found Records : "+foundVisitors);
                     ObservableList<Visitor> observableList =FXCollections.observableList(foundVisitors);
                     setTable();
                     Vview_mainTable.setItems(observableList);
+                    }
+                    else {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null, "Invalid Data", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
             }
@@ -459,36 +477,28 @@ public class VisitorViewController {
             if(!newValue)  Vview_purpose.validate();
         });
 
-        //Check Input Field is number
-        NumberValidator numbValid = new NumberValidator();
-        numbValid.setMessage("Only Number");
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
 
-        Vview_idNumber.getValidators().add(numbValid);
-        Vview_idNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) Vview_idNumber.validate();
+        Vview_phoneNumber.getValidators().add(regexValidator_phone_number);
+        Vview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_phoneNumber.validate();
         });
-        Vview_phoneNumber.getValidators().add(numbValid);
-        Vview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) Vview_phoneNumber.validate();
+
+        //Check Input Field Of NIC
+        RegexValidator regexValidator_nic = new RegexValidator();
+        regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+        regexValidator_nic.setMessage("Invalid Please Check");
+
+        Vview_idNumber.getValidators().add(regexValidator_nic);
+        Vview_idNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_idNumber.validate();
         });
-        Vview_idSearch.getValidators().add(numbValid);
+        Vview_idSearch.getValidators().add(regexValidator_nic);
         Vview_idSearch.focusedProperty().addListener((o, oldVal,newVal)->{
             if(!newVal) Vview_idSearch.validate();
-        });
-
-        //Check Length Of Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-        Vview_idNumber.getValidators().add(lengthValidatorNumb);
-        Vview_idNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Vview_idNumber.validate();
-        });
-        Vview_phoneNumber.getValidators().add(lengthValidatorNumb);
-        Vview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Vview_phoneNumber.validate();
-        });
-        Vview_idSearch.getValidators().add(lengthValidatorNumb);
-        Vview_idSearch.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Vview_idSearch.validate();
         });
 
     }
@@ -510,29 +520,25 @@ public class VisitorViewController {
             if(!newValue)  Vview_purpose.validate();
         });
 
-        //Check Input Field is number
-        NumberValidator numbValid = new NumberValidator();
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
 
-        Vview_idNumber.getValidators().add(numbValid);
-        Vview_idNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) Vview_idNumber.validate();
-        });
-        Vview_phoneNumber.getValidators().add(numbValid);
-        Vview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) Vview_phoneNumber.validate();
-        });
-
-        //Check Length Of Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-        Vview_idNumber.getValidators().add(lengthValidatorNumb);
-        Vview_idNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Vview_idNumber.validate();
-        });
-        Vview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Vview_phoneNumber.getValidators().add(regexValidator_phone_number);
         Vview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Vview_phoneNumber.validate();
+            if(!newValue)  Vview_phoneNumber.validate();
         });
 
+        //Check Input Field Of NIC
+        RegexValidator regexValidator_nic = new RegexValidator();
+        regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+        regexValidator_nic.setMessage("Invalid Please Check");
+
+        Vview_idNumber.getValidators().add(regexValidator_nic);
+        Vview_idNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  Vview_idNumber.validate();
+        });
 
         if (Vview_vName.validate() && Vview_purpose.validate() && Vview_idNumber.validate() && Vview_phoneNumber.validate() ){
             dataInputs = true;

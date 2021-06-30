@@ -9,3 +9,5 @@
 37~Doctor Speciality~Pediatrician
 38~Doctor Speciality~Physiatrist
 35~Complaint Types~staff related
+36~Doctor Speciality~Speciality 1
+37~Complaint Types~new

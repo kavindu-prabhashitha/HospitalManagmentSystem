@@ -473,21 +473,15 @@ public class ComplaintViewController {
             if(!newValue)  Cview_actionTaken.validate();
         });
 
-        //Check Input Field Of Phone Number is number
-        NumberValidator numbValid = new NumberValidator();
-        numbValid.setMessage("Only Number");
-        Cview_phoneNumber.getValidators().add(numbValid);
-        Cview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) Cview_phoneNumber.validate();
-        });
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
 
-        //Check Length Of Phone Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-        Cview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Cview_phoneNumber.getValidators().add(regexValidator_phone_number);
         Cview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Cview_phoneNumber.validate();
+            if(!newValue)  Cview_phoneNumber.validate();
         });
-
     }
 
     public Boolean validateInputs(){
@@ -512,19 +506,14 @@ public class ComplaintViewController {
             if(!newValue)  Cview_actionTaken.validate();
         });
 
-        //Check Input Field Of Phone Number is number
-        NumberValidator numbValid = new NumberValidator();
-        numbValid.setMessage("Only Number");
-        Cview_phoneNumber.getValidators().add(numbValid);
-        Cview_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) Cview_phoneNumber.validate();
-        });
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
 
-        //Check Length Of Phone Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-        Cview_phoneNumber.getValidators().add(lengthValidatorNumb);
+        Cview_phoneNumber.getValidators().add(regexValidator_phone_number);
         Cview_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) Cview_phoneNumber.validate();
+            if(!newValue)  Cview_phoneNumber.validate();
         });
 
         if (Cview_complaitBy.validate() && Cview_phoneNumber.validate() && Cview_description.validate() && Cview_actionTaken.validate()){
