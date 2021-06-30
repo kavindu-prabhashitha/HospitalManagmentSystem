@@ -155,7 +155,16 @@ public class ProfileViewController {
                                 JOptionPane.showMessageDialog(null, "Join Date is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Email Address
+                                RegexValidator regexValidator_email = new RegexValidator();
+                                regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+                                profile_emailAddress.getValidators().add(regexValidator_email);
+                                profile_emailAddress.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  profile_emailAddress.validate();
+                                });
+
+                                if (validateInputs() && profile_emailAddress.validate() ) {
                                     ProfileAction.updateCurrentUserData(getReceptionistFromView());
                                 }
                                 else {
@@ -207,7 +216,16 @@ public class ProfileViewController {
                                 JOptionPane.showMessageDialog(null, "Speciality is Empty", "ERROR", JOptionPane.ERROR_MESSAGE);
                             }
                             else {
-                                if (validateInputs()) {
+
+                                //Check Input Field Of Email Address
+                                RegexValidator regexValidator_email = new RegexValidator();
+                                regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+                                profile_emailAddress.getValidators().add(regexValidator_email);
+                                profile_emailAddress.focusedProperty().addListener((o, oldValue, newValue) -> {
+                                    if(!newValue)  profile_emailAddress.validate();
+                                });
+
+                                if (validateInputs() && profile_emailAddress.validate()) {
                                     ProfileAction.updateCurrentUserData(getMedicalOffFromView());
                                 }
                                 else {
@@ -735,20 +753,34 @@ public class ProfileViewController {
             if(!newValue)  profile_allergies.validate();
         });
 
-        //Check Input Field Of Phone Number is number
-        NumberValidator numbValid = new NumberValidator();
-        numbValid.setMessage("Only Number");
+        //Check Input Field Of Email Address
+        RegexValidator regexValidator_email = new RegexValidator();
+        regexValidator_email.setRegexPattern("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+        regexValidator_email.setMessage("Invalid Please Check");
 
-        profile_phoneNumber.getValidators().add(numbValid);
-        profile_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) profile_phoneNumber.validate();
+        profile_emailAddress.getValidators().add(regexValidator_email);
+        profile_emailAddress.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  profile_emailAddress.validate();
         });
 
-        //Check Length Of Phone Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-        profile_phoneNumber.getValidators().add(lengthValidatorNumb);
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
+
+        profile_phoneNumber.getValidators().add(regexValidator_phone_number);
         profile_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) profile_phoneNumber.validate();
+            if(!newValue)  profile_phoneNumber.validate();
+        });
+
+        //Check Input Field Of NIC
+        RegexValidator regexValidator_nic = new RegexValidator();
+        regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+        regexValidator_nic.setMessage("Invalid Please Check");
+
+        profile_nicNumber.getValidators().add(regexValidator_nic);
+        profile_nicNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  profile_nicNumber.validate();
         });
 
     }
@@ -766,23 +798,27 @@ public class ProfileViewController {
             if(!newValue)  profile_name.validate();
         });
 
-        //Check Input Field Of Phone Number is number
-        NumberValidator numbValid = new NumberValidator();
+        //Check Input Field Of Phone Number
+        RegexValidator regexValidator_phone_number = new RegexValidator();
+        regexValidator_phone_number.setRegexPattern("[+]94[1-9][0-9]{8}|0[1-9][0-9]{8}");
+        regexValidator_phone_number.setMessage("Invalid Please Check");
 
-        profile_phoneNumber.getValidators().add(numbValid);
-        profile_phoneNumber.focusedProperty().addListener((o, oldVal,newVal)->{
-            if(!newVal) profile_phoneNumber.validate();
-        });
-
-        //Check Length Of Phone Number
-        StringLengthValidator lengthValidatorNumb= new StringLengthValidator(10);
-
-        profile_phoneNumber.getValidators().add(lengthValidatorNumb);
+        profile_phoneNumber.getValidators().add(regexValidator_phone_number);
         profile_phoneNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if(!newValue) profile_phoneNumber.validate();
+            if(!newValue)  profile_phoneNumber.validate();
         });
 
-        if (profile_name.validate() && profile_phoneNumber.validate()){
+        //Check Input Field Of NIC
+        RegexValidator regexValidator_nic = new RegexValidator();
+        regexValidator_nic.setRegexPattern("[1-9][0-9]{8}[Vv]|[1-9][0-9]{11}");
+        regexValidator_nic.setMessage("Invalid Please Check");
+
+        profile_nicNumber.getValidators().add(regexValidator_nic);
+        profile_nicNumber.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if(!newValue)  profile_nicNumber.validate();
+        });
+
+        if (profile_name.validate() && profile_phoneNumber.validate() && profile_nicNumber.validate() ){
             dataInputs = true;
         }
         return dataInputs;

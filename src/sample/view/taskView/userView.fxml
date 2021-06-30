@@ -55,7 +55,7 @@
                   <Font name="Bookshelf Symbol 7" size="15.0" />
                </font>
             </Label>
-            <Line endX="-502.10003662109375" endY="-471.0" layoutX="1192.0" layoutY="740.0" startX="-566.5" startY="-471.0" stroke="#d9d9d9" />
+            <Line endX="-502.10003662109375" endY="-471.0" layoutX="1192.0" layoutY="743.0" startX="-566.5" startY="-471.0" stroke="#d9d9d9" />
             <Label layoutX="521.0" layoutY="49.0" text="Patient Details">
                <font>
                   <Font name="Bookshelf Symbol 7" size="15.0" />
@@ -69,8 +69,8 @@
             </Label>
             <Line endX="-178.69998168945312" endY="-468.0" layoutX="690.0" layoutY="527.0" opacity="0.57" startX="-269.70001220703125" startY="-468.0" stroke="#d9d9d9" />
             <Line endX="207.00006103515625" endY="-322.0" layoutX="477.0" layoutY="488.0" startX="137.29998779296875" startY="-322.0" stroke="#d9d9d9" />
-            <Line endX="-362.9000244140625" endY="-458.0" layoutX="865.0" layoutY="727.0" startX="-439.0999755859375" startY="-458.0" stroke="#d9d9d9" />
-            <Label layoutX="512.0" layoutY="258.0" text=" Medical Officer">
+            <Line endX="-362.9000244140625" endY="-458.0" layoutX="865.0" layoutY="730.0" startX="-439.0999755859375" startY="-458.0" stroke="#d9d9d9" />
+            <Label layoutX="512.0" layoutY="262.0" text=" Medical Officer">
                <font>
                   <Font size="15.0" />
                </font>
@@ -99,10 +99,10 @@
                 <RowConstraints maxHeight="95.20001068115235" minHeight="7.600012207031249" prefHeight="75.99999084472657" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="89.6" minHeight="0.0" prefHeight="24.799990844726565" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="61.39999999999999" minHeight="10.0" prefHeight="48.80000915527343" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="40.00000610351563" minHeight="10.0" prefHeight="33.59998779296876" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="56.79998168945312" minHeight="10.0" prefHeight="52.800012207031244" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="89.19999999999999" minHeight="0.0" prefHeight="51.9999938964844" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="89.19999999999999" minHeight="0.0" prefHeight="46.199993896484386" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="40.599999999999994" minHeight="10.0" prefHeight="40.599999999999994" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="56.79998168945312" minHeight="10.0" prefHeight="21.400000000000006" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="89.19999999999999" minHeight="0.0" prefHeight="81.59999389648439" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="58.39999999999998" minHeight="0.0" prefHeight="40.800006103515614" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="65.60001220703123" minHeight="10.0" prefHeight="37.400006103515636" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
@@ -120,7 +120,7 @@
                   <Label text="NIC No" GridPane.rowIndex="5" />
                   <JFXTextField fx:id="userView_NIC" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="270.0" promptText="NIC No" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label text="Address" GridPane.rowIndex="6" />
-                  <JFXTextArea fx:id="userView_address" prefHeight="52.0" prefWidth="248.0" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <JFXTextArea fx:id="userView_address" prefColumnCount="20" prefHeight="20.0" prefWidth="248.0" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <Label fx:id="userView_userNameLable" text="User Name" GridPane.rowIndex="7" />
                   <JFXTextField fx:id="userView_userName" focusColor="DODGERBLUE" prefHeight="26.0" prefWidth="248.0" promptText="username" style="-fx-background-color: e8e8e8;" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                   <Label text="Password" GridPane.rowIndex="8" />
@@ -149,8 +149,8 @@
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="175.20001220703125" minWidth="10.0" prefWidth="173.60003662109375" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="32.599981689453124" minHeight="10.0" prefHeight="31.799993896484374" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="43.000006103515624" minHeight="10.0" prefHeight="43.000006103515624" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label text="Staff ID" />
