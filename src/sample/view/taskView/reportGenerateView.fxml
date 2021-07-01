@@ -121,7 +121,6 @@
             </TabPane>
             <JFXComboBox fx:id="printType_format" layoutX="547.0" layoutY="403.0" prefHeight="25.0" prefWidth="148.0" promptText="Select Report Type" />
             <JFXButton fx:id="appointmentSearch" layoutX="123.0" layoutY="400.0" prefHeight="32.0" prefWidth="131.0" style="-fx-background-color: green;" text="Search Data" textFill="WHITE" />
-            <JFXButton fx:id="reportdataPreview" layoutX="262.0" layoutY="400.0" prefHeight="32.0" prefWidth="131.0" style="-fx-background-color: lightblue;" text="Preview Report Data" />
             <AnchorPane fx:id="medicalOfficerSection" layoutX="15.0" layoutY="181.0" prefHeight="101.0" prefWidth="395.0">
                <children>
                   <Label layoutX="10.0" layoutY="16.0" prefHeight="38.0" prefWidth="170.0" text="Select a Medical Officer" textFill="#575757">
@@ -156,11 +155,6 @@
             </AnchorPane>
             <TabPane fx:id="reportGen_tabPane" layoutX="410.0" layoutY="8.0" prefHeight="376.0" prefWidth="429.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="reportPreviewTab" text="Report Preview">
-                  <content>
-                    <AnchorPane fx:id="reportGen_tabPane_preview" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-                </Tab>
                 <Tab fx:id="reportGen_tabPane_mediSelect" text="Medical Officer Select">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: lightGrey;">

@@ -23,6 +23,7 @@ import sample.model.*;
 
 import javax.print.Doc;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -53,7 +54,6 @@ public class ReportGenController {
     @FXML private AnchorPane userTypeSection;
 
     @FXML private TabPane reportGen_tabPane;
-    @FXML private Tab reportPreviewTab;
 
 
     @FXML private JFXButton reportGen_selectDoc;
@@ -69,6 +69,7 @@ public class ReportGenController {
 
         resetDisplay();
         ReportAction newReportAction = new ReportAction();
+        reportGen_tabPane.setDisable(true);
 
         reportGenarator_rType.getItems().addAll(newReportAction.getReporttype());
         printType_format.getItems().addAll(newReportAction.getPrintType());
@@ -126,29 +127,34 @@ public class ReportGenController {
         appointmentSearch.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                LocalDate start =  reportGenarator_dateFrom.getValue();
+                LocalDate end = reportGenarator_dateTo.getValue();
+                UserRoll selectedroll = userType.getValue();
+
+                switch (reportGenarator_rType.getValue()){
+                    case APPOINTMENT_DATA_REPORT:
+                        ObservableList<AppointmentTableData> tableDataApp = newReportAction.getAppointmentTableData(
+                                reportGenarator_dateFrom.getValue(),
+                                reportGenarator_dateTo.getValue(),
+                                medicalOfficerID_selected.getText()
+                        );
+                        searchAppointmentRecords(tableDataApp);
+                        break;
+                    case USERLOG_DATA_REPORT:
+                        ObservableList<UserLogingLogTableData> tableDataApp1 = newReportAction.getLoginLogtableData(
+                              start,
+                              end,
+                                selectedroll
+                        );
+                        searchUserlogginglog(tableDataApp1);
+                        break;
+                    case PATIENT_LOGIN_DATA:
+                        ObservableList<PatientloginTableData> tableDataApp2 = newReportAction.generateuserLoginDataList();
+                        searchPatientLogindata(tableDataApp2);
+                        break;
+                }
 
 
-                DateRange daterange =new DateRange(reportGenarator_dateFrom.getValue(),reportGenarator_dateTo.getValue());
-                System.out.println("Date Range " + daterange.toList());
-
-                System.out.println(reportGenarator_dateTo.getValue());
-                System.out.println(reportGenarator_dateFrom.getValue());
-
-                ObservableList<AppointmentTableData> tableDataApp = newReportAction.getAppointmentTableData(
-                        reportGenarator_dateFrom.getValue(),
-                        reportGenarator_dateTo.getValue(),
-                        medicalOfficerID_selected.getText()
-                );
-                //System.out.println("AppointmenttableData "+tableDataApp);
-                setAppointTable(tableDataApp);
-
-                ObservableList<UserLogingLogTableData> tableDataApp1 = newReportAction.getLoginLogtableData();
-                //System.out.println("AppointmenttableData "+tableDataApp1);
-                setLoginLogtable(tableDataApp1);
-
-                ObservableList<PatientloginTableData> tableDataApp2 = newReportAction.generateuserLoginDataList();
-               // System.out.println("AppointmenttableData "+tableDataApp2);
-                setPatientLoginDatatable(tableDataApp2);
             }
         });
 
@@ -161,6 +167,18 @@ public class ReportGenController {
 
     }
 
+    private void searchPatientLogindata(ObservableList<PatientloginTableData> data) {
+        setPatientLoginDatatable(data);
+    }
+
+    private void searchUserlogginglog(ObservableList<UserLogingLogTableData> data) {
+        setLoginLogtable(data);
+    }
+
+    private void searchAppointmentRecords(ObservableList<AppointmentTableData> data) {
+        setAppointTable(data);
+    }
+
 
     private void resetDisplay(){
         medicalOfficerSection.setVisible(false);
@@ -168,18 +186,34 @@ public class ReportGenController {
     }
 
     private void setViewForLoginLog() {
+        reportGen_tabPane.setDisable(true);
         medicalOfficerSection.setVisible(false);
         userTypeSection.setVisible(true);
+        appointmentData_Ttab.setDisable(true);
+        appT_UserLogTableTab.setDisable(false);
+        reportView_maintabPain.getSelectionModel().select(appT_UserLogTableTab);
+        patientLog_tableTab.setDisable(true);
     }
 
     private void setViewForPatientLoginData() {
+        reportGen_tabPane.setDisable(true);
         medicalOfficerSection.setVisible(false);
         userTypeSection.setVisible(false);
+        appointmentData_Ttab.setDisable(true);
+        appT_UserLogTableTab.setDisable(true);
+        patientLog_tableTab.setDisable(false);
+        reportView_maintabPain.getSelectionModel().select(patientLog_tableTab);
     }
 
     private void setViewForAppointment() {
+        reportGen_tabPane.setDisable(false);
         medicalOfficerSection.setVisible(true);
         userTypeSection.setVisible(false);
+        appointmentData_Ttab.setDisable(false);
+        appT_UserLogTableTab.setDisable(true);
+        patientLog_tableTab.setDisable(true);
+        reportView_maintabPain.getSelectionModel().select(appointmentData_Ttab);
+
     }
 
     //AppointmentReportTable
