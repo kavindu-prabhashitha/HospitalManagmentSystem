@@ -4,17 +4,33 @@ package sample.model;
 import java.time.LocalDate;
 import java.util.Date;
 
-public abstract class User {
+public abstract class User extends SystemUser{
     private UserRoll userRoll;
     private String userName;
     private String name;
-    private String gender;
+    private Gender gender;
     private String phoneNumber =null;
     private String idCardNumber;
     private LocalDate dob;
     private String address;
     private String maritalStatus;
     private String userPassword;
+
+    private String photoPath;
+    private String filePath;
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+    public String getFilePath() {
+        return filePath;
+    }
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
     public UserRoll getUserRoll() {
         return userRoll;
@@ -32,7 +48,7 @@ public abstract class User {
         return name;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
@@ -64,7 +80,7 @@ public abstract class User {
         this.name = name;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
@@ -98,17 +114,16 @@ public abstract class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "userRoll=" + userRoll +
-                ", userName='" + userName + '\'' +
-                ", name='" + name + '\'' +
-                ", gender='" + gender + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", idCardNumber='" + idCardNumber + '\'' +
-                ", dob=" + dob +
-                ", address='" + address + '\'' +
-                ", maritalStatus='" + maritalStatus + '\'' +
-                ", userPassword='" + userPassword + '\'' +
-                '}';
+        return  userRoll + "~" +
+                name + '~' +
+                gender + '~' +
+                maritalStatus + '~' +
+                dob +"~"+
+                phoneNumber + '~' +
+                idCardNumber + '~' +
+                address + '~' +
+                userName + '~' +
+                userPassword
+                ;
     }
 }

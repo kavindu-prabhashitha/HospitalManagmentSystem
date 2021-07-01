@@ -7,7 +7,6 @@ public class Patient extends User {
     public Patient() {
         setPhoneNumber("null");
         setAllergies("Non");
-
     }
 
     public BloodGroup getBloodGroup() {
@@ -28,9 +27,6 @@ public class Patient extends User {
 
     @Override
     public String toString() {
-        return "Patient{" +
-                "bloodGroup=" + bloodGroup +
-                ", allergies='" + allergies + '\'' +
-                '}' + super.toString();
+        return super.toString()+"~"+bloodGroup + "~"+ allergies;
     }
 }
