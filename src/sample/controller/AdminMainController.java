@@ -1,73 +1,45 @@
 package sample.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import sample.Main;
+import sample.model.Admin;
 
-
-import java.awt.*;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class AdminMainController {
 
+    private Admin currentAdmin;
 
-    @FXML
-    private ResourceBundle resources;
+    @FXML private ResourceBundle resources;
+    @FXML private URL location;
+    @FXML private BorderPane adminMain_boarderPane;
+    @FXML private ImageView adminMain_mainHome;
+    @FXML private JFXButton adminMain_reference;
+    @FXML private JFXButton adminMain_user;
+    @FXML private JFXButton adminMain_postal;
+    @FXML private JFXButton adminMain_appointment;
+    @FXML private JFXButton adminMain_complaint;
+    @FXML private JFXButton adminMain_generateReport;
+    @FXML private Pane adminMain_logout;
+    @FXML private JFXButton adminMain_logoutButton;
+    @FXML private ImageView adminMain_backIcon;
+    @FXML private AnchorPane adminMain_loaderPane;
+    @FXML private JFXTextField adminMain_userName;
+    @FXML private JFXTextField adminMain_userID;
+    @FXML private JFXButton adminMain_profile;
 
-    @FXML
-    private URL location;
 
-    @FXML
-    private BorderPane adminMain_boarderPane;
-
-    @FXML
-    private ImageView adminMain_mainHome;
-
-    @FXML
-    private JFXButton adminMain_reference;
-
-    @FXML
-    private JFXButton adminMain_user;
-
-    @FXML
-    private JFXButton adminMain_postal;
-
-    @FXML
-    private JFXButton adminMain_appointment;
-
-    @FXML
-    private JFXButton adminMain_complaint;
-
-    @FXML
-    private JFXButton adminMain_generateReport;
-
-    @FXML
-    private Pane adminMain_logout;
-
-    @FXML
-    private JFXButton adminMain_logoutButton;
-
-    @FXML
-    private ImageView adminMain_backIcon;
-
-    @FXML
-    private AnchorPane adminMain_loaderPane;
-
-    @FXML
-    void initialize() {
+    @FXML void initialize() {
 
         adminMain_reference.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -157,25 +129,24 @@ public class AdminMainController {
         adminMain_logoutButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                adminMain_logout.getScene().getWindow().hide();
-                Stage detailsStage = new Stage();
-                FXMLLoader loader = new FXMLLoader();
-
-                loader.setLocation(getClass().getResource("/sample/view/mainLoginWindow.fxml"));
-                try {
-                    loader.load();
-
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-
-                Parent root = loader.getRoot();
-                detailsStage.setScene(new Scene(root));
-                detailsStage.show();
+                Main main = new Main();
+                main.backToMain(adminMain_logoutButton.getScene());
             }
 
         });
 
+        adminMain_profile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    System.out.println("taskView/profileSettingView");
+                    Pane view = Main.getView("taskView/profileSettingView");
+                    setReceptionViewCenter(view);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
@@ -184,6 +155,15 @@ public class AdminMainController {
 
     }
 
+    public Admin getCurrentAdmin() {
+        return currentAdmin;
+    }
+
+    public void setCurrentAdmin(Admin currentAdmin) {
+
+        this.currentAdmin =currentAdmin;
+        System.out.println("admin set in adminView : "+currentAdmin);
+    }
 
 
 }
