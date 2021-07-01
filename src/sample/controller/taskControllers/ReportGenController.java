@@ -48,10 +48,10 @@ public class ReportGenController {
     @FXML private ComboBox<PrintType> printType_format;
     @FXML private DatePicker reportGenarator_dateFrom;
     @FXML private DatePicker reportGenarator_dateTo;
-    @FXML private TextArea reportView_preview;
     @FXML private JFXButton appointmentSearch;
     @FXML private AnchorPane medicalOfficerSection;
     @FXML private AnchorPane userTypeSection;
+    @FXML private AnchorPane datePickerSection;
 
     @FXML private TabPane reportGen_tabPane;
 
@@ -62,6 +62,7 @@ public class ReportGenController {
     @FXML private Label reportGen_doctorShow;
     @FXML private Label medicalOfficerID_selected;
     @FXML private JFXTextField selectedDoctorName;
+
 
 
 
@@ -183,6 +184,11 @@ public class ReportGenController {
     private void resetDisplay(){
         medicalOfficerSection.setVisible(false);
         userTypeSection.setVisible(false);
+        if(!reportGenarator_dateTo.isVisible()){
+            reportGenarator_dateTo.setVisible(true);
+            reportGenarator_dateFrom.setVisible(true);
+        }
+
     }
 
     private void setViewForLoginLog() {
@@ -193,6 +199,8 @@ public class ReportGenController {
         appT_UserLogTableTab.setDisable(false);
         reportView_maintabPain.getSelectionModel().select(appT_UserLogTableTab);
         patientLog_tableTab.setDisable(true);
+        datePickerSection.setVisible(true);
+
     }
 
     private void setViewForPatientLoginData() {
@@ -203,6 +211,9 @@ public class ReportGenController {
         appT_UserLogTableTab.setDisable(true);
         patientLog_tableTab.setDisable(false);
         reportView_maintabPain.getSelectionModel().select(patientLog_tableTab);
+        reportGenarator_dateTo.setVisible(false);
+        reportGenarator_dateFrom.setVisible(false);
+        datePickerSection.setVisible(false);
     }
 
     private void setViewForAppointment() {
@@ -213,6 +224,7 @@ public class ReportGenController {
         appT_UserLogTableTab.setDisable(true);
         patientLog_tableTab.setDisable(true);
         reportView_maintabPain.getSelectionModel().select(appointmentData_Ttab);
+        datePickerSection.setVisible(true);
 
     }
 
