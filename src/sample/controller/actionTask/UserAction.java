@@ -32,8 +32,8 @@ import java.util.List;
 public class UserAction {
 
     // scerate key and salt for the user login data encryption
-    private static final String secretKey = "boooooooooom!!!!";
-    private static final String salt = "ssshhhhhhhhhhh!!!!";
+    private static final String secretKey = "gBsq^W)R1z3wXPPxj!UKgBsq^W)R1z3wXPPxj!UK";
+    private static final String salt = "t?u5j@_ku$Gmk9Yt?u5j@_ku$Gmk9Y";
     private static Scanner scanner;
 
     public static String patientloginData = "src/sample/fileStorage/loginData/patientLoginData.txt";
@@ -93,7 +93,7 @@ public class UserAction {
 
                 while ((line = bufferedReader.readLine()) != null) {
 
-                    System.out.println(lineNumberReader.getLineNumber());
+                  //  System.out.println(lineNumberReader.getLineNumber());
                     List<String> tempList = Arrays.asList(line.split("[~\n]"));
                     LoginUser loginUser = new LoginUser();
                     loginUser.setUserName(tempList.get(0).trim());
@@ -777,22 +777,56 @@ public class UserAction {
         return allAdminRecords;
     }
 
+    public static  ArrayList<UserLoginLog> getAllloginLog(){
+        ArrayList<UserLoginLog> allLoginRecordRecords =new ArrayList<>();
+        SystemDataReader systemDataReader = new SystemDataReader();
+        ArrayList<String> allLogStringArrya = systemDataReader.getTempDataArray(userActionLogFile);
+        for (int i=0;i<allLogStringArrya.size();i++){
+            String line = allLogStringArrya.get(i);
+            UserLoginLog log =getUserLogFromList(line);
+            allLoginRecordRecords.add(log);
+        }
+
+        return allLoginRecordRecords;
+    }
+
+    private static  UserLoginLog getUserLogFromList(String loginLine){
+        UserLoginLog loginLog =new UserLoginLog();
+        if(loginLog != null){
+            List<String> loginLogList = Arrays.asList(loginLine.split("[~\n]"));
+           // System.out.println("GetUserFromLoginLog "+ loginLogList);
+
+            loginLog.setLogDate(getLocalDatefromString(loginLogList.get(0)));
+            loginLog.setLocalTime(LocalTime.parse(loginLogList.get(1)));
+            loginLog.setUserRoll(getUserRoll(loginLogList.get(4)));
+        }
+
+        return loginLog;
+    }
+
     private static Admin getAdminFromList(String adminLine) {
-
-        List<String> adminRecList = Arrays.asList(adminLine.split("[~\n]"));
-
         Admin returnAdmiin =new Admin();
+        if(adminLine != null){
+            List<String> adminRecList = Arrays.asList(adminLine.split("[~\n]"));
+            System.out.println(adminRecList);
 
-        returnAdmiin.setUserRoll(getUserRoll(adminRecList.get(0)));
-        returnAdmiin.setName(adminRecList.get(1));
-        returnAdmiin.setGender(getGender(adminRecList.get(2)));
-        returnAdmiin.setMaritalStatus(adminRecList.get(3));
-        returnAdmiin.setDob(getLocalDatefromString(adminRecList.get(4)));
-        returnAdmiin.setPhoneNumber(adminRecList.get(5));
-        returnAdmiin.setIdCardNumber(adminRecList.get(6));
-        returnAdmiin.setAddress(adminRecList.get(7));
-        returnAdmiin.setUserName(adminRecList.get(8));
-        returnAdmiin.setUserPassword(adminRecList.get(9));
+            returnAdmiin.setUserRoll(getUserRoll(adminRecList.get(0)));
+            returnAdmiin.setName(adminRecList.get(1));
+            returnAdmiin.setGender(getGender(adminRecList.get(2)));
+            returnAdmiin.setMaritalStatus(adminRecList.get(3));
+            returnAdmiin.setDob(getLocalDatefromString(adminRecList.get(4)));
+            returnAdmiin.setPhoneNumber(adminRecList.get(5));
+            returnAdmiin.setIdCardNumber(adminRecList.get(6));
+            returnAdmiin.setAddress(adminRecList.get(7));
+            returnAdmiin.setUserName(adminRecList.get(8));
+            returnAdmiin.setUserPassword(adminRecList.get(9));
+        }
+
+
+
+
+
+
         return returnAdmiin;
     }
 
@@ -1011,13 +1045,24 @@ public class UserAction {
                 MedicalOfficer medicalOfficer = tempMedicalOfficer.get(i);
                 medicalOfficer.setUserPassword(null);
                 medicalOfficerBySpec.add(medicalOfficer);
-                System.out.println("Medical officer found by speciality");
+               // System.out.println("Medical officer found by speciality");
             }else {
                 System.out.println("Medical officer not found by speciality");
             }
         }
 
         return medicalOfficerBySpec;
+    }
+
+    private static MedicalOfficer getMedicalOfficerById(String medicalofficeridNo){
+        MedicalOfficer selectedOfficer =null;
+        ArrayList<MedicalOfficer> allMedicalOfficer = getAllMedicalOfficer();
+        for (int i = 0; i < allMedicalOfficer.size(); i++) {
+            if (allMedicalOfficer.get(i).getIdCardNumber().equals(medicalofficeridNo)){
+                selectedOfficer = allMedicalOfficer.get(i);
+            }
+        }
+        return selectedOfficer;
     }
 
 
@@ -1122,8 +1167,8 @@ public class UserAction {
                     newbufferedWriter.close();
                     fileWriter.close();
                     JOptionPane.showMessageDialog(null,"Delete Successfully");
-                    System.out.println("User deleted success");
-                    System.out.println(tempPatientList.toString());
+                    //tem.out.println("User deleted success");
+                   // System.out.println(tempPatientList.toString());
                     deleteUserLoginData(loginDataPath,loginUser);
 
 
@@ -1416,6 +1461,31 @@ public class UserAction {
         );
 
         systemDataWriter.writeDataToFile(userActionLog.toString(),userActionLogFile,5);
+
+    }
+
+    private static ArrayList<UserLoginCredential> getLoginDataList(){
+        ArrayList<Patient> allPatientData =getAllPatients();
+        ArrayList<UserLoginCredential> allpatientDataVals = new ArrayList<>();
+
+        for (int i = 0; i < allPatientData.size(); i++) {
+            Patient selectedPatient= allPatientData.get(i);
+            UserLoginCredential newdata =new UserLoginCredential(
+                    selectedPatient.getName(),
+                    selectedPatient.getUserName(),
+                   decryptUserData( selectedPatient.getUserPassword())
+            );
+            allpatientDataVals.add(newdata);
+        }
+
+        return allpatientDataVals;
+    }
+
+    public static ArrayList<UserLoginCredential> getAllUserCredentials(){
+        return getLoginDataList();
+    }
+
+    public static void getMedicalOfficerData(){
 
     }
 

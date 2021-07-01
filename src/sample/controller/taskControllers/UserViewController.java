@@ -75,7 +75,7 @@ public class UserViewController implements Initializable {
     @FXML private JFXComboBox<String> userView_speciality;
     @FXML private JFXComboBox<UserRoll> userView_userTypeDrop;
     @FXML private JFXPasswordField userView_userPassword;
-    @FXML private  TabPane userView_mainTabPane;
+    @FXML private TabPane userView_mainTabPane;
 
     @FXML private JFXButton userView_UploadPhoto;
     @FXML private Label userView_UploadPhoto_Path;
