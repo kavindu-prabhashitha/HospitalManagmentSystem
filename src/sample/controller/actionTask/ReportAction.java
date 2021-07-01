@@ -71,7 +71,10 @@ public class ReportAction {
         return userType;
     }
 
-    public ObservableList<AppointmentTableData> getAppointmentTableData(LocalDate startdate, LocalDate enddate, String id){
+    public ObservableList<AppointmentTableData> getAppointmentTableData(
+            LocalDate startdate,
+            LocalDate enddate,
+            String id){
         ArrayList<Appointment> allAppointments = filterAppointmentData(
                 startdate,
                 enddate,
@@ -101,8 +104,12 @@ public class ReportAction {
         return appointmentData;
     }
 
-    public ObservableList<UserLogingLogTableData> getLoginLogtableData(){
-        ArrayList<UserLoginLog> allLoginLog = UserAction.getAllloginLog();
+    public ObservableList<UserLogingLogTableData> getLoginLogtableData(
+            LocalDate start,
+            LocalDate end,
+            UserRoll roll
+    ){
+        ArrayList<UserLoginLog> allLoginLog = filterUserLoginLog(start,end, UserAction.getAllloginLog(),roll);
         ObservableList<UserLogingLogTableData> loginLogdata = FXCollections.observableArrayList();
 
         for (int i = 0; i < allLoginLog.size() ; i++) {
@@ -184,6 +191,36 @@ public class ReportAction {
         System.out.println(dateList);
     return finalfilteredAppointments;
 
+    }
+
+    public ArrayList<UserLoginLog> filterUserLoginLog(
+            LocalDate start,
+            LocalDate end,
+            ArrayList<UserLoginLog> data,
+            UserRoll userRoll){
+        DateRange dateranges = new DateRange(start,end);
+        List<LocalDate> dateList = dateranges.toList();
+        ArrayList<UserLoginLog> filterdloginLog =new  ArrayList();
+        ArrayList<UserLoginLog> finalfilteredlog =new  ArrayList();
+
+        for (int i = 0; i < data.size() ; i++) {
+            LocalDate logdate = data.get(i).getLogDate();
+            for (int j = 0; j <dateList.size() ; j++) {
+                if(logdate.equals( dateList.get(j))){
+                    filterdloginLog.add(data.get(i));
+                }
+            }
+        }
+
+        for (int k = 0; k < filterdloginLog.size(); k++) {
+            UserLoginLog secondFilter = filterdloginLog.get(k);
+            if(secondFilter.getUserRoll().equals(userRoll)){
+                finalfilteredlog.add(filterdloginLog.get(k));
+            }
+        }
+
+        System.out.println("Filter Log data "+finalfilteredlog);
+        return finalfilteredlog;
     }
 
 }
