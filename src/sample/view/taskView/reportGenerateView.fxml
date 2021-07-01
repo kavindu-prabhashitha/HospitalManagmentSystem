@@ -28,18 +28,6 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: offwhite;" BorderPane.alignment="CENTER">
          <children>
-            <Label layoutX="104.0" layoutY="93.0" prefHeight="12.0" prefWidth="59.0" text="Date" textFill="#575757">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <DatePicker fx:id="reportGenarator_dateFrom" layoutX="177.0" layoutY="94.0" prefHeight="26.0" prefWidth="144.0" promptText="Select" />
-            <Label alignment="BOTTOM_LEFT" layoutX="104.0" layoutY="140.0" prefHeight="24.0" prefWidth="38.0" text="To" textFill="#575757">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <DatePicker fx:id="reportGenarator_dateTo" layoutX="177.0" layoutY="141.0" prefHeight="26.0" prefWidth="144.0" promptText="Select" />
             <Label layoutX="451.0" layoutY="402.0" prefHeight="27.0" prefWidth="100.0" text="Print Type">
                <font>
                   <Font size="18.0" />
@@ -176,6 +164,22 @@
                 </Tab>
               </tabs>
             </TabPane>
+            <AnchorPane fx:id="datePickerSection" layoutX="17.0" layoutY="72.0" prefHeight="118.0" prefWidth="375.0">
+               <children>
+                  <Label layoutX="82.0" layoutY="19.0" prefHeight="12.0" prefWidth="59.0" text="Date" textFill="#575757">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <DatePicker fx:id="reportGenarator_dateFrom" layoutX="153.0" layoutY="19.0" prefHeight="26.0" prefWidth="144.0" promptText="Select" />
+                  <DatePicker fx:id="reportGenarator_dateTo" layoutX="153.0" layoutY="56.0" prefHeight="26.0" prefWidth="144.0" promptText="Select" />
+                  <Label alignment="BOTTOM_LEFT" layoutX="82.0" layoutY="56.0" prefHeight="24.0" prefWidth="38.0" text="To" textFill="#575757">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
          </children></AnchorPane>
    </center>
 </BorderPane>
