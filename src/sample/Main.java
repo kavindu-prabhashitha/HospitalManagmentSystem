@@ -14,6 +14,7 @@ import javafx.util.Duration;
 import sample.controller.MultipleFXMLLoader;
 import sample.controller.SystemDataReader;
 import sample.controller.actionTask.ReferenceAction;
+import sample.controller.actionTask.UserAction;
 import sample.model.SystemUser;
 
 import javax.swing.*;
@@ -56,7 +57,6 @@ public class Main extends Application {
         loadSystemData();
         launch(args);
         saveSystemData();
-        System.out.println("system closing");
     }
 
     public static void liveClock(Label dispalyLable) {
@@ -74,7 +74,6 @@ public class Main extends Application {
 
     public static Pane getView(String fileName) {
         //receptionView_task.setVisible(false);
-        System.out.println("you clicked " + fileName);
         MultipleFXMLLoader newFXML = new MultipleFXMLLoader();
         Pane viewCurrent = newFXML.getPage(fileName);
 
@@ -244,6 +243,7 @@ public class Main extends Application {
     public static SystemUser getCurrentSystemUser() {
         return currentSystemUser;
     }
+
     public static String getCurretUserName(){
         String userName = null;
         SystemUser systemUser =getCurrentSystemUser();

@@ -41,8 +41,6 @@ public class AdminMainController {
 
     @FXML void initialize() {
 
-
-
         adminMain_reference.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -149,7 +147,6 @@ public class AdminMainController {
                 }
             }
         });
-
 
     }
 
